@@ -485,7 +485,7 @@ function cardHTML(p){
     +'<button class="check-btn" data-action="check">'+(isCol?'v':'')+'</button>'
     +(hasTcg?'<div class="card-icon">&#127183;</div>':'')
     +'<div class="card-body" data-action="open">'
-    +'<img class="pokemon-img" src="'+spriteUrl+'" alt="'+p.name+'" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>?</text></svg>'">'
+    +'<img class="pokemon-img" src="'+spriteUrl+'" alt="'+p.name+'" loading="lazy" onerror="this.style.visibility=&quot;hidden&quot;">'
     +(numLabel?'<div class="pokemon-number">'+numLabel+'</div>':'')
     +'<div class="pokemon-name">'+p.name+'</div>'
     +(p.formLabel?'<div class="form-label">'+p.formLabel+'</div>':'')
@@ -587,7 +587,7 @@ function renderModalCardSection(){
   const content=document.getElementById('modal-card-content');
   if(saved?.imageUrl){
     content.innerHTML='<div class="card-saved-view">'
-      +'<img class="card-saved-thumb" id="card-thumb" src="'+saved.imageUrl+'" alt="Carta TCG" onerror="this.style.display=\'none\'">'
+      +'<img class="card-saved-thumb" id="card-thumb" src="'+saved.imageUrl+'" alt="Carta TCG" onerror="this.style.display=&quot;none&quot;">'
       +'<div class="card-saved-info">'
       +'<div class="card-saved-title">Carta guardada</div>'
       +'<div class="card-saved-sub">Toca la imagen para ampliarla</div>'
