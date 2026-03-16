@@ -7,295 +7,147 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="PokéDex">
+<meta name="apple-mobile-web-app-title" content="PokeDex">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>PokéDex Colección</title>
+<title>PokeDex Coleccion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --red: #CC0000; --red-dark: #8B0000;
-    --yellow: #FFCC00; --yellow-dark: #E6A800;
-    --dark: #1A1A1A;
-    --gray-100: #F0F0F0; --gray-200: #DEDEDE;
-    --gray-400: #999; --gray-700: #444;
-    --radius: 14px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Nunito', sans-serif; background: #1A1A1A; min-height: 100vh; overflow-x: hidden; }
+:root{--red:#CC0000;--red-dark:#8B0000;--yellow:#FFCC00;--yellow-dark:#E6A800;--dark:#1A1A1A;--gray-100:#F0F0F0;--gray-200:#DEDEDE;--gray-400:#999;--gray-700:#444;--radius:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflow-x:hidden}
 
-  /* ── HEADER ── */
-  .header {
-    background: linear-gradient(160deg, var(--red-dark) 0%, var(--red) 55%, #DD2222 100%);
-    padding: 16px 16px 0; position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
-  }
-  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .logo { display: flex; align-items: center; gap: 10px; }
-  .pokeball {
-    width: 40px; height: 40px; border-radius: 50%;
-    background: linear-gradient(180deg, #fafafa 50%, #1a1a1a 50%);
-    border: 3px solid #1a1a1a; position: relative; flex-shrink: 0;
-  }
-  .pokeball::before {
-    content: ''; position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
-    width: 11px; height: 11px; border-radius: 50%; background: white; border: 2.5px solid #1a1a1a; z-index: 1;
-  }
-  .pokeball::after {
-    content: ''; position: absolute; top: 50%; left: 0; right: 0;
-    transform: translateY(-50%); height: 3px; background: #1a1a1a;
-  }
-  .logo-text { font-family: 'Bangers', cursive; font-size: 30px; color: var(--yellow); letter-spacing: 1px; text-shadow: 2px 2px 0 rgba(0,0,0,0.35); line-height: 1; }
-  .logo-sub { font-size: 10px; color: rgba(255,255,255,0.75); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
-  .header-right { display: flex; align-items: center; gap: 8px; }
-  .sync-dot { width: 10px; height: 10px; border-radius: 50%; background: #44DD44; box-shadow: 0 0 6px #44DD44; transition: all 0.3s; flex-shrink: 0; }
-  .sync-dot.syncing { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); animation: pulse 0.6s infinite alternate; }
-  .sync-dot.error { background: #FF4444; box-shadow: 0 0 6px #FF4444; animation: none; }
-  @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
-  .stats-badge { background: rgba(0,0,0,0.35); border-radius: 20px; padding: 6px 14px; text-align: center; border: 1px solid rgba(255,255,255,0.15); }
-  .stats-number { font-family: 'Bangers', cursive; font-size: 20px; color: var(--yellow); line-height: 1; }
-  .stats-label { font-size: 9px; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
-  .search-row { display: flex; gap: 8px; margin-bottom: 10px; }
-  .search-input {
-    flex: 1; padding: 10px 16px; border-radius: 30px; border: 2px solid transparent;
-    background: rgba(255,255,255,0.15); color: white;
-    font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 600; outline: none; transition: all 0.2s;
-  }
-  .search-input::placeholder { color: rgba(255,255,255,0.45); }
-  .search-input:focus { background: rgba(255,255,255,0.25); border-color: var(--yellow); }
-  .btn-filter {
-    padding: 10px 14px; border-radius: 30px; border: 2px solid rgba(255,255,255,0.3);
-    background: rgba(255,255,255,0.1); color: white;
-    font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700;
-    cursor: pointer; transition: all 0.2s; white-space: nowrap;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .btn-filter.active { background: var(--yellow); color: var(--dark); border-color: var(--yellow-dark); }
-  .gen-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 12px; scrollbar-width: none; }
-  .gen-tabs::-webkit-scrollbar { display: none; }
-  .gen-tab {
-    flex-shrink: 0; padding: 6px 14px; border-radius: 20px;
-    background: rgba(255,255,255,0.1); border: 2px solid transparent;
-    color: rgba(255,255,255,0.7); font-family: 'Nunito', sans-serif;
-    font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .gen-tab.active { background: var(--yellow); color: var(--dark); border-color: var(--yellow-dark); }
+/* HEADER */
+.header{background:linear-gradient(160deg,var(--red-dark) 0%,var(--red) 55%,#DD2222 100%);padding:16px 16px 0;position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,.5)}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.logo{display:flex;align-items:center;gap:10px}
+.pokeball{width:40px;height:40px;border-radius:50%;background:linear-gradient(180deg,#fafafa 50%,#1a1a1a 50%);border:3px solid #1a1a1a;position:relative;flex-shrink:0}
+.pokeball::before{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:11px;height:11px;border-radius:50%;background:white;border:2.5px solid #1a1a1a;z-index:1}
+.pokeball::after{content:'';position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);height:3px;background:#1a1a1a}
+.logo-text{font-family:'Bangers',cursive;font-size:30px;color:var(--yellow);letter-spacing:1px;text-shadow:2px 2px 0 rgba(0,0,0,.35);line-height:1}
+.logo-sub{font-size:10px;color:rgba(255,255,255,.75);font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.header-right{display:flex;align-items:center;gap:8px}
+.sync-dot{width:10px;height:10px;border-radius:50%;background:#44DD44;box-shadow:0 0 6px #44DD44;transition:all .3s;flex-shrink:0}
+.sync-dot.syncing{background:var(--yellow);box-shadow:0 0 6px var(--yellow);animation:pulse .6s infinite alternate}
+.sync-dot.error{background:#FF4444;box-shadow:0 0 6px #FF4444;animation:none}
+@keyframes pulse{from{opacity:.4}to{opacity:1}}
+.stats-badge{background:rgba(0,0,0,.35);border-radius:20px;padding:6px 14px;text-align:center;border:1px solid rgba(255,255,255,.15)}
+.stats-number{font-family:'Bangers',cursive;font-size:20px;color:var(--yellow);line-height:1}
+.stats-label{font-size:9px;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:1px;font-weight:700}
+.search-row{display:flex;gap:8px;margin-bottom:10px}
+.search-input{flex:1;padding:10px 16px;border-radius:30px;border:2px solid transparent;background:rgba(255,255,255,.15);color:white;font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;outline:none;transition:all .2s}
+.search-input::placeholder{color:rgba(255,255,255,.45)}
+.search-input:focus{background:rgba(255,255,255,.25);border-color:var(--yellow)}
+.btn-filter{padding:10px 14px;border-radius:30px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:white;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.btn-filter.active{background:var(--yellow);color:var(--dark);border-color:var(--yellow-dark)}
+.gen-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:12px;scrollbar-width:none}
+.gen-tabs::-webkit-scrollbar{display:none}
+.gen-tab{flex-shrink:0;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,.1);border:2px solid transparent;color:rgba(255,255,255,.7);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.gen-tab.active{background:var(--yellow);color:var(--dark);border-color:var(--yellow-dark)}
 
-  /* ── CONTENT ── */
-  .content { padding: 16px; background: var(--gray-100); min-height: calc(100vh - 180px); }
-  .gen-section { margin-bottom: 24px; }
-  .gen-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .gen-title { font-family: 'Bangers', cursive; font-size: 22px; color: var(--red); letter-spacing: 1px; }
-  .gen-title span { font-family: 'Nunito', sans-serif; font-size: 12px; color: var(--gray-400); font-weight: 700; margin-left: 8px; }
-  .gen-progress { display: flex; align-items: center; gap: 8px; }
-  .progress-bar { width: 80px; height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--yellow)); border-radius: 4px; transition: width 0.4s ease; }
-  .gen-count { font-size: 12px; font-weight: 700; color: var(--gray-700); }
-  .pokemon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; }
+/* CONTENT */
+.content{padding:16px;background:var(--gray-100);min-height:calc(100vh - 180px)}
+.gen-section{margin-bottom:24px}
+.gen-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.gen-title{font-family:'Bangers',cursive;font-size:22px;color:var(--red);letter-spacing:1px}
+.gen-title span{font-family:'Nunito',sans-serif;font-size:12px;color:var(--gray-400);font-weight:700;margin-left:8px}
+.gen-progress{display:flex;align-items:center;gap:8px}
+.progress-bar{width:80px;height:8px;background:var(--gray-200);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--yellow));border-radius:4px;transition:width .4s ease}
+.gen-count{font-size:12px;font-weight:700;color:var(--gray-700)}
+.pokemon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
 
-  /* ── POKEMON CARD ── */
-  .pokemon-card {
-    background: white; border-radius: var(--radius); padding: 10px 6px 8px;
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
-    cursor: pointer; border: 2.5px solid transparent;
-    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-    position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    user-select: none; -webkit-tap-highlight-color: transparent;
-    touch-action: none;
-  }
-  .pokemon-card.collected { border-color: var(--yellow-dark); background: linear-gradient(135deg, #FFFDE7, #FFF8C4); }
-  .pokemon-card.collected::after { content: '✓'; position: absolute; top: 4px; right: 7px; color: var(--red); font-size: 14px; font-weight: 900; }
-  .pokemon-card.form { border-style: dashed; border-color: #ccc; }
-  .pokemon-card.form.collected { border-style: solid; border-color: var(--yellow-dark); }
-  @keyframes syncFlicker {
-    0%   { box-shadow: 0 0 0 0 rgba(255,204,0,0); }
-    30%  { box-shadow: 0 0 0 6px rgba(255,204,0,0.7); }
-    100% { box-shadow: 0 0 0 0 rgba(255,204,0,0); }
-  }
-  .pokemon-card.synced-in { animation: syncFlicker 0.9s ease-out; }
-  @keyframes pressRing {
-    0%   { box-shadow: 0 2px 8px rgba(0,0,0,0.07), 0 0 0 0px rgba(255,204,0,0.9); }
-    100% { box-shadow: 0 2px 8px rgba(0,0,0,0.07), 0 0 0 12px rgba(255,204,0,0); }
-  }
-  .pokemon-card.pressing { background: #FFFBEA !important; animation: pressRing 0.5s ease-out forwards; }
-  .pokemon-card.collected.pressing { background: linear-gradient(135deg,#FFF8C4,#FFE066) !important; }
+/* POKEMON CARD */
+.pokemon-card{background:white;border-radius:var(--radius);padding:28px 6px 8px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;border:2.5px solid transparent;transition:border-color .2s,background .2s;position:relative;box-shadow:0 2px 8px rgba(0,0,0,.07);user-select:none}
+.pokemon-card.collected{border-color:var(--yellow-dark);background:linear-gradient(135deg,#FFFDE7,#FFF8C4)}
+.pokemon-card.form{border-style:dashed;border-color:#ccc}
+.pokemon-card.form.collected{border-style:solid;border-color:var(--yellow-dark)}
+.pokemon-card.regional{border-color:#aaa;border-style:dashed}
+.pokemon-card.regional.collected{border-color:var(--yellow-dark);border-style:solid}
+@keyframes syncFlicker{0%{box-shadow:0 0 0 0 rgba(255,204,0,0)}30%{box-shadow:0 0 0 6px rgba(255,204,0,.7)}100%{box-shadow:0 0 0 0 rgba(255,204,0,0)}}
+.pokemon-card.synced-in{animation:syncFlicker .9s ease-out}
 
-  .pokemon-img { width: 58px; height: 58px; image-rendering: pixelated; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12)); transition: filter 0.2s; }
-  .pokemon-card:not(.collected) .pokemon-img { filter: grayscale(0.4) opacity(0.6); }
-  .pokemon-number { font-size: 10px; color: var(--gray-400); font-weight: 700; letter-spacing: 0.5px; }
-  .pokemon-name { font-size: 11px; font-weight: 700; color: var(--dark); text-align: center; text-transform: capitalize; line-height: 1.2; }
-  .form-label { font-size: 9px; color: var(--gray-400); text-align: center; font-weight: 600; line-height: 1.1; }
-  .tcg-badge { position: absolute; bottom: 4px; left: 5px; font-size: 10px; line-height: 1; pointer-events: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,.3)); }
+/* Card body (clickeable para abrir modal) */
+.card-body{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:0}
+.card-body:active{opacity:.7}
 
-  .loading { display: flex; justify-content: center; align-items: center; padding: 80px; gap: 10px; }
-  .lb { width: 14px; height: 14px; border-radius: 50%; background: var(--red); animation: bounce 0.7s infinite alternate; }
-  .lb:nth-child(2) { animation-delay: 0.15s; background: var(--yellow); }
-  .lb:nth-child(3) { animation-delay: 0.3s; }
-  @keyframes bounce { from { transform: translateY(0); opacity: 0.5; } to { transform: translateY(-18px); opacity: 1; } }
-  .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-400); }
-  .empty-state .ei { font-size: 48px; margin-bottom: 12px; }
-  .empty-state p { font-weight: 700; font-size: 16px; }
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: var(--dark); color: white; padding: 10px 22px;
-    border-radius: 30px; font-weight: 700; font-size: 14px;
-    z-index: 2000; transition: transform 0.3s; pointer-events: none;
-    white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .section-divider {
-    font-size: 11px; font-weight: 700; color: var(--gray-400);
-    letter-spacing: 1px; text-transform: uppercase;
-    padding: 8px 0 6px; margin-top: 10px; border-top: 1px dashed var(--gray-200);
-  }
+/* Check button — esquina superior izquierda */
+.check-btn{position:absolute;top:5px;left:5px;width:24px;height:24px;border-radius:7px;border:2px solid var(--gray-200);background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;transition:background .15s,border-color .15s,transform .1s;-webkit-tap-highlight-color:transparent;font-size:13px;font-weight:900;color:transparent;line-height:1}
+.check-btn:active{transform:scale(.82)}
+.pokemon-card.collected .check-btn{background:var(--red);border-color:var(--red-dark);color:white}
 
-  /* ── FIRST-VISIT HINT ── */
-  .press-hint {
-    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-    background: rgba(20,20,20,0.95); color: rgba(255,255,255,0.9);
-    font-size: 12px; font-weight: 700; padding: 9px 18px; border-radius: 20px;
-    z-index: 1500; pointer-events: none; white-space: nowrap;
-    border: 1px solid rgba(255,204,0,0.4); box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    animation: hintFade 4.5s ease forwards;
-  }
-  @keyframes hintFade {
-    0%,8%  { opacity:0; transform: translateX(-50%) translateY(8px); }
-    18%,75%{ opacity:1; transform: translateX(-50%) translateY(0); }
-    100%   { opacity:0; transform: translateX(-50%) translateY(0); }
-  }
+/* TCG badge — esquina superior derecha */
+.card-icon{position:absolute;top:5px;right:6px;font-size:11px;line-height:1;pointer-events:none;z-index:2;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
 
-  /* ══════════════════════════════════════
-     ① VISTA DE CARTA GUARDADA
-     ══════════════════════════════════════ */
-  .card-view-overlay {
-    display: none; position: fixed; inset: 0; z-index: 1000;
-    background: rgba(0,0,0,0.9); backdrop-filter: blur(10px);
-    align-items: center; justify-content: center; flex-direction: column;
-    padding: 28px 20px 24px;
-  }
-  .card-view-overlay.open { display: flex; }
+.pokemon-img{width:54px;height:54px;image-rendering:pixelated;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.12));pointer-events:none}
+.pokemon-card:not(.collected) .pokemon-img{filter:grayscale(.4) opacity(.6)}
+.pokemon-number{font-size:10px;color:var(--gray-400);font-weight:700;letter-spacing:.5px;pointer-events:none}
+.pokemon-name{font-size:11px;font-weight:700;color:var(--dark);text-align:center;text-transform:capitalize;line-height:1.2;pointer-events:none}
+.form-label{font-size:9px;color:var(--gray-400);text-align:center;font-weight:600;line-height:1.1;pointer-events:none}
 
-  .card-view-img-wrap { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; }
-  .cv-loading { display: flex; gap: 8px; align-items: center; justify-content: center; }
-  .card-view-img {
-    max-width: min(280px, 78vw); max-height: 62dvh;
-    border-radius: 14px; object-fit: contain;
-    box-shadow: 0 20px 70px rgba(0,0,0,0.95), 0 0 0 1px rgba(255,255,255,0.05);
-    animation: cardPop 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  }
-  @keyframes cardPop {
-    from { opacity:0; transform: scale(0.78) translateY(12px); }
-    to   { opacity:1; transform: scale(1) translateY(0); }
-  }
+/* UTILS */
+.loading{display:flex;justify-content:center;align-items:center;padding:80px;gap:10px}
+.lb{width:14px;height:14px;border-radius:50%;background:var(--red);animation:bounce .7s infinite alternate}
+.lb:nth-child(2){animation-delay:.15s;background:var(--yellow)}
+.lb:nth-child(3){animation-delay:.3s}
+@keyframes bounce{from{transform:translateY(0);opacity:.5}to{transform:translateY(-18px);opacity:1}}
+.empty-state{text-align:center;padding:60px 20px;color:var(--gray-400)}
+.empty-state .ei{font-size:48px;margin-bottom:12px}
+.empty-state p{font-weight:700;font-size:16px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark);color:white;padding:10px 22px;border-radius:30px;font-weight:700;font-size:14px;z-index:2000;transition:transform .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.section-divider{font-size:11px;font-weight:700;color:var(--gray-400);letter-spacing:1px;text-transform:uppercase;padding:8px 0 6px;margin-top:10px;border-top:1px dashed var(--gray-200)}
 
-  .card-view-info { text-align: center; padding: 16px 0 6px; flex-shrink: 0; }
-  .card-view-name { font-family: 'Bangers', cursive; font-size: 28px; color: var(--yellow); letter-spacing: 1px; line-height: 1; margin-bottom: 4px; }
-  .card-view-set { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-sheet{background:#181818;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding-bottom:max(env(safe-area-inset-bottom,0px),16px);box-shadow:0 -8px 40px rgba(0,0,0,.7);border-top:1px solid rgba(255,255,255,.07);animation:sheetUp .28s cubic-bezier(.32,.72,0,1);overflow:hidden;will-change:transform}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:40px;height:4px;background:rgba(255,255,255,.18);border-radius:2px;margin:12px auto 0}
+.modal-header{display:flex;align-items:center;gap:14px;padding:14px 18px 0}
+.modal-sprite{width:72px;height:72px;image-rendering:pixelated;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3));flex-shrink:0}
+.modal-title-wrap{flex:1}
+.modal-poke-num{font-size:11px;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:1px}
+.modal-poke-name{font-family:'Bangers',cursive;font-size:26px;color:var(--yellow);letter-spacing:1px;line-height:1}
+.modal-poke-form{font-size:11px;color:rgba(255,255,255,.45);font-weight:700;margin-top:2px}
+.modal-close{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.modal-close:active{background:rgba(255,255,255,.2)}
+.modal-divider{height:1px;background:rgba(255,255,255,.07);margin:14px 0 0}
+.modal-actions{padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+.modal-collect-btn{width:100%;padding:14px;border-radius:14px;border:none;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .1s;display:flex;align-items:center;justify-content:center;gap:8px}
+.modal-collect-btn:active{transform:scale(.97)}
+.modal-collect-btn.add{background:var(--yellow);color:var(--dark)}
+.modal-collect-btn.remove{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.12)}
 
-  .card-view-actions { display: flex; gap: 10px; width: 100%; max-width: 340px; flex-shrink: 0; }
-  .cv-btn {
-    flex: 1; padding: 15px 8px; border-radius: 16px; border: none;
-    font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800;
-    cursor: pointer; -webkit-tap-highlight-color: transparent;
-    transition: transform 0.12s; min-height: 52px; line-height: 1.2;
-  }
-  .cv-btn:active { transform: scale(0.94); }
-  .cv-btn-change { background: var(--yellow); color: var(--dark); }
-  .cv-btn-remove { background: rgba(255,60,60,0.15); color: rgba(255,120,120,0.9); border: 1px solid rgba(255,60,60,0.2); }
-  .cv-btn-close  { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.08); }
+/* Seccion carta */
+.modal-card-section{background:rgba(255,255,255,.04);border-radius:14px;padding:14px;border:1px solid rgba(255,255,255,.08)}
+.modal-card-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:10px}
+.card-saved-view{display:flex;align-items:flex-start;gap:12px}
+.card-saved-thumb{width:52px;height:72px;border-radius:6px;object-fit:cover;box-shadow:0 4px 14px rgba(0,0,0,.5);flex-shrink:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.card-saved-info{flex:1;min-width:0}
+.card-saved-title{font-size:12px;font-weight:700;color:rgba(255,255,255,.8)}
+.card-saved-sub{font-size:10px;color:rgba(255,255,255,.35);font-weight:600;margin-top:2px}
+.card-saved-btns{display:flex;gap:6px;margin-top:8px}
+.card-mini-btn{flex:1;padding:7px 4px;border-radius:8px;border:none;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .1s}
+.card-mini-btn:active{opacity:.7}
+.card-mini-btn.view{background:rgba(255,204,0,.15);color:var(--yellow)}
+.card-mini-btn.change{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
+.card-mini-btn.del{background:rgba(255,60,60,.1);color:rgba(255,100,100,.8)}
+.card-url-wrap{display:flex;gap:8px;align-items:stretch}
+.card-url-input{flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:white;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;outline:none;transition:border-color .2s;min-width:0}
+.card-url-input::placeholder{color:rgba(255,255,255,.25)}
+.card-url-input:focus{border-color:var(--yellow)}
+.card-url-save{padding:10px 14px;border-radius:10px;border:none;background:var(--yellow);color:var(--dark);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;flex-shrink:0}
+.card-url-save:active{opacity:.8}
+.card-url-hint{font-size:10px;color:rgba(255,255,255,.25);margin-top:6px;font-weight:600}
 
-  /* ══════════════════════════════════════
-     ② SELECTOR DE CARTAS (bottom sheet)
-     ══════════════════════════════════════ */
-  .selector-overlay {
-    display: none; position: fixed; inset: 0; z-index: 1000;
-    background: rgba(0,0,0,0.72); backdrop-filter: blur(3px);
-    align-items: flex-end; justify-content: center;
-  }
-  .selector-overlay.open { display: flex; }
-
-  .selector-sheet {
-    background: #181818; border-radius: 24px 24px 0 0;
-    width: 100%; max-width: 540px;
-    max-height: 88dvh; display: flex; flex-direction: column;
-    box-shadow: 0 -8px 40px rgba(0,0,0,0.7);
-    border-top: 1px solid rgba(255,255,255,0.07);
-    overflow: hidden;
-    animation: sheetUp 0.3s cubic-bezier(0.32,0.72,0,1);
-    will-change: transform;
-  }
-  @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-  .sheet-handle { width: 40px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 10px auto 0; flex-shrink: 0; }
-  .sheet-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px 8px; flex-shrink: 0; }
-  .sheet-poke-name { font-family: 'Bangers', cursive; font-size: 26px; color: var(--yellow); letter-spacing: 1px; line-height: 1; }
-  .sheet-subtitle { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
-  .sheet-close {
-    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
-    background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.7);
-    font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .sheet-close:active { background: rgba(255,255,255,0.2); }
-
-  .sheet-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 4px 14px 36px; flex: 1; }
-  .sheet-section-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.35); padding: 10px 4px 6px; }
-
-  .tcg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 4px; }
-  .tcg-tile-wrap { display: flex; flex-direction: column; gap: 4px; }
-  .tcg-tile {
-    position: relative; border-radius: 10px; overflow: hidden;
-    cursor: pointer; border: 2.5px solid transparent;
-    background: #2a2a2a; aspect-ratio: 2.5 / 3.5;
-    -webkit-tap-highlight-color: transparent;
-    transition: transform 0.12s, border-color 0.15s;
-  }
-  .tcg-tile:active { transform: scale(0.93); }
-  .tcg-tile img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity 0.25s; border-radius: 8px; }
-  .tcg-tile img.loaded { opacity: 1; }
-  .tcg-tile-label { font-size: 9px; color: rgba(255,255,255,0.35); font-weight: 700; text-align: center; padding: 0 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .tcg-tile .selected-check { position: absolute; top: 5px; right: 5px; background: var(--yellow); color: #111; font-size: 11px; font-weight: 900; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,.5); }
-
-  .sheet-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 56px 20px; gap: 14px; color: rgba(255,255,255,0.4); font-size: 13px; font-weight: 700; }
-  .sheet-dots { display: flex; gap: 6px; }
-  .sheet-dot { width: 10px; height: 10px; border-radius: 50%; animation: bounce 0.7s infinite alternate; }
-  .sheet-dot:nth-child(1) { background: var(--red); }
-  .sheet-dot:nth-child(2) { background: var(--yellow); animation-delay: 0.15s; }
-  .sheet-dot:nth-child(3) { background: var(--red); animation-delay: 0.3s; }
-  .sheet-empty { text-align: center; padding: 56px 20px; color: rgba(255,255,255,0.3); font-size: 14px; font-weight: 700; }
-  .sheet-empty span { font-size: 40px; display: block; margin-bottom: 10px; }
-
-  /* ══════════════════════════════════════
-     ③ PREVIEW PANTALLA COMPLETA
-     ══════════════════════════════════════ */
-  .preview-overlay {
-    display: none; position: fixed; inset: 0; z-index: 1100;
-    background: rgba(0,0,0,0.95); backdrop-filter: blur(12px);
-    align-items: center; justify-content: center; flex-direction: column;
-    padding: 28px 20px 24px;
-  }
-  .preview-overlay.open { display: flex; }
-  .preview-img-wrap { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; }
-  .preview-img {
-    max-width: min(280px, 80vw); max-height: 64dvh;
-    border-radius: 14px; object-fit: contain;
-    box-shadow: 0 20px 70px rgba(0,0,0,0.95);
-    animation: cardPop 0.25s cubic-bezier(0.34,1.56,0.64,1);
-  }
-  .preview-info { text-align: center; padding: 14px 0 6px; flex-shrink: 0; }
-  .preview-set { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
-  .preview-actions { display: flex; gap: 10px; width: 100%; max-width: 340px; flex-shrink: 0; }
-  .pv-btn {
-    flex: 1; padding: 15px 8px; border-radius: 16px; border: none;
-    font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800;
-    cursor: pointer; -webkit-tap-highlight-color: transparent;
-    transition: transform 0.12s; min-height: 52px;
-  }
-  .pv-btn:active { transform: scale(0.94); }
-  .pv-btn-select { background: var(--yellow); color: var(--dark); }
-  .pv-btn-back   { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1); }
+/* VISOR CARTA */
+.card-viewer-overlay{display:none;position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,.95);backdrop-filter:blur(12px);align-items:center;justify-content:center;flex-direction:column;padding:24px 20px;gap:20px}
+.card-viewer-overlay.open{display:flex}
+.card-viewer-img{max-width:min(300px,84vw);max-height:70dvh;border-radius:14px;object-fit:contain;box-shadow:0 20px 70px rgba(0,0,0,.9);animation:cardPop .25s cubic-bezier(.34,1.56,.64,1)}
+@keyframes cardPop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.card-viewer-close{padding:12px 32px;border-radius:30px;border:none;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent}
 </style>
 </head>
 <body>
@@ -305,22 +157,22 @@
     <div class="logo">
       <div class="pokeball"></div>
       <div>
-        <div class="logo-text">PokéDex</div>
-        <div class="logo-sub">Colección compartida</div>
+        <div class="logo-text">PokeCol</div>
+        <div class="logo-sub">Coleccion compartida</div>
       </div>
     </div>
     <div class="header-right">
       <div class="sync-dot syncing" id="sync-dot"></div>
       <div class="stats-badge">
-        <div class="stats-number" id="global-count">— / —</div>
+        <div class="stats-number" id="global-count">-- / --</div>
         <div class="stats-label">Capturados</div>
       </div>
     </div>
   </div>
   <div class="search-row">
-    <input class="search-input" type="search" id="search" placeholder="🔍  Buscar Pokémon..." autocomplete="off">
+    <input class="search-input" type="search" id="search" placeholder="Buscar Pokemon..." autocomplete="off">
     <button class="btn-filter" id="btn-missing">Faltan</button>
-    <button class="btn-filter" id="btn-mark-all">✓ Todos</button>
+    <button class="btn-filter" id="btn-mark-all">Todos</button>
   </div>
   <div class="gen-tabs" id="gen-tabs">
     <div class="gen-tab active" data-gen="all">Todos</div>
@@ -332,57 +184,37 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<!-- ① VISTA DE CARTA GUARDADA -->
-<div class="card-view-overlay" id="card-view-overlay">
-  <div class="card-view-img-wrap">
-    <div class="cv-loading" id="cv-loading">
-      <div class="lb"></div><div class="lb"></div><div class="lb"></div>
-    </div>
-    <img class="card-view-img" id="cv-img" src="" alt="" style="display:none">
-  </div>
-  <div class="card-view-info">
-    <div class="card-view-name" id="cv-name"></div>
-    <div class="card-view-set"  id="cv-set"></div>
-  </div>
-  <div class="card-view-actions">
-    <button class="cv-btn cv-btn-change" id="cv-btn-change">🔄 Cambiar</button>
-    <button class="cv-btn cv-btn-remove" id="cv-btn-remove">✕ Quitar</button>
-    <button class="cv-btn cv-btn-close"  id="cv-btn-close">Cerrar</button>
-  </div>
-</div>
-
-<!-- ② SELECTOR DE CARTAS -->
-<div class="selector-overlay" id="selector-overlay">
-  <div class="selector-sheet" id="selector-sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header">
-      <div>
-        <div class="sheet-poke-name" id="sheet-poke-name"></div>
-        <div class="sheet-subtitle">Toca una carta para seleccionarla</div>
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-sheet" id="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <img class="modal-sprite" id="modal-sprite" src="" alt="">
+      <div class="modal-title-wrap">
+        <div class="modal-poke-num"  id="modal-poke-num"></div>
+        <div class="modal-poke-name" id="modal-poke-name"></div>
+        <div class="modal-poke-form" id="modal-poke-form"></div>
       </div>
-      <button class="sheet-close" id="sheet-close">✕</button>
+      <button class="modal-close" id="modal-close">X</button>
     </div>
-    <div class="sheet-scroll" id="sheet-scroll">
-      <div class="sheet-loading">
-        <div class="sheet-dots"><div class="sheet-dot"></div><div class="sheet-dot"></div><div class="sheet-dot"></div></div>
-        Buscando cartas TCG…
+    <div class="modal-divider"></div>
+    <div class="modal-actions">
+      <button class="modal-collect-btn add" id="modal-collect-btn">
+        <span id="modal-collect-icon">+</span>
+        <span id="modal-collect-text">Marcar como capturado</span>
+      </button>
+      <div class="modal-card-section">
+        <div class="modal-card-label">Mi carta TCG</div>
+        <div id="modal-card-content"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ③ PREVIEW PANTALLA COMPLETA -->
-<div class="preview-overlay" id="preview-overlay">
-  <div class="preview-img-wrap">
-    <img class="preview-img" id="pv-img" src="" alt="">
-  </div>
-  <div class="preview-info">
-    <div class="preview-set" id="pv-set"></div>
-  </div>
-  <div class="preview-actions">
-    <button class="pv-btn pv-btn-select" id="pv-btn-select">✓ Esta es la mía</button>
-    <button class="pv-btn pv-btn-back"   id="pv-btn-back">← Volver</button>
-  </div>
+<!-- VISOR CARTA -->
+<div class="card-viewer-overlay" id="card-viewer-overlay">
+  <img class="card-viewer-img" id="card-viewer-img" src="" alt="Carta TCG">
+  <button class="card-viewer-close" id="card-viewer-close">Cerrar</button>
 </div>
 
 <script type="module">
@@ -397,634 +229,483 @@ const firebaseConfig = {
   messagingSenderId: "845609478909",
   appId: "1:845609478909:web:126ed35a55dbdf2dec6c94"
 };
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+const app    = initializeApp(firebaseConfig);
+const db     = getFirestore(app);
 const colRef = doc(db, 'coleccion', 'principal');
 
-// ─── DATA ───
 const GENERATIONS = [
-  { id:1, name:'Generación I',    region:'Kanto',   range:[1,151] },
-  { id:2, name:'Generación II',   region:'Johto',   range:[152,251] },
-  { id:3, name:'Generación III',  region:'Hoenn',   range:[252,386] },
-  { id:4, name:'Generación IV',   region:'Sinnoh',  range:[387,493] },
-  { id:5, name:'Generación V',    region:'Teselia', range:[494,649] },
-  { id:6, name:'Generación VI',   region:'Kalos',   range:[650,721] },
-  { id:7, name:'Generación VII',  region:'Alola',   range:[722,809] },
-  { id:8, name:'Generación VIII', region:'Galar',   range:[810,905] },
-  { id:9, name:'Generación IX',   region:'Paldea',  range:[906,1025] },
+  { id:1,       name:'Generacion I',    region:'Kanto',   range:[1,151] },
+  { id:2,       name:'Generacion II',   region:'Johto',   range:[152,251] },
+  { id:3,       name:'Generacion III',  region:'Hoenn',   range:[252,386] },
+  { id:4,       name:'Generacion IV',   region:'Sinnoh',  range:[387,493] },
+  { id:5,       name:'Generacion V',    region:'Teselia', range:[494,649] },
+  { id:6,       name:'Generacion VI',   region:'Kalos',   range:[650,721] },
+  { id:7,       name:'Generacion VII',  region:'Alola',   range:[722,809] },
+  { id:8,       name:'Generacion VIII', region:'Galar',   range:[810,905] },
+  { id:'hisui', name:'Hisui',           region:'Hisui',   range:null },
+  { id:9,       name:'Generacion IX',   region:'Paldea',  range:[906,1025] },
 ];
+
+// type: 'family' = formas del mismo Pokemon (aparecen junto al base)
+//        'regional' = variantes regionales (van al final de la gen)
+//        'hisui' = formas de Hisui (su propia generacion)
 const ALT_FORMS = [
-  { key:'castform-sunny',   name:'Castform',   formLabel:'Forma Solar',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10013.png', gen:3 },
-  { key:'castform-rainy',   name:'Castform',   formLabel:'Forma Lluvia',   sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10014.png', gen:3 },
-  { key:'castform-snowy',   name:'Castform',   formLabel:'Forma Nieve',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10015.png', gen:3 },
-  { key:'shellos-east',     name:'Shellos',    formLabel:'Forma Este',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10021.png', gen:4 },
-  { key:'gastrodon-east',   name:'Gastrodon',  formLabel:'Forma Este',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10022.png', gen:4 },
-  { key:'rotom-heat',   name:'Rotom', formLabel:'Forma Calor',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10008.png', gen:4 },
-  { key:'rotom-wash',   name:'Rotom', formLabel:'Forma Lavado',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10009.png', gen:4 },
-  { key:'rotom-frost',  name:'Rotom', formLabel:'Forma Frío',      sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10010.png', gen:4 },
-  { key:'rotom-fan',    name:'Rotom', formLabel:'Forma Ventilad.', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10011.png', gen:4 },
-  { key:'rotom-mow',    name:'Rotom', formLabel:'Forma Corte',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10012.png', gen:4 },
-  { key:'deerling-summer', name:'Deerling', formLabel:'Verano',   sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10030.png', gen:5 },
-  { key:'deerling-autumn', name:'Deerling', formLabel:'Otoño',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10031.png', gen:5 },
-  { key:'deerling-winter', name:'Deerling', formLabel:'Invierno', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10032.png', gen:5 },
-  { key:'sawsbuck-summer', name:'Sawsbuck', formLabel:'Verano',   sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10033.png', gen:5 },
-  { key:'sawsbuck-autumn', name:'Sawsbuck', formLabel:'Otoño',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10034.png', gen:5 },
-  { key:'sawsbuck-winter', name:'Sawsbuck', formLabel:'Invierno', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10035.png', gen:5 },
-  { key:'oricorio-pom-pom', name:'Oricorio', formLabel:'Pom-Pom', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10126.png', gen:7 },
-  { key:'oricorio-pau',     name:'Oricorio', formLabel:"Pa'u",    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10127.png', gen:7 },
-  { key:'oricorio-sensu',   name:'Oricorio', formLabel:'Sensu',   sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10128.png', gen:7 },
-  { key:'rattata-alola',   name:'Rattata',   formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10091.png', gen:7 },
-  { key:'raticate-alola',  name:'Raticate',  formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10092.png', gen:7 },
-  { key:'raichu-alola',    name:'Raichu',    formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10100.png', gen:7 },
-  { key:'sandshrew-alola', name:'Sandshrew', formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10101.png', gen:7 },
-  { key:'sandslash-alola', name:'Sandslash', formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10102.png', gen:7 },
-  { key:'vulpix-alola',    name:'Vulpix',    formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10103.png', gen:7 },
-  { key:'ninetales-alola', name:'Ninetales', formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10104.png', gen:7 },
-  { key:'diglett-alola',   name:'Diglett',   formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10105.png', gen:7 },
-  { key:'dugtrio-alola',   name:'Dugtrio',   formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10106.png', gen:7 },
-  { key:'meowth-alola',    name:'Meowth',    formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10107.png', gen:7 },
-  { key:'persian-alola',   name:'Persian',   formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10108.png', gen:7 },
-  { key:'geodude-alola',   name:'Geodude',   formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10109.png', gen:7 },
-  { key:'graveler-alola',  name:'Graveler',  formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10110.png', gen:7 },
-  { key:'golem-alola',     name:'Golem',     formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10111.png', gen:7 },
-  { key:'grimer-alola',    name:'Grimer',    formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10112.png', gen:7 },
-  { key:'muk-alola',       name:'Muk',       formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10113.png', gen:7 },
-  { key:'exeggutor-alola', name:'Exeggutor', formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10114.png', gen:7 },
-  { key:'marowak-alola',   name:'Marowak',   formLabel:'Forma Alola', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10115.png', gen:7 },
-  { key:'indeedee-f',      name:'Indeedee',  formLabel:'Hembra',      sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10186.png', gen:8 },
-  { key:'meowth-galar',    name:'Meowth',    formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10161.png', gen:8 },
-  { key:'ponyta-galar',    name:'Ponyta',    formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10162.png', gen:8 },
-  { key:'rapidash-galar',  name:'Rapidash',  formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10163.png', gen:8 },
-  { key:'slowpoke-galar',  name:'Slowpoke',  formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10164.png', gen:8 },
-  { key:'slowbro-galar',   name:'Slowbro',   formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10165.png', gen:8 },
-  { key:'farfetchd-galar', name:"Farfetch'd",formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10166.png', gen:8 },
-  { key:'weezing-galar',   name:'Weezing',   formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10167.png', gen:8 },
-  { key:'mr-mime-galar',   name:'Mr. Mime',  formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10168.png', gen:8 },
-  { key:'articuno-galar',  name:'Articuno',  formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10169.png', gen:8 },
-  { key:'zapdos-galar',    name:'Zapdos',    formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10170.png', gen:8 },
-  { key:'moltres-galar',   name:'Moltres',   formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10171.png', gen:8 },
-  { key:'slowking-galar',  name:'Slowking',  formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10172.png', gen:8 },
-  { key:'corsola-galar',   name:'Corsola',   formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10173.png', gen:8 },
-  { key:'zigzagoon-galar', name:'Zigzagoon', formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10174.png', gen:8 },
-  { key:'linoone-galar',   name:'Linoone',   formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10175.png', gen:8 },
-  { key:'darumaka-galar',  name:'Darumaka',  formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10176.png', gen:8 },
-  { key:'darmanitan-galar',name:'Darmanitan',formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10177.png', gen:8 },
-  { key:'yamask-galar',    name:'Yamask',    formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10178.png', gen:8 },
-  { key:'stunfisk-galar',  name:'Stunfisk',  formLabel:'Forma Galar', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10179.png', gen:8 },
-  { key:'growlithe-hisui',  name:'Growlithe',  formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10229.png', gen:8 },
-  { key:'arcanine-hisui',   name:'Arcanine',   formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10230.png', gen:8 },
-  { key:'voltorb-hisui',    name:'Voltorb',    formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10231.png', gen:8 },
-  { key:'electrode-hisui',  name:'Electrode',  formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10232.png', gen:8 },
-  { key:'typhlosion-hisui', name:'Typhlosion', formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10233.png', gen:8 },
-  { key:'qwilfish-hisui',   name:'Qwilfish',   formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10234.png', gen:8 },
-  { key:'sneasel-hisui',    name:'Sneasel',    formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10235.png', gen:8 },
-  { key:'samurott-hisui',   name:'Samurott',   formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10236.png', gen:8 },
-  { key:'lilligant-hisui',  name:'Lilligant',  formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10237.png', gen:8 },
-  { key:'basculin-hisui',   name:'Basculin',   formLabel:'Blanca Rayada',sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10238.png', gen:8 },
-  { key:'zorua-hisui',      name:'Zorua',      formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10239.png', gen:8 },
-  { key:'zoroark-hisui',    name:'Zoroark',    formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10240.png', gen:8 },
-  { key:'braviary-hisui',   name:'Braviary',   formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10241.png', gen:8 },
-  { key:'sliggoo-hisui',    name:'Sliggoo',    formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10242.png', gen:8 },
-  { key:'goodra-hisui',     name:'Goodra',     formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10243.png', gen:8 },
-  { key:'avalugg-hisui',    name:'Avalugg',    formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10244.png', gen:8 },
-  { key:'decidueye-hisui',  name:'Decidueye',  formLabel:'Forma Hisui', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10245.png', gen:8 },
-  { key:'kleavor',          name:'Kleavor',    formLabel:'',            sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/900.png',   gen:8 },
-  { key:'wormadam-sandy',   name:'Wormadam',   formLabel:'Manto Arena',  sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10004.png', gen:4 },
-  { key:'wormadam-trash',   name:'Wormadam',   formLabel:'Manto Basura', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10005.png', gen:4 },
-  { key:'cherrim-sunshine', name:'Cherrim',    formLabel:'Forma Sol',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10006.png', gen:4 },
-  { key:'giratina-origin',  name:'Giratina',   formLabel:'Forma Origen', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10007.png', gen:4 },
-  { key:'kyurem-white',     name:'Kyurem',     formLabel:'Kyurem Blanco',sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10023.png', gen:5 },
-  { key:'kyurem-black',     name:'Kyurem',     formLabel:'Kyurem Negro', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10024.png', gen:5 },
-  { key:'zygarde-10',       name:'Zygarde',    formLabel:'Forma 10%',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10118.png', gen:6 },
-  { key:'zygarde-complete', name:'Zygarde',    formLabel:'Forma Completa',sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10119.png', gen:6 },
-  { key:'lycanroc-midnight',name:'Lycanroc',   formLabel:'Forma Nocturna',sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10130.png', gen:7 },
-  { key:'lycanroc-dusk',    name:'Lycanroc',   formLabel:'Forma Crepusc.',sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10152.png', gen:7 },
-  { key:'necrozma-dusk',    name:'Necrozma',   formLabel:'Alas del Alba', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10155.png', gen:7 },
-  { key:'necrozma-dawn',    name:'Necrozma',   formLabel:'Crines del Cre.',sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10156.png', gen:7 },
-  { key:'necrozma-ultra',   name:'Necrozma',   formLabel:'Ultra Necrozma',sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10157.png', gen:7 },
-  { key:'wishiwashi-school',name:'Wishiwashi', formLabel:'Forma Banco',   sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10129.png', gen:7 },
-  { key:'morpeko-hangry',   name:'Morpeko',    formLabel:'Modo Famélico', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10184.png', gen:8 },
-  { key:'tauros-paldea-combat',name:'Tauros',  formLabel:'Combate',      sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10250.png', gen:9 },
-  { key:'tauros-paldea-blaze', name:'Tauros',  formLabel:'Fuego Paldea', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10251.png', gen:9 },
-  { key:'tauros-paldea-aqua',  name:'Tauros',  formLabel:'Agua Paldea',  sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10252.png', gen:9 },
-  { key:'wooper-paldea',       name:'Wooper',  formLabel:'Forma Paldea', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10253.png', gen:9 },
-  { key:'ursaluna-bloodmoon',  name:'Ursaluna',formLabel:'Luna Carmesí', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10273.png', gen:9 },
-  { key:'oinkologne-male',     name:'Oinkologne',formLabel:'Macho',      sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/916.png',   gen:9 },
-  { key:'squawkabilly-blue',   name:'Squawkabilly',formLabel:'Plumaje Azul',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10261.png', gen:9 },
-  { key:'squawkabilly-yellow', name:'Squawkabilly',formLabel:'Plumaje Amarillo',sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10262.png', gen:9 },
-  { key:'squawkabilly-white',  name:'Squawkabilly',formLabel:'Plumaje Blanco',  sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10263.png', gen:9 },
-  { key:'palafin-hero',        name:'Palafin', formLabel:'Forma Héroe',  sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10264.png', gen:9 },
-  { key:'tatsugiri-droopy',    name:'Tatsugiri',formLabel:'Caído',       sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10265.png', gen:9 },
-  { key:'tatsugiri-stretchy',  name:'Tatsugiri',formLabel:'Estirado',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10266.png', gen:9 },
-  { key:'ogerpon-wellspring',  name:'Ogerpon', formLabel:'Máscara Fuente',  sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10267.png', gen:9 },
-  { key:'ogerpon-hearthflame', name:'Ogerpon', formLabel:'Máscara Hoguera', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10268.png', gen:9 },
-  { key:'ogerpon-cornerstone', name:'Ogerpon', formLabel:'Máscara Piedra',  sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10269.png', gen:9 },
+  // ── GEN 3 — Castform (family) ──
+  { key:'castform-sunny',      name:'Castform',   formLabel:'Forma Solar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10013.png', gen:3,      baseId:'351', type:'family' },
+  { key:'castform-rainy',      name:'Castform',   formLabel:'Forma Lluvia',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10014.png', gen:3,      baseId:'351', type:'family' },
+  { key:'castform-snowy',      name:'Castform',   formLabel:'Forma Nieve',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10015.png', gen:3,      baseId:'351', type:'family' },
+
+  // ── GEN 4 — formas family ──
+  { key:'wormadam-sandy',      name:'Wormadam',   formLabel:'Manto Arena',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10004.png', gen:4,      baseId:'413', type:'family' },
+  { key:'wormadam-trash',      name:'Wormadam',   formLabel:'Manto Basura',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10005.png', gen:4,      baseId:'413', type:'family' },
+  { key:'cherrim-sunshine',    name:'Cherrim',    formLabel:'Forma Sol',       sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10006.png', gen:4,      baseId:'421', type:'family' },
+  { key:'shellos-east',        name:'Shellos',    formLabel:'Forma Este',      sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10021.png', gen:4,      baseId:'422', type:'family' },
+  { key:'gastrodon-east',      name:'Gastrodon',  formLabel:'Forma Este',      sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10022.png', gen:4,      baseId:'423', type:'family' },
+  { key:'rotom-heat',          name:'Rotom',      formLabel:'Forma Calor',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10008.png', gen:4,      baseId:'479', type:'family' },
+  { key:'rotom-wash',          name:'Rotom',      formLabel:'Forma Lavado',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10009.png', gen:4,      baseId:'479', type:'family' },
+  { key:'rotom-frost',         name:'Rotom',      formLabel:'Forma Frio',      sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10010.png', gen:4,      baseId:'479', type:'family' },
+  { key:'rotom-fan',           name:'Rotom',      formLabel:'Forma Ventilad.', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10011.png', gen:4,      baseId:'479', type:'family' },
+  { key:'rotom-mow',           name:'Rotom',      formLabel:'Forma Corte',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10012.png', gen:4,      baseId:'479', type:'family' },
+  { key:'giratina-origin',     name:'Giratina',   formLabel:'Forma Origen',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10007.png', gen:4,      baseId:'487', type:'family' },
+
+  // ── GEN 5 — formas family ──
+  { key:'kyurem-white',        name:'Kyurem',     formLabel:'Kyurem Blanco',   sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10023.png', gen:5,      baseId:'646', type:'family' },
+  { key:'kyurem-black',        name:'Kyurem',     formLabel:'Kyurem Negro',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10024.png', gen:5,      baseId:'646', type:'family' },
+  { key:'deerling-summer',     name:'Deerling',   formLabel:'Verano',          sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10030.png', gen:5,      baseId:'585', type:'family' },
+  { key:'deerling-autumn',     name:'Deerling',   formLabel:'Otono',           sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10031.png', gen:5,      baseId:'585', type:'family' },
+  { key:'deerling-winter',     name:'Deerling',   formLabel:'Invierno',        sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10032.png', gen:5,      baseId:'585', type:'family' },
+  { key:'sawsbuck-summer',     name:'Sawsbuck',   formLabel:'Verano',          sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10033.png', gen:5,      baseId:'586', type:'family' },
+  { key:'sawsbuck-autumn',     name:'Sawsbuck',   formLabel:'Otono',           sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10034.png', gen:5,      baseId:'586', type:'family' },
+  { key:'sawsbuck-winter',     name:'Sawsbuck',   formLabel:'Invierno',        sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10035.png', gen:5,      baseId:'586', type:'family' },
+
+  // ── GEN 6 — formas family ──
+  { key:'zygarde-10',          name:'Zygarde',    formLabel:'Forma 10%',       sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10118.png', gen:6,      baseId:'718', type:'family' },
+  { key:'zygarde-complete',    name:'Zygarde',    formLabel:'Forma Completa',  sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10119.png', gen:6,      baseId:'718', type:'family' },
+
+  // ── GEN 7 — formas family ──
+  { key:'oricorio-pom-pom',    name:'Oricorio',   formLabel:'Pom-Pom',         sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10126.png', gen:7,      baseId:'741', type:'family' },
+  { key:'oricorio-pau',        name:'Oricorio',   formLabel:"Pa'u",            sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10127.png', gen:7,      baseId:'741', type:'family' },
+  { key:'oricorio-sensu',      name:'Oricorio',   formLabel:'Sensu',           sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10128.png', gen:7,      baseId:'741', type:'family' },
+  { key:'lycanroc-midnight',   name:'Lycanroc',   formLabel:'Forma Nocturna',  sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10130.png', gen:7,      baseId:'745', type:'family' },
+  { key:'lycanroc-dusk',       name:'Lycanroc',   formLabel:'Forma Crepusc.',  sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10152.png', gen:7,      baseId:'745', type:'family' },
+  { key:'wishiwashi-school',   name:'Wishiwashi', formLabel:'Forma Banco',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10129.png', gen:7,      baseId:'746', type:'family' },
+  { key:'necrozma-dusk',       name:'Necrozma',   formLabel:'Alas del Alba',   sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10155.png', gen:7,      baseId:'800', type:'family' },
+  { key:'necrozma-dawn',       name:'Necrozma',   formLabel:'Crines del Cre.', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10156.png', gen:7,      baseId:'800', type:'family' },
+  { key:'necrozma-ultra',      name:'Necrozma',   formLabel:'Ultra Necrozma',  sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10157.png', gen:7,      baseId:'800', type:'family' },
+
+  // ── GEN 7 — variantes regionales Alola ──
+  { key:'rattata-alola',       name:'Rattata',    formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10091.png', gen:7,      baseId:'19',  type:'regional' },
+  { key:'raticate-alola',      name:'Raticate',   formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10092.png', gen:7,      baseId:'20',  type:'regional' },
+  { key:'raichu-alola',        name:'Raichu',     formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10100.png', gen:7,      baseId:'26',  type:'regional' },
+  { key:'sandshrew-alola',     name:'Sandshrew',  formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10101.png', gen:7,      baseId:'27',  type:'regional' },
+  { key:'sandslash-alola',     name:'Sandslash',  formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10102.png', gen:7,      baseId:'28',  type:'regional' },
+  { key:'vulpix-alola',        name:'Vulpix',     formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10103.png', gen:7,      baseId:'37',  type:'regional' },
+  { key:'ninetales-alola',     name:'Ninetales',  formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10104.png', gen:7,      baseId:'38',  type:'regional' },
+  { key:'diglett-alola',       name:'Diglett',    formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10105.png', gen:7,      baseId:'50',  type:'regional' },
+  { key:'dugtrio-alola',       name:'Dugtrio',    formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10106.png', gen:7,      baseId:'51',  type:'regional' },
+  { key:'meowth-alola',        name:'Meowth',     formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10107.png', gen:7,      baseId:'52',  type:'regional' },
+  { key:'persian-alola',       name:'Persian',    formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10108.png', gen:7,      baseId:'53',  type:'regional' },
+  { key:'geodude-alola',       name:'Geodude',    formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10109.png', gen:7,      baseId:'74',  type:'regional' },
+  { key:'graveler-alola',      name:'Graveler',   formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10110.png', gen:7,      baseId:'75',  type:'regional' },
+  { key:'golem-alola',         name:'Golem',      formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10111.png', gen:7,      baseId:'76',  type:'regional' },
+  { key:'grimer-alola',        name:'Grimer',     formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10112.png', gen:7,      baseId:'88',  type:'regional' },
+  { key:'muk-alola',           name:'Muk',        formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10113.png', gen:7,      baseId:'89',  type:'regional' },
+  { key:'exeggutor-alola',     name:'Exeggutor',  formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10114.png', gen:7,      baseId:'103', type:'regional' },
+  { key:'marowak-alola',       name:'Marowak',    formLabel:'Forma Alola',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10115.png', gen:7,      baseId:'105', type:'regional' },
+
+  // ── GEN 8 — formas family ──
+  { key:'indeedee-f',          name:'Indeedee',   formLabel:'Hembra',          sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10186.png', gen:8,      baseId:'876', type:'family' },
+  { key:'morpeko-hangry',      name:'Morpeko',    formLabel:'Modo Famelico',   sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10184.png', gen:8,      baseId:'877', type:'family' },
+
+  // ── GEN 8 — variantes regionales Galar ──
+  { key:'meowth-galar',        name:'Meowth',     formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10161.png', gen:8,      baseId:'52',  type:'regional' },
+  { key:'ponyta-galar',        name:'Ponyta',     formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10162.png', gen:8,      baseId:'77',  type:'regional' },
+  { key:'rapidash-galar',      name:'Rapidash',   formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10163.png', gen:8,      baseId:'78',  type:'regional' },
+  { key:'slowpoke-galar',      name:'Slowpoke',   formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10164.png', gen:8,      baseId:'79',  type:'regional' },
+  { key:'slowbro-galar',       name:'Slowbro',    formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10165.png', gen:8,      baseId:'80',  type:'regional' },
+  { key:'farfetchd-galar',     name:"Farfetch'd", formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10166.png', gen:8,      baseId:'83',  type:'regional' },
+  { key:'weezing-galar',       name:'Weezing',    formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10167.png', gen:8,      baseId:'110', type:'regional' },
+  { key:'mr-mime-galar',       name:'Mr. Mime',   formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10168.png', gen:8,      baseId:'122', type:'regional' },
+  { key:'articuno-galar',      name:'Articuno',   formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10169.png', gen:8,      baseId:'144', type:'regional' },
+  { key:'zapdos-galar',        name:'Zapdos',     formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10170.png', gen:8,      baseId:'145', type:'regional' },
+  { key:'moltres-galar',       name:'Moltres',    formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10171.png', gen:8,      baseId:'146', type:'regional' },
+  { key:'slowking-galar',      name:'Slowking',   formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10172.png', gen:8,      baseId:'199', type:'regional' },
+  { key:'corsola-galar',       name:'Corsola',    formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10173.png', gen:8,      baseId:'222', type:'regional' },
+  { key:'zigzagoon-galar',     name:'Zigzagoon',  formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10174.png', gen:8,      baseId:'263', type:'regional' },
+  { key:'linoone-galar',       name:'Linoone',    formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10175.png', gen:8,      baseId:'264', type:'regional' },
+  { key:'darumaka-galar',      name:'Darumaka',   formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10176.png', gen:8,      baseId:'554', type:'regional' },
+  { key:'darmanitan-galar',    name:'Darmanitan', formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10177.png', gen:8,      baseId:'555', type:'regional' },
+  { key:'yamask-galar',        name:'Yamask',     formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10178.png', gen:8,      baseId:'562', type:'regional' },
+  { key:'stunfisk-galar',      name:'Stunfisk',   formLabel:'Forma Galar',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10179.png', gen:8,      baseId:'618', type:'regional' },
+
+  // ── HISUI — variantes (generacion propia) ──
+  { key:'growlithe-hisui',     name:'Growlithe',  formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10229.png', gen:'hisui', baseId:'58',  type:'hisui' },
+  { key:'arcanine-hisui',      name:'Arcanine',   formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10230.png', gen:'hisui', baseId:'59',  type:'hisui' },
+  { key:'voltorb-hisui',       name:'Voltorb',    formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10231.png', gen:'hisui', baseId:'100', type:'hisui' },
+  { key:'electrode-hisui',     name:'Electrode',  formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10232.png', gen:'hisui', baseId:'101', type:'hisui' },
+  { key:'typhlosion-hisui',    name:'Typhlosion', formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10233.png', gen:'hisui', baseId:'157', type:'hisui' },
+  { key:'qwilfish-hisui',      name:'Qwilfish',   formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10234.png', gen:'hisui', baseId:'211', type:'hisui' },
+  { key:'sneasel-hisui',       name:'Sneasel',    formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10235.png', gen:'hisui', baseId:'215', type:'hisui' },
+  { key:'samurott-hisui',      name:'Samurott',   formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10236.png', gen:'hisui', baseId:'503', type:'hisui' },
+  { key:'lilligant-hisui',     name:'Lilligant',  formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10237.png', gen:'hisui', baseId:'549', type:'hisui' },
+  { key:'basculin-hisui',      name:'Basculin',   formLabel:'Blanca Rayada',   sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10238.png', gen:'hisui', baseId:'550', type:'hisui' },
+  { key:'zorua-hisui',         name:'Zorua',      formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10239.png', gen:'hisui', baseId:'570', type:'hisui' },
+  { key:'zoroark-hisui',       name:'Zoroark',    formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10240.png', gen:'hisui', baseId:'571', type:'hisui' },
+  { key:'braviary-hisui',      name:'Braviary',   formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10241.png', gen:'hisui', baseId:'628', type:'hisui' },
+  { key:'sliggoo-hisui',       name:'Sliggoo',    formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10242.png', gen:'hisui', baseId:'705', type:'hisui' },
+  { key:'goodra-hisui',        name:'Goodra',     formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10243.png', gen:'hisui', baseId:'706', type:'hisui' },
+  { key:'avalugg-hisui',       name:'Avalugg',    formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10244.png', gen:'hisui', baseId:'713', type:'hisui' },
+  { key:'decidueye-hisui',     name:'Decidueye',  formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10245.png', gen:'hisui', baseId:'724', type:'hisui' },
+  { key:'kleavor',             name:'Kleavor',    formLabel:'',                sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/900.png',   gen:'hisui', baseId:null,  type:'hisui' },
+
+  // ── GEN 9 — variantes regionales Paldea ──
+  { key:'wooper-paldea',       name:'Wooper',     formLabel:'Forma Paldea',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10253.png', gen:9,      baseId:'194', type:'regional' },
+  { key:'tauros-paldea-combat',name:'Tauros',     formLabel:'Combate',         sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10250.png', gen:9,      baseId:'128', type:'regional' },
+  { key:'tauros-paldea-blaze', name:'Tauros',     formLabel:'Fuego Paldea',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10251.png', gen:9,      baseId:'128', type:'regional' },
+  { key:'tauros-paldea-aqua',  name:'Tauros',     formLabel:'Agua Paldea',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10252.png', gen:9,      baseId:'128', type:'regional' },
+
+  // ── GEN 9 — formas family ──
+  { key:'ursaluna-bloodmoon',  name:'Ursaluna',   formLabel:'Luna Carmesi',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10273.png', gen:9,      baseId:'901', type:'family' },
+  { key:'oinkologne-male',     name:'Oinkologne', formLabel:'Macho',           sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/916.png',   gen:9,      baseId:'916', type:'family' },
+  { key:'squawkabilly-blue',   name:'Squawkabilly',formLabel:'Plumaje Azul',   sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10261.png', gen:9,      baseId:'931', type:'family' },
+  { key:'squawkabilly-yellow', name:'Squawkabilly',formLabel:'Plumaje Amarillo',sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10262.png',gen:9,      baseId:'931', type:'family' },
+  { key:'squawkabilly-white',  name:'Squawkabilly',formLabel:'Plumaje Blanco', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10263.png', gen:9,      baseId:'931', type:'family' },
+  { key:'palafin-hero',        name:'Palafin',    formLabel:'Forma Heroe',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10264.png', gen:9,      baseId:'964', type:'family' },
+  { key:'tatsugiri-droopy',    name:'Tatsugiri',  formLabel:'Caido',           sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10265.png', gen:9,      baseId:'978', type:'family' },
+  { key:'tatsugiri-stretchy',  name:'Tatsugiri',  formLabel:'Estirado',        sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10266.png', gen:9,      baseId:'978', type:'family' },
+  { key:'ogerpon-wellspring',  name:'Ogerpon',    formLabel:'Mascara Fuente',  sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10267.png', gen:9,      baseId:'1017',type:'family' },
+  { key:'ogerpon-hearthflame', name:'Ogerpon',    formLabel:'Mascara Hoguera', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10268.png', gen:9,      baseId:'1017',type:'family' },
+  { key:'ogerpon-cornerstone', name:'Ogerpon',    formLabel:'Mascara Piedra',  sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10269.png', gen:9,      baseId:'1017',type:'family' },
 ];
 
-// ─── STATE ───
-let collected     = new Set();
-let tcgCards      = {};   // { pokeId: { cardId, imageUrl, setName, localId } }
-let allPokemon    = [];
-let nameCache     = {};
-let activeGen     = 'all';
-let filterMissing = false;
-let searchQuery   = '';
-let isLocalChange = false;
+// STATE
+let collected=new Set(), tcgCards={}, allPokemon=[], nameCache={};
+let activeGen='all', filterMissing=false, searchQuery='', isLocalChange=false;
+let modalPoke=null;
 
-// ─── TOAST & SYNC ───
+// TOAST & SYNC
 let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
-}
-function setSyncState(s) {
-  const d = document.getElementById('sync-dot');
-  d.className = 'sync-dot' + (s !== 'ok' ? ' '+s : '');
-}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200)}
+function setSyncState(s){document.getElementById('sync-dot').className='sync-dot'+(s!=='ok'?' '+s:'')}
 
-// ─── FIRESTORE ───
-async function saveAll() {
-  setSyncState('syncing');
-  try {
-    await setDoc(colRef, { ids: [...collected], tcg: tcgCards });
+// FIRESTORE
+async function saveAll(){setSyncState('syncing');try{await setDoc(colRef,{ids:[...collected],tcg:tcgCards});setSyncState('ok')}catch(e){setSyncState('error');console.error(e)}}
+function loadFromSnap(data){collected=new Set(data.ids||[]);tcgCards=data.tcg||{}}
+
+function startListener(){
+  onSnapshot(colRef,snap=>{
+    if(!snap.exists()){setSyncState('ok');return}
+    if(isLocalChange){isLocalChange=false;return}
+    const data=snap.data();
+    const prev=new Set(collected);
+    const prevTcg=JSON.stringify(tcgCards);
+    loadFromSnap(data);
+    const added=[...collected].filter(id=>!prev.has(id));
+    const removed=[...prev].filter(id=>!collected.has(id));
+    patchCards(added,removed);
+    if(JSON.stringify(tcgCards)!==prevTcg)renderContent();
+    updateGlobalCount();updateAllGenProgress();
+    if(added.length+removed.length>0)showToast('Tu pareja actualizo '+( added.length+removed.length)+' Pokemon');
     setSyncState('ok');
-  } catch(e) { setSyncState('error'); console.error(e); }
-}
-function loadTcgFromSnap(data) {
-  tcgCards = data.tcg || {};
-}
-function startListener() {
-  onSnapshot(colRef, snap => {
-    if (!snap.exists()) { setSyncState('ok'); return; }
-    if (isLocalChange) { isLocalChange = false; return; }
-    const data = snap.data();
-    const remoteIds = data.ids || [];
-    const remoteSet = new Set(remoteIds);
-    const added   = remoteIds.filter(id => !collected.has(id));
-    const removed = [...collected].filter(id => !remoteSet.has(id));
-    collected = remoteSet;
-    loadTcgFromSnap(data);
-    patchCards(added, removed);
-    updateGlobalCount(); updateAllGenProgress();
-    if (added.length + removed.length > 0)
-      showToast(`🔄 Tu pareja actualizó ${added.length + removed.length} Pokémon`);
-    setSyncState('ok');
-  }, err => { setSyncState('error'); console.error(err); });
-}
-function patchCards(added, removed) {
-  for (const id of added) {
-    const c = document.querySelector(`.pokemon-card[data-id="${CSS.escape(String(id))}"]`);
-    if (c) { c.classList.add('collected'); c.classList.remove('synced-in'); void c.offsetWidth; c.classList.add('synced-in'); }
-  }
-  for (const id of removed) {
-    const c = document.querySelector(`.pokemon-card[data-id="${CSS.escape(String(id))}"]`);
-    if (c) { c.classList.remove('collected'); c.classList.remove('synced-in'); void c.offsetWidth; c.classList.add('synced-in'); }
-  }
+  },err=>{setSyncState('error');console.error(err)});
 }
 
-// ─── NAMES ───
-const NAMES_KEY = 'pokedex_names_es_v2';
-async function fetchName(id) {
-  if (nameCache[id]) return nameCache[id];
-  try {
-    const r = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}/`);
-    const d = await r.json();
-    const es = d.names.find(n => n.language.name === 'es');
-    return es ? es.name : d.name;
-  } catch { return `#${id}`; }
+function patchCards(added,removed){
+  for(const id of added){const c=document.querySelector(`.pokemon-card[data-id="${CSS.escape(String(id))}"]`);if(c){c.classList.add('collected');c.querySelector('.check-btn').textContent='v';c.classList.remove('synced-in');void c.offsetWidth;c.classList.add('synced-in')}}
+  for(const id of removed){const c=document.querySelector(`.pokemon-card[data-id="${CSS.escape(String(id))}"]`);if(c){c.classList.remove('collected');c.querySelector('.check-btn').textContent='';c.classList.remove('synced-in');void c.offsetWidth;c.classList.add('synced-in')}}
 }
 
-// ─── BUILD LIST ───
-function buildPokemonList() {
-  allPokemon = [];
-  for (const gen of GENERATIONS) {
-    for (let id = gen.range[0]; id <= gen.range[1]; id++)
-      allPokemon.push({ id: String(id), name: nameCache[id] || `#${id}`, gen: gen.id, isForm: false, sprite: null, formLabel: '' });
-    for (const f of ALT_FORMS.filter(f => f.gen === gen.id))
-      allPokemon.push({ id: f.key, name: f.name, gen: f.gen, isForm: true, sprite: f.sprite, formLabel: f.formLabel });
+// NAMES
+const NAMES_KEY='pokedex_names_es_v2';
+async function fetchName(id){if(nameCache[id])return nameCache[id];try{const r=await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}/`);const d=await r.json();const es=d.names.find(n=>n.language.name==='es');return es?es.name:d.name}catch{return '#'+id}}
+
+// BUILD LIST
+// allPokemon entries have: id, name, gen, sprite, formLabel, type
+// type: 'base' | 'family' | 'regional' | 'hisui'
+// baseId: for family forms, the dex number of the parent (used to sort inline)
+function buildPokemonList(){
+  allPokemon=[];
+  for(const gen of GENERATIONS){
+    if(gen.id==='hisui'){
+      // Hisui: only ALT_FORMS with type='hisui'
+      for(const f of ALT_FORMS.filter(f=>f.type==='hisui'))
+        allPokemon.push({id:f.key,name:f.name,gen:'hisui',sprite:f.sprite,formLabel:f.formLabel,type:'hisui',baseId:f.baseId});
+    } else {
+      // Base Pokemon for this gen
+      for(let id=gen.range[0];id<=gen.range[1];id++){
+        allPokemon.push({id:String(id),name:nameCache[id]||('#'+id),gen:gen.id,sprite:null,formLabel:'',type:'base',baseId:null});
+        // Insert family forms right after their base
+        for(const f of ALT_FORMS.filter(f=>f.type==='family'&&f.gen===gen.id&&f.baseId===String(id)))
+          allPokemon.push({id:f.key,name:f.name,gen:gen.id,sprite:f.sprite,formLabel:f.formLabel,type:'family',baseId:f.baseId});
+      }
+      // Regional forms at the end of their gen
+      for(const f of ALT_FORMS.filter(f=>f.type==='regional'&&f.gen===gen.id))
+        allPokemon.push({id:f.key,name:f.name,gen:gen.id,sprite:f.sprite,formLabel:f.formLabel,type:'regional',baseId:f.baseId});
+    }
   }
 }
 
-// ─── GEN TABS ───
-function buildGenTabs() {
-  const container = document.getElementById('gen-tabs');
-  container.innerHTML = '<div class="gen-tab active" data-gen="all">Todos</div>';
-  for (const gen of GENERATIONS) {
-    const tab = document.createElement('div');
-    tab.className = 'gen-tab'; tab.dataset.gen = gen.id; tab.textContent = `Gen ${gen.id}`;
+// GEN TABS
+function buildGenTabs(){
+  const container=document.getElementById('gen-tabs');
+  container.innerHTML='<div class="gen-tab active" data-gen="all">Todos</div>';
+  for(const gen of GENERATIONS){
+    const tab=document.createElement('div');
+    tab.className='gen-tab';
+    tab.dataset.gen=gen.id;
+    tab.textContent=gen.id==='hisui'?'Hisui':('Gen '+gen.id);
     container.appendChild(tab);
   }
-  container.addEventListener('click', e => {
-    const tab = e.target.closest('.gen-tab'); if (!tab) return;
-    activeGen = tab.dataset.gen === 'all' ? 'all' : parseInt(tab.dataset.gen);
-    container.querySelectorAll('.gen-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active'); renderContent();
+  container.addEventListener('click',e=>{
+    const tab=e.target.closest('.gen-tab');if(!tab)return;
+    const raw=tab.dataset.gen;
+    activeGen=raw==='all'?'all':(raw==='hisui'?'hisui':parseInt(raw));
+    container.querySelectorAll('.gen-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');renderContent();
   });
 }
 
-// ─── FILTER ───
-function getFiltered() {
-  let list = allPokemon;
-  if (activeGen !== 'all') list = list.filter(p => p.gen === activeGen);
-  if (filterMissing) list = list.filter(p => !collected.has(p.id));
-  if (searchQuery) {
-    const q = searchQuery.toLowerCase();
-    list = list.filter(p => p.name.toLowerCase().includes(q) || (p.formLabel && p.formLabel.toLowerCase().includes(q)) || String(p.id).includes(q));
-  }
+// FILTER
+function getFiltered(){
+  let list=allPokemon;
+  if(activeGen!=='all')list=list.filter(p=>String(p.gen)===String(activeGen));
+  if(filterMissing)list=list.filter(p=>!collected.has(p.id));
+  if(searchQuery){const q=searchQuery.toLowerCase();list=list.filter(p=>p.name.toLowerCase().includes(q)||(p.formLabel&&p.formLabel.toLowerCase().includes(q))||String(p.id).includes(q))}
   return list;
 }
 
-// ─── RENDER ───
-function cardHTML(p) {
-  const spriteUrl = p.sprite || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png`;
-  const numLabel  = !isNaN(p.id) ? `#${String(p.id).padStart(4,'0')}` : '';
-  const hasTcg    = !!tcgCards[p.id];
-  return `
-    <div class="pokemon-card${collected.has(p.id)?' collected':''}${p.isForm?' form':''}" data-id="${p.id}">
-      <img class="pokemon-img" src="${spriteUrl}" alt="${p.name}" loading="lazy"
-        onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>❓</text></svg>'">
-      ${numLabel ? `<div class="pokemon-number">${numLabel}</div>` : ''}
-      <div class="pokemon-name">${p.name}</div>
-      ${p.formLabel ? `<div class="form-label">${p.formLabel}</div>` : ''}
-      ${hasTcg ? `<div class="tcg-badge" title="Carta TCG guardada">🃏</div>` : ''}
-    </div>`;
+// RENDER
+function cardHTML(p){
+  const spriteUrl=p.sprite||('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'+p.id+'.png');
+  const numLabel=!isNaN(p.id)?('#'+String(p.id).padStart(4,'0')):'';
+  const isCol=collected.has(p.id);
+  const hasTcg=!!tcgCards[p.id];
+  const extraClass=(p.type==='family'?' form':(p.type==='regional'||p.type==='hisui')?' form regional':'');
+  return '<div class="pokemon-card'+(isCol?' collected':'')+extraClass+'" data-id="'+p.id+'">'
+    +'<button class="check-btn" data-action="check">'+(isCol?'v':'')+'</button>'
+    +(hasTcg?'<div class="card-icon">&#127183;</div>':'')
+    +'<div class="card-body" data-action="open">'
+    +'<img class="pokemon-img" src="'+spriteUrl+'" alt="'+p.name+'" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>?</text></svg>'">'
+    +(numLabel?'<div class="pokemon-number">'+numLabel+'</div>':'')
+    +'<div class="pokemon-name">'+p.name+'</div>'
+    +(p.formLabel?'<div class="form-label">'+p.formLabel+'</div>':'')
+    +'</div></div>';
 }
 
-function renderContent() {
-  const content  = document.getElementById('content');
-  const filtered = getFiltered();
-  if (filtered.length === 0) {
-    content.innerHTML = `<div class="empty-state"><div class="ei">🔍</div><p>No se encontraron Pokémon</p></div>`;
-    updateGlobalCount(); return;
+function renderContent(){
+  const content=document.getElementById('content');
+  const filtered=getFiltered();
+  if(filtered.length===0){content.innerHTML='<div class="empty-state"><div class="ei">&#128269;</div><p>No se encontraron Pokemon</p></div>';updateGlobalCount();return}
+  const byGen={};
+  for(const p of filtered){
+    if(!byGen[p.gen])byGen[p.gen]={main:[],regional:[]};
+    if(p.type==='regional')byGen[p.gen].regional.push(p);
+    else byGen[p.gen].main.push(p);
   }
-  const byGen = {};
-  for (const p of filtered) {
-    if (!byGen[p.gen]) byGen[p.gen] = { base:[], forms:[] };
-    if (p.isForm) byGen[p.gen].forms.push(p); else byGen[p.gen].base.push(p);
+  let html='';
+  for(const gen of GENERATIONS){
+    if(!byGen[gen.id])continue;
+    const{main,regional}=byGen[gen.id];
+    const all=[...main,...regional];
+    const got=all.filter(p=>collected.has(p.id)).length;
+    const pct=all.length?Math.round(got/all.length*100):0;
+    html+='<div class="gen-section" data-gen="'+gen.id+'">'
+      +'<div class="gen-header"><div class="gen-title">'+gen.name+'<span>'+gen.region+'</span></div>'
+      +'<div class="gen-progress"><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div><span class="gen-count">'+got+'/'+all.length+'</span></div></div>'
+      +'<div class="pokemon-grid">'+main.map(p=>cardHTML(p)).join('')+'</div>'
+      +(regional.length?'<div class="section-divider">Variantes regionales</div><div class="pokemon-grid">'+regional.map(p=>cardHTML(p)).join('')+'</div>':'')
+      +'</div>';
   }
-  let html = '';
-  for (const gen of GENERATIONS) {
-    if (!byGen[gen.id]) continue;
-    const { base, forms } = byGen[gen.id];
-    const all = [...base,...forms];
-    const got = all.filter(p => collected.has(p.id)).length;
-    const pct = all.length ? Math.round(got/all.length*100) : 0;
-    html += `
-      <div class="gen-section" data-gen="${gen.id}">
-        <div class="gen-header">
-          <div class="gen-title">${gen.name}<span>${gen.region}</span></div>
-          <div class="gen-progress"><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><span class="gen-count">${got}/${all.length}</span></div>
-        </div>
-        <div class="pokemon-grid">${base.map(p=>cardHTML(p)).join('')}</div>
-        ${forms.length?`<div class="section-divider">✦ Formas alternativas</div><div class="pokemon-grid">${forms.map(p=>cardHTML(p)).join('')}</div>`:''}
-      </div>`;
-  }
-  content.innerHTML = html;
+  content.innerHTML=html;
   updateGlobalCount();
-  attachCardClicks();
+  attachClicks();
 }
 
-// ─── LONG PRESS ───
-let lpTimer = null, lpFired = false;
-const LP_MS = 480;
 
-function attachCardClicks() {
-  const content = document.getElementById('content');
-  content.addEventListener('contextmenu', e => e.preventDefault());
-
-  function startPress(card) {
-    if (!card) return;
-    lpFired = false;
-    card.classList.add('pressing');
-    const poke = allPokemon.find(p => p.id === card.dataset.id) || { id: card.dataset.id, name: `#${card.dataset.id}` };
-    lpTimer = setTimeout(() => {
-      lpFired = true;
-      card.classList.remove('pressing');
-      navigator.vibrate?.(25);
-      openTcgFlow(poke);
-    }, LP_MS);
-  }
-  function cancelPress(card) {
-    clearTimeout(lpTimer);
-    if (card) card.classList.remove('pressing');
-  }
-
-  content.addEventListener('touchstart',  e => startPress(e.target.closest('.pokemon-card')), { passive:true });
-  content.addEventListener('touchend',    e => cancelPress(e.target.closest('.pokemon-card')), { passive:true });
-  content.addEventListener('touchmove',   e => cancelPress(e.target.closest('.pokemon-card')), { passive:true });
-  content.addEventListener('mousedown',   e => startPress(e.target.closest('.pokemon-card')));
-  content.addEventListener('mouseup',     e => cancelPress(e.target.closest('.pokemon-card')));
-
-  content.addEventListener('click', async e => {
-    if (lpFired) { lpFired = false; return; }
-    const card = e.target.closest('.pokemon-card'); if (!card) return;
-    const id   = card.dataset.id;
-    const poke = allPokemon.find(p => p.id === id);
-    const name = poke ? (poke.formLabel ? `${poke.name} (${poke.formLabel})` : poke.name) : id;
-    isLocalChange = true;
-    if (collected.has(id)) {
-      collected.delete(id); card.classList.remove('collected'); showToast(`${name} eliminado`);
-    } else {
-      collected.add(id); card.classList.add('collected'); showToast(`✓ ¡${name} capturado!`);
+// CLICKS
+function attachClicks(){
+  const content=document.getElementById('content');
+  content.addEventListener('click',async e=>{
+    if(e.target.closest('[data-action="check"]')){
+      e.stopPropagation();
+      const card=e.target.closest('.pokemon-card');
+      if(card)await toggleCollected(card);
+      return;
     }
-    if (filterMissing && !collected.has(id)) card.remove();
-    updateGlobalCount(); updateGenProgress(poke?.gen);
-    await saveAll();
+    if(e.target.closest('[data-action="open"]')){
+      const card=e.target.closest('.pokemon-card');
+      if(card){const poke=allPokemon.find(p=>p.id===card.dataset.id);if(poke)openModal(poke)}
+      return;
+    }
   });
 }
 
-// ─── TCG FLOW ───
-function openTcgFlow(poke) {
-  if (tcgCards[poke.id]) openCardView(poke);
-  else openSelector(poke);
+async function toggleCollected(card){
+  const id=card.dataset.id;
+  const poke=allPokemon.find(p=>p.id===id);
+  const name=poke?(poke.formLabel?poke.name+' ('+poke.formLabel+')':poke.name):id;
+  isLocalChange=true;
+  if(collected.has(id)){collected.delete(id);card.classList.remove('collected');card.querySelector('.check-btn').textContent='';showToast(name+' eliminado')}
+  else{collected.add(id);card.classList.add('collected');card.querySelector('.check-btn').textContent='v';showToast(name+' capturado!')}
+  if(filterMissing&&!collected.has(id))card.remove();
+  updateGlobalCount();updateGenProgress(poke?.gen);
+  await saveAll();
+  if(modalPoke?.id===id)renderModalCollectBtn();
 }
 
-// ─── ① VISTA CARTA GUARDADA ───
-let cvPoke = null;
-function openCardView(poke) {
-  cvPoke = poke;
-  const saved   = tcgCards[poke.id];
-  const overlay = document.getElementById('card-view-overlay');
-  const cvImg   = document.getElementById('cv-img');
-  const cvLoad  = document.getElementById('cv-loading');
-
-  document.getElementById('cv-name').textContent = poke.formLabel ? `${poke.name} (${poke.formLabel})` : poke.name;
-  document.getElementById('cv-set').textContent  = saved.setName ? `${saved.setName}${saved.localId?' · #'+saved.localId:''}` : '';
-
-  cvImg.style.display  = 'none';
-  cvLoad.style.display = 'flex';
-  overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
-
-  const img = new Image();
-  img.onload  = () => { cvImg.src = img.src; cvImg.style.display=''; cvLoad.style.display='none'; };
-  img.onerror = () => { cvLoad.style.display='none'; cvImg.src=''; cvImg.style.display=''; };
-  img.src = saved.imageUrl;
-}
-function closeCardView() {
-  document.getElementById('card-view-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-  cvPoke = null;
-}
-document.getElementById('cv-btn-close').addEventListener('click', closeCardView);
-document.getElementById('card-view-overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('card-view-overlay')) closeCardView();
-});
-document.getElementById('cv-btn-change').addEventListener('click', () => {
-  const poke = cvPoke; closeCardView();
-  setTimeout(() => openSelector(poke), 80);
-});
-document.getElementById('cv-btn-remove').addEventListener('click', async () => {
-  if (!cvPoke) return;
-  const id = cvPoke.id;
-  delete tcgCards[id];
-  const gridCard = document.querySelector(`.pokemon-card[data-id="${CSS.escape(id)}"]`);
-  gridCard?.querySelector('.tcg-badge')?.remove();
-  isLocalChange = true; await saveAll();
-  showToast('🃏 Carta eliminada'); closeCardView();
-});
-
-// ─── ② SELECTOR ───
-let selPoke = null, selCards = [];
-const tcgCache = {};
-
-async function fetchTcgCards(name) {
-  const key = name.toLowerCase();
-  if (tcgCache[key] !== undefined) return tcgCache[key];
-  try {
-    const res = await fetch(`https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(name)}&orderBy=releaseDate&order=DESC`);
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    const cards = (Array.isArray(data)?data:[]).filter(c=>c.image);
-    tcgCache[key] = cards; return cards;
-  } catch { tcgCache[key]=[]; return []; }
+// MODAL
+function openModal(poke){
+  modalPoke=poke;
+  const spriteUrl=poke.sprite||('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'+poke.id+'.png');
+  const numLabel=!isNaN(poke.id)?('#'+String(poke.id).padStart(4,'0')):'';
+  document.getElementById('modal-sprite').src=spriteUrl;
+  document.getElementById('modal-poke-num').textContent=numLabel;
+  document.getElementById('modal-poke-name').textContent=poke.name;
+  const formEl=document.getElementById('modal-poke-form');
+  formEl.textContent=poke.formLabel||'';
+  formEl.style.display=poke.formLabel?'':'none';
+  renderModalCollectBtn();
+  renderModalCardSection();
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
 }
 
-async function openSelector(poke) {
-  selPoke = poke;
-  const overlay = document.getElementById('selector-overlay');
-  const sheet   = document.getElementById('selector-sheet');
-  const scroll  = document.getElementById('sheet-scroll');
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');document.body.style.overflow='';modalPoke=null}
 
-  document.getElementById('sheet-poke-name').textContent = poke.formLabel ? `${poke.name} (${poke.formLabel})` : poke.name;
-  scroll.innerHTML = `<div class="sheet-loading"><div class="sheet-dots"><div class="sheet-dot"></div><div class="sheet-dot"></div><div class="sheet-dot"></div></div>Buscando cartas TCG…</div>`;
-  sheet.style.transform = ''; sheet.style.transition = '';
-  overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
-
-  selCards = await fetchTcgCards(poke.name);
-  renderSelectorGrid(selCards);
+function renderModalCollectBtn(){
+  if(!modalPoke)return;
+  const isCol=collected.has(modalPoke.id);
+  const btn=document.getElementById('modal-collect-btn');
+  btn.className='modal-collect-btn '+(isCol?'remove':'add');
+  document.getElementById('modal-collect-icon').textContent=isCol?'X':'+';
+  document.getElementById('modal-collect-text').textContent=isCol?'Quitar de capturados':'Marcar como capturado';
 }
 
-function renderSelectorGrid(cards) {
-  const scroll = document.getElementById('sheet-scroll');
-  if (!cards.length) {
-    scroll.innerHTML = `<div class="sheet-empty"><span>🃏</span>No se encontraron cartas TCG</div>`; return;
-  }
-  const savedId = tcgCards[selPoke?.id]?.cardId;
-  let html = `<div class="sheet-section-label">${cards.length} carta${cards.length!==1?'s':''} disponibles</div><div class="tcg-grid">`;
-  for (const card of cards) {
-    const isSel  = card.id === savedId;
-    const setName = card.set?.name || card.id || '';
-    html += `<div class="tcg-tile-wrap">
-      <div class="tcg-tile" data-card-id="${card.id}" style="${isSel?'border-color:var(--yellow-dark);':''}">
-        <img data-src="${card.image}/high.webp" alt="${card.name||''}">
-        ${isSel?'<div class="selected-check">✓</div>':''}
-      </div>
-      <div class="tcg-tile-label">${setName}</div>
-    </div>`;
-  }
-  html += '</div>';
-  scroll.innerHTML = html;
-
-  scroll.querySelectorAll('.tcg-tile img[data-src]').forEach(img => {
-    const i = new Image();
-    i.onload  = () => { img.src = i.src; img.classList.add('loaded'); };
-    i.onerror = () => img.classList.add('loaded');
-    i.src = img.dataset.src;
-  });
-  scroll.querySelectorAll('.tcg-tile').forEach(tile => {
-    tile.addEventListener('click', () => {
-      const card = selCards.find(c => c.id === tile.dataset.cardId);
-      if (card) openPreview(card);
+function renderModalCardSection(){
+  if(!modalPoke)return;
+  const saved=tcgCards[modalPoke.id];
+  const content=document.getElementById('modal-card-content');
+  if(saved?.imageUrl){
+    content.innerHTML='<div class="card-saved-view">'
+      +'<img class="card-saved-thumb" id="card-thumb" src="'+saved.imageUrl+'" alt="Carta TCG" onerror="this.style.display=\'none\'">'
+      +'<div class="card-saved-info">'
+      +'<div class="card-saved-title">Carta guardada</div>'
+      +'<div class="card-saved-sub">Toca la imagen para ampliarla</div>'
+      +'<div class="card-saved-btns">'
+      +'<button class="card-mini-btn view" id="card-btn-view">Ver</button>'
+      +'<button class="card-mini-btn change" id="card-btn-change">Cambiar</button>'
+      +'<button class="card-mini-btn del" id="card-btn-del">Quitar</button>'
+      +'</div></div></div>';
+    document.getElementById('card-thumb').addEventListener('click',()=>openCardViewer(saved.imageUrl));
+    document.getElementById('card-btn-view').addEventListener('click',()=>openCardViewer(saved.imageUrl));
+    document.getElementById('card-btn-change').addEventListener('click',()=>showUrlInput());
+    document.getElementById('card-btn-del').addEventListener('click',async()=>{
+      delete tcgCards[modalPoke.id];
+      document.querySelector('.pokemon-card[data-id="'+CSS.escape(modalPoke.id)+'"] .card-icon')?.remove();
+      isLocalChange=true;await saveAll();showToast('Carta eliminada');renderModalCardSection();
     });
+  } else {
+    showUrlInput(content);
+  }
+}
+
+function showUrlInput(container){
+  const content=container||document.getElementById('modal-card-content');
+  content.innerHTML='<div class="card-url-wrap">'
+    +'<input class="card-url-input" id="card-url-input" type="url" placeholder="https://... link a la imagen de la carta" autocomplete="off">'
+    +'<button class="card-url-save" id="card-url-save">Guardar</button>'
+    +'</div>'
+    +'<div class="card-url-hint">Pega el link directo a la imagen de tu carta TCG</div>';
+  document.getElementById('card-url-save').addEventListener('click',async()=>{
+    const url=document.getElementById('card-url-input').value.trim();
+    if(!url)return;
+    tcgCards[modalPoke.id]={imageUrl:url};
+    const gridCard=document.querySelector('.pokemon-card[data-id="'+CSS.escape(modalPoke.id)+'"]');
+    if(gridCard&&!gridCard.querySelector('.card-icon')){const b=document.createElement('div');b.className='card-icon';b.textContent='🃏';gridCard.appendChild(b)}
+    isLocalChange=true;await saveAll();showToast('Carta guardada!');renderModalCardSection();
   });
+  document.getElementById('card-url-input').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('card-url-save').click()});
 }
 
-function closeSelector() {
-  const sheet   = document.getElementById('selector-sheet');
-  const overlay = document.getElementById('selector-overlay');
-  sheet.style.transition = 'transform 0.28s cubic-bezier(0.32,0.72,0,1)';
-  sheet.style.transform  = 'translateY(100%)';
-  setTimeout(() => {
-    overlay.classList.remove('open');
-    sheet.style.transform = ''; sheet.style.transition = '';
-    document.body.style.overflow = '';
-    selPoke = null;
-  }, 280);
-}
-document.getElementById('sheet-close').addEventListener('click', closeSelector);
-document.getElementById('selector-overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('selector-overlay')) closeSelector();
+// VISOR CARTA
+function openCardViewer(url){document.getElementById('card-viewer-img').src=url;document.getElementById('card-viewer-overlay').classList.add('open')}
+document.getElementById('card-viewer-close').addEventListener('click',()=>document.getElementById('card-viewer-overlay').classList.remove('open'));
+document.getElementById('card-viewer-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('card-viewer-overlay'))document.getElementById('card-viewer-overlay').classList.remove('open')});
+
+// MODAL EVENTS
+document.getElementById('modal-close').addEventListener('click',closeModal);
+document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal()});
+document.getElementById('modal-collect-btn').addEventListener('click',async()=>{
+  if(!modalPoke)return;
+  const card=document.querySelector('.pokemon-card[data-id="'+CSS.escape(modalPoke.id)+'"]');
+  if(card){await toggleCollected(card)}
+  else{
+    const id=modalPoke.id;const name=modalPoke.formLabel?modalPoke.name+' ('+modalPoke.formLabel+')':modalPoke.name;
+    isLocalChange=true;
+    if(collected.has(id)){collected.delete(id);showToast(name+' eliminado')}else{collected.add(id);showToast(name+' capturado!')}
+    updateGlobalCount();updateGenProgress(modalPoke.gen);await saveAll();renderModalCollectBtn();
+  }
 });
 
-// Swipe down to close
+// Swipe down to close modal
 {
-  const sheet = document.getElementById('selector-sheet');
-  let sy = 0, swiping = false;
-  sheet.addEventListener('touchstart', e => { sy = e.touches[0].clientY; swiping = false; }, { passive:true });
-  sheet.addEventListener('touchmove',  e => {
-    const dy = e.touches[0].clientY - sy;
-    const sc = document.getElementById('sheet-scroll');
-    if (dy > 10 && sc.scrollTop <= 0) {
-      swiping = true;
-      sheet.style.transition = 'none';
-      sheet.style.transform  = `translateY(${dy * 0.55}px)`;
-    }
-  }, { passive:true });
-  sheet.addEventListener('touchend', e => {
-    if (!swiping) return;
-    const dy = e.changedTouches[0].clientY - sy;
-    sheet.style.transition = ''; sheet.style.transform = '';
-    if (dy > 90) closeSelector();
-    swiping = false;
-  }, { passive:true });
+  const sheet=document.getElementById('modal-sheet');
+  let sy=0,swiping=false;
+  sheet.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;swiping=false},{passive:true});
+  sheet.addEventListener('touchmove',e=>{const dy=e.touches[0].clientY-sy;if(dy>10){swiping=true;sheet.style.transform='translateY('+dy*.5+'px)';sheet.style.transition='none'}},{passive:true});
+  sheet.addEventListener('touchend',e=>{sheet.style.transition='';sheet.style.transform='';if(swiping&&(e.changedTouches[0].clientY-sy)>80)closeModal();swiping=false},{passive:true});
 }
 
-// ─── ③ PREVIEW CARTA ───
-let pvCard = null;
-function openPreview(card) {
-  pvCard = card;
-  const setName = card.set?.name || '';
-  const num     = card.localId   || '';
-  document.getElementById('pv-set').textContent = [setName, num?`#${num}`:''].filter(Boolean).join(' · ');
-  document.getElementById('pv-img').src = card.image + '/high.webp';
-  document.getElementById('preview-overlay').classList.add('open');
+// PROGRESS
+function updateGlobalCount(){const got=allPokemon.filter(p=>collected.has(p.id)).length;document.getElementById('global-count').textContent=got+' / '+allPokemon.length}
+function updateGenProgress(genId){
+  if(!genId)return;
+  const section=document.querySelector('.gen-section[data-gen="'+genId+'"]');if(!section)return;
+  const cards=section.querySelectorAll('.pokemon-card');
+  const got=section.querySelectorAll('.pokemon-card.collected').length;
+  const pct=cards.length?Math.round(got/cards.length*100):0;
+  const fill=section.querySelector('.progress-fill');const cnt=section.querySelector('.gen-count');
+  if(fill)fill.style.width=pct+'%';if(cnt)cnt.textContent=got+'/'+cards.length;
 }
-function closePreview() {
-  document.getElementById('preview-overlay').classList.remove('open');
-  pvCard = null;
-}
-document.getElementById('pv-btn-back').addEventListener('click', closePreview);
-document.getElementById('preview-overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('preview-overlay')) closePreview();
-});
-document.getElementById('pv-btn-select').addEventListener('click', async () => {
-  if (!pvCard || !selPoke) return;
-  const card = pvCard, poke = selPoke;
+function updateAllGenProgress(){for(const g of GENERATIONS)updateGenProgress(g.id)}
 
-  tcgCards[poke.id] = {
-    cardId:   card.id,
-    imageUrl: card.image + '/high.webp',
-    setName:  card.set?.name  || '',
-    localId:  card.localId    || '',
-  };
-
-  // Actualizar badge en grid sin re-renderizar
-  const gridCard = document.querySelector(`.pokemon-card[data-id="${CSS.escape(poke.id)}"]`);
-  if (gridCard && !gridCard.querySelector('.tcg-badge')) {
-    const badge = document.createElement('div');
-    badge.className = 'tcg-badge'; badge.title = 'Carta TCG guardada'; badge.textContent = '🃏';
-    gridCard.appendChild(badge);
-  }
-
-  isLocalChange = true; await saveAll();
-  showToast('🃏 ¡Carta guardada!');
-  closePreview(); closeSelector();
-});
-
-// ─── PROGRESS ───
-function updateGlobalCount() {
-  const got = allPokemon.filter(p => collected.has(p.id)).length;
-  document.getElementById('global-count').textContent = `${got} / ${allPokemon.length}`;
-}
-function updateGenProgress(genId) {
-  if (!genId) return;
-  const section = document.querySelector(`.gen-section[data-gen="${genId}"]`); if (!section) return;
-  const cards   = section.querySelectorAll('.pokemon-card');
-  const got     = section.querySelectorAll('.pokemon-card.collected').length;
-  const pct     = cards.length ? Math.round(got/cards.length*100) : 0;
-  const fill    = section.querySelector('.progress-fill');
-  const cnt     = section.querySelector('.gen-count');
-  if (fill) fill.style.width = pct + '%';
-  if (cnt)  cnt.textContent  = `${got}/${cards.length}`;
-}
-function updateAllGenProgress() { for (const g of GENERATIONS) updateGenProgress(g.id); }
-
-// ─── SEARCH & FILTERS ───
-document.getElementById('search').addEventListener('input', e => {
-  searchQuery = e.target.value.trim();
-  if (searchQuery) {
-    activeGen = 'all';
-    document.querySelectorAll('.gen-tab').forEach(t => t.classList.remove('active'));
-    document.querySelector('.gen-tab[data-gen="all"]')?.classList.add('active');
-  }
+// SEARCH & FILTERS
+document.getElementById('search').addEventListener('input',e=>{
+  searchQuery=e.target.value.trim();
+  if(searchQuery){activeGen='all';document.querySelectorAll('.gen-tab').forEach(t=>t.classList.remove('active'));document.querySelector('.gen-tab[data-gen="all"]')?.classList.add('active')}
   renderContent();
 });
-document.getElementById('btn-missing').addEventListener('click', e => {
-  filterMissing = !filterMissing; e.target.classList.toggle('active', filterMissing); renderContent();
-});
-document.getElementById('btn-mark-all').addEventListener('click', async e => {
-  const filtered  = getFiltered();
-  const allMarked = filtered.every(p => collected.has(p.id));
-  if (allMarked) { filtered.forEach(p => collected.delete(p.id)); showToast(`${filtered.length} Pokémon desmarcados`); e.target.textContent='✓ Todos'; }
-  else           { filtered.forEach(p => collected.add(p.id));    showToast(`✓ ${filtered.length} Pokémon marcados`); e.target.textContent='✗ Ninguno'; }
-  isLocalChange = true; renderContent(); await saveAll();
+document.getElementById('btn-missing').addEventListener('click',e=>{filterMissing=!filterMissing;e.target.classList.toggle('active',filterMissing);renderContent()});
+document.getElementById('btn-mark-all').addEventListener('click',async e=>{
+  const filtered=getFiltered();const allMarked=filtered.every(p=>collected.has(p.id));
+  if(allMarked){filtered.forEach(p=>collected.delete(p.id));showToast(filtered.length+' Pokemon desmarcados');e.target.textContent='Todos'}
+  else{filtered.forEach(p=>collected.add(p.id));showToast(filtered.length+' Pokemon marcados');e.target.textContent='Ninguno'}
+  isLocalChange=true;renderContent();await saveAll();
 });
 
-// ─── FIRST-VISIT HINT ───
-function showHintIfFirst() {
-  const KEY = 'pokedex_tcg_hint_v1';
-  if (localStorage.getItem(KEY)) return;
-  localStorage.setItem(KEY, '1');
-  const h = document.createElement('div');
-  h.className = 'press-hint';
-  h.textContent = '💡 Mantén pulsado para guardar su carta TCG';
-  document.body.appendChild(h);
-  setTimeout(() => h.remove(), 5000);
-}
-
-// ─── INIT ───
-async function init() {
-  try { nameCache = JSON.parse(localStorage.getItem(NAMES_KEY) || '{}'); } catch {}
-  try {
-    const snap = await getDoc(colRef);
-    if (snap.exists()) { const d = snap.data(); collected = new Set(d.ids||[]); loadTcgFromSnap(d); }
-  } catch(e) { console.error(e); setSyncState('error'); }
-
-  buildPokemonList(); buildGenTabs(); renderContent();
-  startListener(); setSyncState('ok');
-  showHintIfFirst();
-
-  const missing = allPokemon.filter(p => !p.isForm && !nameCache[p.id]).map(p => parseInt(p.id)).filter(Boolean);
-  if (missing.length > 0) {
-    const BATCH = 15;
-    for (let i = 0; i < missing.length; i += BATCH) {
-      const batch = missing.slice(i, i+BATCH);
-      await Promise.all(batch.map(async id => {
-        const name = await fetchName(id); nameCache[id] = name;
-        const entry = allPokemon.find(p => p.id === String(id)); if (entry) entry.name = name;
-        const el = document.querySelector(`.pokemon-card[data-id="${id}"] .pokemon-name`); if (el) el.textContent = name;
+// INIT
+async function init(){
+  try{nameCache=JSON.parse(localStorage.getItem(NAMES_KEY)||'{}')}catch{}
+  try{const snap=await getDoc(colRef);if(snap.exists())loadFromSnap(snap.data())}catch(e){console.error(e);setSyncState('error')}
+  buildPokemonList();buildGenTabs();renderContent();startListener();setSyncState('ok');
+  const missing=allPokemon.filter(p=>!p.isForm&&!nameCache[p.id]).map(p=>parseInt(p.id)).filter(Boolean);
+  if(missing.length>0){
+    const BATCH=15;
+    for(let i=0;i<missing.length;i+=BATCH){
+      const batch=missing.slice(i,i+BATCH);
+      await Promise.all(batch.map(async id=>{
+        const name=await fetchName(id);nameCache[id]=name;
+        const entry=allPokemon.find(p=>p.id===String(id));if(entry)entry.name=name;
+        const el=document.querySelector('.pokemon-card[data-id="'+id+'"] .pokemon-name');if(el)el.textContent=name;
       }));
-      localStorage.setItem(NAMES_KEY, JSON.stringify(nameCache));
+      localStorage.setItem(NAMES_KEY,JSON.stringify(nameCache));
     }
   }
 }
-
 init();
 </script>
-
 <script>
-// ── Registrar Service Worker (PWA) ──
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/pokecollector/sw.js')
-      .then(reg => console.log('SW registrado:', reg.scope))
-      .catch(err => console.warn('SW error:', err));
-  });
-}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/PokeCollector/sw.js').catch(e=>console.warn('SW:',e))})}
 </script>
 </body>
 </html>
