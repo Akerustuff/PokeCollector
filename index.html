@@ -641,6 +641,24 @@ function renderModalCollectBtn(){
   document.getElementById('modal-collect-text').textContent=isCol?'Quitar de capturados':'Marcar como capturado';
 }
 
+function raritySymbol(rarity){
+  if(!rarity)return '';
+  const r=rarity.toLowerCase();
+  if(r.includes('amazing'))return '✦ Amazing Rare';
+  if(r.includes('hyper'))return '✦✦ Hyper Rare';
+  if(r.includes('special illustration'))return '✦✦ Special Illustration Rare';
+  if(r.includes('illustration'))return '✦ Illustration Rare';
+  if(r.includes('ultra'))return '◆◆◆◆ Ultra Rare';
+  if(r.includes('double rare'))return '◆◆ Double Rare';
+  if(r.includes('shiny'))return '✦ Shiny Rare';
+  if(r.includes('rare holo'))return '◆◆ Rare Holo';
+  if(r.includes('promo'))return '✦ Promo';
+  if(r==='rare')return '◆◆ Rare';
+  if(r==='uncommon')return '◆ Uncommon';
+  if(r==='common')return '○ Common';
+  return rarity;
+}
+
 function fieldCell(label,value,cls=''){
   const empty=!value;
   return '<div class="card-field">'
