@@ -663,6 +663,71 @@ function raritySymbol(rarity){
   return rarity;
 }
 
+// Detecta si el link es de Serebii y extrae set/número
+function parseSerebiiUrl(url){
+  const m=url.match(/serebii\.net\/card\/([^/]+)\/0*(\d+)\.shtml/i);
+  if(m)return{setName:m[1],number:m[2]};
+  return null;
+}
+
+// Fetch con timeout de 6 segundos
+async function fetchWithTimeout(url,ms=6000){
+  const ctrl=new AbortController();
+  const timer=setTimeout(()=>ctrl.abort(),ms);
+  try{
+    const res=await fetch(url,{signal:ctrl.signal});
+    clearTimeout(timer);
+    return res;
+  }catch(e){
+    clearTimeout(timer);
+    throw e;
+  }
+}
+
+// Mapa de nombres Serebii → ID de set en la API de PokémonTCG
+const SEREBII_SET_MAP={
+  '151':'sv3pt5','scarletviolet':'sv1','paradoxrift':'sv4','temporalforces':'sv5',
+  'twilightmasquerade':'sv6','shroudedfresco':'sv6pt5','stellarcrown':'sv7',
+  'surgingrivalssv':'sv8','surgingrivalssv8':'sv8','prismaticevolutions':'sv8pt5',
+  'megaevolution':'meg',
+  'swsh1':'swsh1','brilliantstars':'swsh9','astralradiance':'swsh10',
+  'pokegocardgame':'pgo','lostorigin':'swsh11','silvertempest':'swsh12','crownzenith':'swsh12pt5',
+  'sm1':'sm1','guardianrising':'sm2','burningshadows':'sm3','ultraprism':'sm5',
+  'forbiddenlight':'sm6','celestialstorm':'sm7','dragonmajesty':'sm75',
+  'lostthunder':'sm8','teamup':'sm9','unbrokenbbonds':'sm10','unifiedminds':'sm11',
+  'hiddenfates':'sm115','cosmiceclipse':'sm12',
+  'xy':'xy1','flashfire':'xy2','furiosfists':'xy3','phantomforces':'xy4',
+  'primalbattle':'xy5','roughsea':'xy6','ancientorigins':'xy7',
+  'breakthrough':'xy8','breakpoint':'xy9','fatescollide':'xy10',
+  'steamsiege':'xy11','evolutions':'xy12',
+  'blackwhite':'bw1','emergingpowers':'bw2','noblevictories':'bw3',
+  'nextdestinies':'bw4','darkexplorers':'bw5','dragonsexalted':'bw6',
+  'boundariescrossed':'bw7','plasmafreeze':'bw9','plasmaclash':'bw10',
+  'legendarytreasures':'bw11',
+  'base1':'base1','jungle':'jungle','fossil':'fossil','teamrocket':'base5',
+  'gymheroes':'gym1','gymchallenge':'gym2',
+  'neo1':'neo1','neo2':'neo2','neo3':'neo3','neo4':'neo4',
+};
+
+// Busca la carta en la API de PokémonTCG
+async function fetchTcgCardBySerebii(setName,number){
+  try{
+    const mappedId=SEREBII_SET_MAP[setName.toLowerCase()];
+    if(mappedId){
+      const query=encodeURIComponent('set.id:'+mappedId+' number:'+number);
+      const res=await fetchWithTimeout('https://api.pokemontcg.io/v2/cards?q='+query+'&pageSize=1');
+      if(res.ok){const data=await res.json();if(data.data&&data.data.length>0)return data.data[0];}
+      return null;
+    }
+    const query=encodeURIComponent('set.name:"'+setName+'" number:'+number);
+    const res=await fetchWithTimeout('https://api.pokemontcg.io/v2/cards?q='+query+'&pageSize=1');
+    if(!res.ok)return null;
+    const data=await res.json();
+    if(data.data&&data.data.length>0)return data.data[0];
+    return null;
+  }catch(e){console.warn('TCG API:',e.message);return null;}
+}
+
 function showUrlInput(container){
   const el=container||document.getElementById('modal-card-content');
   el.innerHTML='<input class="card-url-input" id="card-url-input" type="url" placeholder="Link de Serebii o imagen directa" autocomplete="off">'
