@@ -501,16 +501,15 @@ function renderContent(){
   if(filtered.length===0){content.innerHTML='<div class="empty-state"><div class="ei">&#128269;</div><p>No se encontraron Pokemon</p></div>';updateGlobalCount();return}
   const byGen={};
   for(const p of filtered){
-    if(!byGen[p.gen])byGen[p.gen]={main:[],regional:[]};
-    if(p.type==='regional')byGen[p.gen].regional.push(p);
-    else byGen[p.gen].main.push(p);
+    const gk=String(p.gen);
+    if(!byGen[gk])byGen[gk]={main:[],regional:[]};
+    if(p.type==='regional')byGen[gk].regional.push(p);
+    else byGen[gk].main.push(p);
   }
-  console.log('byGen keys:',Object.keys(byGen),'hisui count:',byGen['hisui']?byGen['hisui'].main.length+byGen['hisui'].regional.length:0);
   let html='';
   for(const gen of GENERATIONS){
-    console.log('gen.id:',gen.id,'type:',typeof gen.id,'byGen has it:',!!byGen[gen.id]);
-    if(!byGen[gen.id])continue;
-    const{main,regional}=byGen[gen.id];
+    if(!byGen[String(gen.id)])continue;
+    const{main,regional}=byGen[String(gen.id)];
     const all=[...main,...regional];
     const got=all.filter(p=>collected.has(p.id)).length;
     const pct=all.length?Math.round(got/all.length*100):0;
