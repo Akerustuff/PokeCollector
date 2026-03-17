@@ -505,6 +505,7 @@ function renderContent(){
     if(p.type==='regional')byGen[p.gen].regional.push(p);
     else byGen[p.gen].main.push(p);
   }
+  console.log('byGen keys:',Object.keys(byGen),'hisui count:',byGen['hisui']?byGen['hisui'].main.length+byGen['hisui'].regional.length:0);
   let html='';
   for(const gen of GENERATIONS){
     if(!byGen[gen.id])continue;
@@ -691,7 +692,7 @@ async function init(){
   try{nameCache=JSON.parse(localStorage.getItem(NAMES_KEY)||'{}')}catch{}
   try{const snap=await getDoc(colRef);if(snap.exists())loadFromSnap(snap.data())}catch(e){console.error(e);setSyncState('error')}
   buildPokemonList();buildGenTabs();renderContent();startListener();setSyncState('ok');
-  const missing=allPokemon.filter(p=>!p.isForm&&!nameCache[p.id]).map(p=>parseInt(p.id)).filter(Boolean);
+  const missing=allPokemon.filter(p=>p.type==='base'&&!nameCache[p.id]).map(p=>parseInt(p.id)).filter(Boolean);
   if(missing.length>0){
     const BATCH=15;
     for(let i=0;i<missing.length;i+=BATCH){
