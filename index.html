@@ -686,24 +686,46 @@ async function fetchWithTimeout(url,ms=6000){
 
 // Mapa de nombres Serebii → ID de set en la API de PokémonTCG
 const SEREBII_SET_MAP={
-  '151':'sv3pt5','scarletviolet':'sv1','paradoxrift':'sv4','temporalforces':'sv5',
-  'twilightmasquerade':'sv6','shroudedfresco':'sv6pt5','stellarcrown':'sv7',
-  'surgingrivalssv':'sv8','surgingrivalssv8':'sv8','prismaticevolutions':'sv8pt5',
+  // Scarlet & Violet
+  '151':'sv3pt5',
+  'scarletviolet':'sv1',
+  'paldeanfates':'sv4pt5',
+  'paradoxrift':'sv4',
+  'temporalforces':'sv5',
+  'twilightmasquerade':'sv6',
+  'shroudedfresco':'sv6pt5',
+  'stellarcrown':'sv7',
+  'surgingrivalssv':'sv8','surgingrivalssv8':'sv8','surgingrivalssv08':'sv8',
+  'prismaticevolutions':'sv8pt5',
+  'journeytogether':'sv9','journey':'sv9',
+  'destinedrivals':'sv10','destined':'sv10',
+  // Mega Evolution (2025 - puede que aún no esté en la API)
   'megaevolution':'meg',
-  'swsh1':'swsh1','brilliantstars':'swsh9','astralradiance':'swsh10',
+  // Sword & Shield
+  'swordshield':'swsh1','swsh1':'swsh1',
+  'rebelclash':'swsh2','darknessablaze':'swsh3','championspath':'swsh35',
+  'vividdvoltage':'swsh4','shiningfates':'swsh45','battlestyles':'swsh5',
+  'chillingstyle':'swsh6','evolvingskies':'swsh7','celebrations':'swsh7',
+  'fusionstrikeswsh':'swsh8','brilliantstars':'swsh9','astralradiance':'swsh10',
   'pokegocardgame':'pgo','lostorigin':'swsh11','silvertempest':'swsh12','crownzenith':'swsh12pt5',
-  'sm1':'sm1','guardianrising':'sm2','burningshadows':'sm3','ultraprism':'sm5',
-  'forbiddenlight':'sm6','celestialstorm':'sm7','dragonmajesty':'sm75',
-  'lostthunder':'sm8','teamup':'sm9','unbrokenbbonds':'sm10','unifiedminds':'sm11',
-  'hiddenfates':'sm115','cosmiceclipse':'sm12',
+  // Sun & Moon
+  'sunandsoon':'sm1','sunandmoon':'sm1',
+  'guardianrising':'sm2','burningshadows':'sm3','crimsonbandits':'sm35',
+  'ultraprism':'sm5','forbiddenlight':'sm6','celestialstorm':'sm7',
+  'dragonmajesty':'sm75','lostthunder':'sm8','teamup':'sm9',
+  'unbrokenbonds':'sm10','unifiedminds':'sm11',
+  'hiddenfates':'sm115','cosmiceclipse':'sm12','shininglegends':'sm35',
+  // XY
   'xy':'xy1','flashfire':'xy2','furiosfists':'xy3','phantomforces':'xy4',
   'primalbattle':'xy5','roughsea':'xy6','ancientorigins':'xy7',
   'breakthrough':'xy8','breakpoint':'xy9','fatescollide':'xy10',
   'steamsiege':'xy11','evolutions':'xy12',
+  // Black & White
   'blackwhite':'bw1','emergingpowers':'bw2','noblevictories':'bw3',
   'nextdestinies':'bw4','darkexplorers':'bw5','dragonsexalted':'bw6',
   'boundariescrossed':'bw7','plasmafreeze':'bw9','plasmaclash':'bw10',
   'legendarytreasures':'bw11',
+  // Clásicos
   'base1':'base1','jungle':'jungle','fossil':'fossil','teamrocket':'base5',
   'gymheroes':'gym1','gymchallenge':'gym2',
   'neo1':'neo1','neo2':'neo2','neo3':'neo3','neo4':'neo4',
