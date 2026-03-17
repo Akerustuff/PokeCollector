@@ -687,14 +687,120 @@ function raritySymbol(rarity){
   return rarity;
 }
 
+// Mapa de nombres Serebii → ID de set en la API de PokémonTCG
+// Agregar aquí cuando se encuentre un set que no funciona automáticamente
+const SEREBII_SET_MAP = {
+  // Scarlet & Violet
+  '151':               'sv3pt5',
+  'scarletviolet':     'sv1',
+  'paradoxrift':       'sv4',
+  'temporalforces':    'sv5',
+  'twilightmasquerade':'sv6',
+  'shroudedfresco':    'sv6pt5',
+  'stellarcrown':      'sv7',
+  'surgingrivalssv':   'sv8',
+  // Mega Evolution (2025)
+  'megaevolution':     'meg',
+  // Sword & Shield
+  'swsh1':             'swsh1',
+  'chillinguildset':   'swsh9',
+  'brilliantstars':    'swsh9',
+  'astralradiance':    'swsh10',
+  'pokegocardgame':    'pgo',
+  'lostorigin':        'swsh11',
+  'silvertemsest':     'swsh12',
+  'crownzenith':       'swsh12pt5',
+  // Sun & Moon
+  'sunandsmoonsm1':    'sm1',
+  'guardianrising':    'sm2',
+  'burningshaddows':   'sm3',
+  'crimsoninstason':   'sm35',
+  'ultraprism':        'sm5',
+  'forbiddenlight':    'sm6',
+  'celestialstorm':    'sm7',
+  'dragonmajesty':     'sm75',
+  'lostthunder':       'sm8',
+  'teamup':            'sm9',
+  'detectivepikachu':  'det1',
+  'unbrokenbbonds':    'sm10',
+  'unifiedminds':      'sm11',
+  'hiddenffates':      'sm115',
+  'cosmicelipse':      'sm12',
+  'shininglegends':    'sm35',
+  // XY
+  'xy':                'xy1',
+  'flashfire':         'xy2',
+  'furiosfists':       'xy3',
+  'phantomforces':     'xy4',
+  'primalbattle':      'xy5',
+  'roughesea':         'xy6',
+  'ancientorigins':    'xy7',
+  'breaktrough':       'xy8',
+  'breakpoint':        'xy9',
+  'fatescolide':       'xy10',
+  'steamsiege':        'xy11',
+  'evolutions':        'xy12',
+  'generoussymbol':    'xy12',
+  // Black & White
+  'blackwhite':        'bw1',
+  'emergingpowers':    'bw2',
+  'noblvictories':     'bw3',
+  'nextdestinies':     'bw4',
+  'darkexplorers':     'bw5',
+  'dragonsexalted':    'bw6',
+  'dragonvault':       'bw6',
+  'boundariescrossed': 'bw7',
+  'plasmafreeze':      'bw9',
+  'plasmastore':       'bw10',
+  'legendarytreasures':'bw11',
+  // Classic sets
+  'base1':             'base1',
+  'base2':             'base2',
+  'base3':             'base3',
+  'base4':             'base4',
+  'jungle':            'jungle',
+  'fossil':            'fossil',
+  'teamrocket':        'base5',
+  'gymheroes':         'gym1',
+  'gymchallenge':      'gym2',
+  'neo1':              'neo1',
+  'neo2':              'neo2',
+  'neo3':              'neo3',
+  'neo4':              'neo4',
+};
+
 // Busca la carta en la API de PokémonTCG por nombre de set y número
 async function fetchTcgCardBySerebii(setName,number){
   try{
-    const query=encodeURIComponent('set.name:"'+setName+'" number:'+number);
-    const res=await fetch('https://api.pokemontcg.io/v2/cards?q='+query+'&pageSize=1');
+    // Primero intentar con el mapa de IDs conocidos
+    const mappedId=SEREBII_SET_MAP[setName.toLowerCase()];
+    let res, data;
+
+    if(mappedId){
+      // Buscar directamente por ID de set
+      const query=encodeURIComponent('set.id:'+mappedId+' number:'+number);
+      res=await fetch('https://api.pokemontcg.io/v2/cards?q='+query+'&pageSize=1');
+      if(res.ok){
+        data=await res.json();
+        if(data.data&&data.data.length>0)return data.data[0];
+      }
+    }
+
+    // Fallback: buscar por nombre de set
+    const query2=encodeURIComponent('set.name:"'+setName+'" number:'+number);
+    res=await fetch('https://api.pokemontcg.io/v2/cards?q='+query2+'&pageSize=1');
     if(!res.ok)throw new Error('API error');
-    const data=await res.json();
+    data=await res.json();
     if(data.data&&data.data.length>0)return data.data[0];
+
+    // Segundo fallback: buscar solo por número y parte del nombre del set
+    const setNameClean=setName.replace(/[^a-z0-9]/gi,' ').trim();
+    const query3=encodeURIComponent('set.name:*'+setNameClean+'* number:'+number);
+    res=await fetch('https://api.pokemontcg.io/v2/cards?q='+query3+'&pageSize=1');
+    if(!res.ok)return null;
+    data=await res.json();
+    if(data.data&&data.data.length>0)return data.data[0];
+
     return null;
   }catch(e){console.error(e);return null;}
 }
