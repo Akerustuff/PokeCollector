@@ -387,6 +387,8 @@ const ALT_FORMS = [
   { key:'goodra-hisui',          name:'Goodra',      formLabel:'Forma Hisui',      sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10242.png', gen:'hisui', baseId:'706',  type:'hisui' },
   { key:'avalugg-hisui',         name:'Avalugg',     formLabel:'Forma Hisui',      sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10243.png', gen:'hisui', baseId:'713',  type:'hisui' },
   { key:'decidueye-hisui',       name:'Decidueye',   formLabel:'Forma Hisui',      sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10244.png', gen:'hisui', baseId:'724',  type:'hisui' },
+  { key:'dialga-origin',       name:'Dialga',      formLabel:'Forma Origen',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10245.png', gen:'hisui', baseId:'483',  type:'hisui' },
+  { key:'palkia-origin',       name:'Palkia',      formLabel:'Forma Origen',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10246.png', gen:'hisui', baseId:'484',  type:'hisui' },
 
   // ── HISUI — formas family ──
   { key:'ursaluna-bloodmoon',    name:'Ursaluna',    formLabel:'Luna Carmesi',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10272.png', gen:'hisui', baseId:'901', type:'family' },
@@ -455,9 +457,12 @@ function buildPokemonList(){
   allPokemon=[];
   for(const gen of GENERATIONS){
     if(gen.id==='hisui'){
-      // Hisui: base Pokemon 899-905 first
+      // Hisui: base Pokemon 899-905, con family forms inline
       for(let id=gen.range[0];id<=gen.range[1];id++){
         allPokemon.push({id:String(id),name:nameCache[id]||('#'+id),gen:'hisui',sprite:null,formLabel:'',type:'base',baseId:null});
+        // Insert family forms right after their base (e.g. Ursaluna Luna Carmesi after #901)
+        for(const f of ALT_FORMS.filter(f=>f.type==='family'&&f.gen==='hisui'&&f.baseId===String(id)))
+          allPokemon.push({id:f.key,name:f.name,gen:'hisui',sprite:f.sprite,formLabel:f.formLabel,type:'family',baseId:f.baseId});
       }
       // Then Hisui regional variants at the end
       for(const f of ALT_FORMS.filter(f=>f.type==='hisui'))
