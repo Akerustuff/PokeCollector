@@ -508,6 +508,7 @@ function renderContent(){
   console.log('byGen keys:',Object.keys(byGen),'hisui count:',byGen['hisui']?byGen['hisui'].main.length+byGen['hisui'].regional.length:0);
   let html='';
   for(const gen of GENERATIONS){
+    console.log('gen.id:',gen.id,'type:',typeof gen.id,'byGen has it:',!!byGen[gen.id]);
     if(!byGen[gen.id])continue;
     const{main,regional}=byGen[gen.id];
     const all=[...main,...regional];
