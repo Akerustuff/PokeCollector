@@ -356,7 +356,7 @@ const ALT_FORMS = [
   { key:'goodra-hisui',        name:'Goodra',     formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10243.png', gen:'hisui', baseId:'706', type:'hisui' },
   { key:'avalugg-hisui',       name:'Avalugg',    formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10244.png', gen:'hisui', baseId:'713', type:'hisui' },
   { key:'decidueye-hisui',     name:'Decidueye',  formLabel:'Forma Hisui',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10245.png', gen:'hisui', baseId:'724', type:'hisui' },
-  
+
   // ── GEN 9 — variantes regionales Paldea ──
   { key:'wooper-paldea',       name:'Wooper',     formLabel:'Forma Paldea',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10253.png', gen:9,      baseId:'194', type:'regional' },
   { key:'tauros-paldea-combat',name:'Tauros',     formLabel:'Combate',         sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10250.png', gen:9,      baseId:'128', type:'regional' },
@@ -426,9 +426,13 @@ function buildPokemonList(){
   allPokemon=[];
   for(const gen of GENERATIONS){
     if(gen.id==='hisui'){
-      // Hisui: only ALT_FORMS with type='hisui'
+      // Hisui: base Pokemon 899-905 first
+      for(let id=gen.range[0];id<=gen.range[1];id++){
+        allPokemon.push({id:String(id),name:nameCache[id]||('#'+id),gen:'hisui',sprite:null,formLabel:'',type:'base',baseId:null});
+      }
+      // Then Hisui regional variants at the end
       for(const f of ALT_FORMS.filter(f=>f.type==='hisui'))
-        allPokemon.push({id:f.key,name:f.name,gen:'hisui',sprite:f.sprite,formLabel:f.formLabel,type:'hisui',baseId:f.baseId});
+        allPokemon.push({id:f.key,name:f.name,gen:'hisui',sprite:f.sprite,formLabel:f.formLabel,type:'regional',baseId:f.baseId});
     } else {
       // Base Pokemon for this gen
       for(let id=gen.range[0];id<=gen.range[1];id++){
