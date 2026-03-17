@@ -123,7 +123,12 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 .modal-collect-btn.remove{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.12)}
 
 /* Seccion carta */
-.card-img-wrap{display:flex;justify-content:center;margin-bottom:12px}
+.card-img-wrap{position:relative;display:flex;justify-content:center;margin-bottom:12px}
+.lang-wrap{position:absolute;top:6px;left:calc(50% + 76px);display:flex;flex-direction:column;align-items:center;z-index:5}
+.lang-btn{background:#242424;border:1.5px solid rgba(255,255,255,.2);border-radius:8px;padding:5px 7px;cursor:pointer;font-size:18px;line-height:1;display:block;-webkit-tap-highlight-color:transparent}
+.lang-dropdown{margin-top:4px;background:#242424;border:1px solid rgba(255,255,255,.15);border-radius:10px;overflow:hidden;width:46px;display:none;flex-direction:column}
+.lang-option{padding:7px;text-align:center;font-size:18px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.lang-option.active{background:rgba(255,204,0,.15)}
 .card-saved-full{width:100%;max-width:min(240px,65vw);max-height:50dvh;border-radius:12px;object-fit:contain;box-shadow:0 8px 32px rgba(0,0,0,.7);display:block;margin:0 auto}
 .card-saved-btns{display:flex;gap:8px;margin-top:10px}
 .card-mini-btn{flex:1;padding:12px 4px;border-radius:10px;border:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .1s}
@@ -725,7 +730,17 @@ function renderModalCardSection(){
       ?'<img class="card-saved-full" src="'+saved.imageUrl+'" alt="Carta TCG" onerror="this.style.display=&quot;none&quot;">'
       :'<div style="text-align:center;padding:16px 0;color:rgba(255,255,255,.25);font-size:13px">Sin imagen</div>';
 
-    el.innerHTML='<div class="card-img-wrap">'+imgHtml+'</div>'
+    const lang=saved.lang||'en';
+    const langFlag={'en':'🇺🇸','es':'🇨🇱','pt':'🇧🇷'};
+    const langHtml='<div class="lang-wrap">'
+      +'<button class="lang-btn" id="lang-btn">'+langFlag[lang]+'</button>'
+      +'<div class="lang-dropdown" id="lang-dd">'
+      +'<div class="lang-option'+(lang==='en'?' active':'')+'" data-lang="en">🇺🇸</div>'
+      +'<div class="lang-option'+(lang==='es'?' active':'')+'" data-lang="es">🇨🇱</div>'
+      +'<div class="lang-option'+(lang==='pt'?' active':'')+'" data-lang="pt">🇧🇷</div>'
+      +'</div></div>';
+
+    el.innerHTML='<div class="card-img-wrap">'+imgHtml+langHtml+'</div>'
       +'<div class="card-info-header">'
       +'<span class="card-info-title">Informacion de la carta</span>'
       +'<button class="card-edit-btn" id="card-btn-edit">&#9998; Editar</button>'
@@ -743,6 +758,31 @@ function renderModalCardSection(){
 
     document.getElementById('card-btn-edit').addEventListener('click',()=>showEditForm());
     document.getElementById('card-btn-change').addEventListener('click',()=>showUrlInput());
+
+    // Lang dropdown
+    document.getElementById('lang-btn').addEventListener('click',e=>{
+      e.stopPropagation();
+      const dd=document.getElementById('lang-dd');
+      const open=dd.style.display==='flex';
+      dd.style.display=open?'none':'flex';
+      dd.style.flexDirection='column';
+    });
+    document.getElementById('lang-dd').addEventListener('click',async e=>{
+      const opt=e.target.closest('.lang-option');if(!opt)return;
+      const lang=opt.dataset.lang;
+      const flags={'en':'🇺🇸','es':'🇨🇱','pt':'🇧🇷'};
+      tcgCards[modalPoke.id]={...tcgCards[modalPoke.id],lang};
+      isLocalChange=true;await saveAll();
+      document.getElementById('lang-btn').textContent=flags[lang];
+      document.querySelectorAll('.lang-option').forEach(o=>o.classList.remove('active'));
+      opt.classList.add('active');
+      document.getElementById('lang-dd').style.display='none';
+    });
+    document.addEventListener('click',function closeLang(e){
+      const dd=document.getElementById('lang-dd');
+      if(dd&&!e.target.closest('.lang-wrap'))dd.style.display='none';
+    },{once:false});
+
     document.getElementById('card-btn-del').addEventListener('click',async()=>{
       delete tcgCards[modalPoke.id];
       document.querySelector('.pokemon-card[data-id="'+CSS.escape(modalPoke.id)+'"] .card-icon')?.remove();
@@ -768,6 +808,12 @@ function showEditForm(){
     +'<input class="card-edit-input" id="edit-rarity" placeholder="Ej: Common, Rare Holo..." value="'+(saved.rarity||'')+'"></div>'
     +'<div class="card-edit-field"><label class="card-edit-label">Ilustrador</label>'
     +'<input class="card-edit-input" id="edit-artist" placeholder="Nombre del ilustrador" value="'+(saved.artist||'')+'"></div>'
+    +'<div class="card-edit-field"><label class="card-edit-label">Idioma</label>'
+    +'<select class="card-edit-input" id="edit-lang">'
+    +'<option value="en"'+(saved.lang==='en'||!saved.lang?' selected':'')+'">Ingles (🇺🇸)</option>'
+    +'<option value="es"'+(saved.lang==='es'?' selected':'')+'">Espanol (🇨🇱)</option>'
+    +'<option value="pt"'+(saved.lang==='pt'?' selected':'')+'">Portugues (🇧🇷)</option>'
+    +'</select></div>'
     +'<div class="card-edit-actions">'
     +'<button class="card-edit-save" id="edit-save">Guardar</button>'
     +'<button class="card-edit-cancel" id="edit-cancel">Cancelar</button>'
@@ -786,6 +832,7 @@ function showEditForm(){
       total,
       rarity:  document.getElementById('edit-rarity').value.trim(),
       artist:  document.getElementById('edit-artist').value.trim(),
+      lang:    document.getElementById('edit-lang').value,
     };
     isLocalChange=true;await saveAll();showToast('Informacion actualizada');renderModalCardSection();
   });
