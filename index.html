@@ -24,7 +24,8 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 .logo{display:flex;align-items:center;gap:10px}
 
 .logo-text{font-family:'Bangers',cursive;font-size:30px;color:var(--yellow);letter-spacing:1px;text-shadow:2px 2px 0 rgba(0,0,0,.35);line-height:1}
-.logo-sub{font-size:10px;color:rgba(255,255,255,.75);font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.logo-sub{font-size:10px;color:rgba(255,255,255,.75);font-weight:700;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:5px}
+.version-badge{font-size:8px;font-weight:700;background:rgba(255,255,255,.15);color:rgba(255,255,255,.55);padding:1px 5px;border-radius:8px;font-family:monospace;letter-spacing:.5px;text-transform:none}
 .header-right{display:flex;align-items:center;gap:8px}
 .sync-dot{width:10px;height:10px;border-radius:50%;background:#44DD44;box-shadow:0 0 6px #44DD44;transition:all .3s;flex-shrink:0}
 .sync-dot.syncing{background:var(--yellow);box-shadow:0 0 6px var(--yellow);animation:pulse .6s infinite alternate}
@@ -189,7 +190,7 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
       </svg>
       <div>
         <div class="logo-text">Caco Collector</div>
-        <div class="logo-sub">Colección compartida</div>
+        <div class="logo-sub">Colección compartida <span class="version-badge" id="app-version"></span></div>
       </div>
     </div>
     <div class="header-right">
@@ -1005,7 +1006,7 @@ document.getElementById('btn-missing').addEventListener('click',e=>{
   document.getElementById('menu-dropdown').classList.remove('open');
   renderContent();
 });
-document.document.getElementById('btn-mark-all').addEventListener('click',async()=>{
+document.getElementById('btn-mark-all').addEventListener('click',async()=>{
   const filtered=getFiltered();
   filtered.forEach(p=>collected.add(p.id));
   showToast(filtered.length+' Pokémon marcados');
@@ -1048,6 +1049,18 @@ init();
 </script>
 <script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/pokecollector/sw.js').catch(e=>console.warn('SW:',e))})}
+// Mostrar versión del SW activo
+(async()=>{
+  try{
+    const keys=await caches.keys();
+    const key=keys.find(k=>k.startsWith('pokedex-'));
+    if(key){
+      const el=document.getElementById('app-version');
+      if(el)el.textContent=key.replace('pokedex-','');
+    }
+  }catch(e){}
+})();
+
 </script>
 </body>
 </html>
