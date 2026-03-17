@@ -659,6 +659,52 @@ function raritySymbol(rarity){
   return rarity;
 }
 
+function showUrlInput(container){
+  const el=container||document.getElementById('modal-card-content');
+  el.innerHTML='<input class="card-url-input" id="card-url-input" type="url" placeholder="Link de Serebii o imagen directa" autocomplete="off">'
+    +'<button class="card-url-save" id="card-url-save">Guardar</button>'
+    +'<div class="card-url-hint">Pega el link de serebii.net/card/... o un link directo a la imagen</div>';
+
+  document.getElementById('card-url-save').addEventListener('click',async()=>{
+    const url=document.getElementById('card-url-input').value.trim();
+    if(!url)return;
+
+    const btn=document.getElementById('card-url-save');
+    btn.textContent='Buscando...';btn.disabled=true;
+
+    const serebii=parseSerebiiUrl(url);
+    if(serebii){
+      const card=await fetchTcgCardBySerebii(serebii.setName,serebii.number);
+      if(card){
+        const num=card.number?String(card.number).padStart(3,'0'):serebii.number;
+        const total=card.set?.printedTotal?String(card.set.printedTotal):'';
+        tcgCards[modalPoke.id]={
+          imageUrl:   card.images?.large||card.images?.small||'',
+          setName:    card.set?.name||serebii.setName,
+          number:     num,
+          total:      total,
+          artist:     card.artist||'',
+          rarity:     card.rarity||'',
+          serebiiUrl: url,
+        };
+        showToast('Carta encontrada: '+card.name);
+      } else {
+        tcgCards[modalPoke.id]={imageUrl:'',setName:serebii.setName,number:serebii.number,serebiiUrl:url};
+        showToast('Set no disponible en la API aun — guardado sin imagen');
+      }
+    } else {
+      tcgCards[modalPoke.id]={imageUrl:url,setName:'',number:'',total:'',artist:'',rarity:''};
+      showToast('Carta guardada!');
+    }
+
+    btn.textContent='Guardar';btn.disabled=false;
+    const gridCard=document.querySelector('.pokemon-card[data-id="'+CSS.escape(modalPoke.id)+'"]');
+    if(gridCard&&!gridCard.querySelector('.card-icon')){const b=document.createElement('div');b.className='card-icon';b.textContent='🃏';gridCard.appendChild(b)}
+    isLocalChange=true;await saveAll();renderModalCardSection();
+  });
+  document.getElementById('card-url-input').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('card-url-save').click()});
+}
+
 function fieldCell(label,value,cls=''){
   const empty=!value;
   return '<div class="card-field">'
