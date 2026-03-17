@@ -130,6 +130,12 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 .card-mini-btn:active{opacity:.7}
 .card-mini-btn.change{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
 .card-mini-btn.del{background:rgba(255,60,60,.1);color:rgba(255,100,100,.8)}
+.card-meta-top{display:flex;justify-content:space-between;align-items:center;padding:8px 2px 4px}
+.card-meta-set{font-size:12px;font-weight:700;color:rgba(255,255,255,.6)}
+.card-meta-num{font-size:11px;font-weight:700;color:rgba(255,255,255,.35);font-family:monospace}
+.card-meta-bot{display:flex;justify-content:space-between;align-items:center;padding:2px 2px 10px}
+.card-meta-rarity{font-size:11px;font-weight:700;color:var(--yellow);opacity:.8}
+.card-meta-artist{font-size:10px;color:rgba(255,255,255,.3);font-weight:600}
 /* URL input — vertical */
 .card-url-input{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:white;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;outline:none;transition:border-color .2s;box-sizing:border-box}
 .card-url-input::placeholder{color:rgba(255,255,255,.3)}
@@ -286,8 +292,9 @@ const ALT_FORMS = [
   { key:'jellicent-f',           name:'Jellicent',   formLabel:'Hembra',           sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/female/593.png',  gen:5, baseId:'593',  type:'family' },
   { key:'kyurem-white',          name:'Kyurem',      formLabel:'Kyurem Blanco',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10023.png', gen:5,      baseId:'646',  type:'family' },
   { key:'kyurem-black',          name:'Kyurem',      formLabel:'Kyurem Negro',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10022.png', gen:5,      baseId:'646',  type:'family' },
-  { key:'keldeo-resolute',       name:'Keldeo',      formLabel:'Forma Resolucion', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10024.png', gen:5,      baseId:'647',  type:'family' },
+  { key:'keldeo-resolute',       name:'Keldeo',      formLabel:'Forma Resolucion', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10025.png', gen:5,      baseId:'647',  type:'family' },
   { key:'meloetta-pirouette',    name:'Meloetta',    formLabel:'Forma Pirouette',  sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10018.png', gen:5,      baseId:'648',  type:'family' },
+  { key:'keldeo-resolute',       name:'Keldeo',      formLabel:'Forma Resolucion', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10025.png', gen:5,      baseId:'647',  type:'family' },
 
   // ── GEN 6 — formas family ──
   { key:'zygarde-10',            name:'Zygarde',     formLabel:'Forma 10%',        sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10118.png', gen:6,      baseId:'718',  type:'family' },
@@ -340,7 +347,8 @@ const ALT_FORMS = [
   // ── GEN 8 — formas family ──
   { key:'indeedee-f',            name:'Indeedee',    formLabel:'Hembra',           sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10186.png', gen:8,      baseId:'876',  type:'family' },
   { key:'morpeko-hangry',        name:'Morpeko',     formLabel:'Modo Famelico',    sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10187.png', gen:8,      baseId:'877',  type:'family' },
-  { key:'toxtricity-low-key',    name:'Toxtricity',  formLabel:'Forma Grave',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10184.png', gen:8,      baseId:'849',  type:'family' },
+  { key:'toxtricity-low-key',    name:'Toxtricity',  formLabel:'Baja Tension',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/849-low-key.png', gen:8,      baseId:'849',  type:'family' },
+  { key:'toxtricity-low-key',     name:'Toxtricity',  formLabel:'Baja Energia',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10188.png', gen:8,      baseId:'849',  type:'family' },
   { key:'urshifu-rapid',         name:'Urshifu',     formLabel:'Golpe Rapido',     sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10191.png', gen:8,      baseId:'892',  type:'family' },
   { key:'calyrex-ice',           name:'Calyrex',     formLabel:'Jinete de Hielo',  sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10193.png', gen:8,      baseId:'898',  type:'family' },
   { key:'calyrex-shadow',        name:'Calyrex',     formLabel:'Jinete Espectral', sprite:'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10194.png', gen:8,      baseId:'898',  type:'family' },
@@ -621,10 +629,21 @@ function renderModalCardSection(){
   if(!modalPoke)return;
   const saved=tcgCards[modalPoke.id];
   const el=document.getElementById('modal-card-content');
-  if(saved?.imageUrl){
-    el.innerHTML='<div class="card-img-wrap">'
-      +'<img class="card-saved-full" id="card-full" src="'+saved.imageUrl+'" alt="Carta TCG" onerror="this.style.display=&quot;none&quot;">'
-      +'</div>'
+  if(saved&&(saved.imageUrl||saved.serebiiUrl)){
+    // Build metadata lines
+    const numStr=saved.number?(saved.total?saved.number+'/'+saved.total:'#'+saved.number):'';
+    const rarityStr=saved.rarity?raritySymbol(saved.rarity):'';
+    const artistStr=saved.artist?'✏ '+saved.artist:'';
+
+    const imgHtml=saved.imageUrl
+      ?'<img class="card-saved-full" id="card-full" src="'+saved.imageUrl+'" alt="Carta TCG" onerror="this.style.display=&quot;none&quot;">'
+      :'<div style="text-align:center;padding:20px 0;color:rgba(255,255,255,.3);font-size:13px">Sin imagen disponible</div>';
+
+    const metaTop=(saved.setName||numStr)?'<div class="card-meta-top">'+(saved.setName?'<span class="card-meta-set">'+saved.setName+'</span>':'')+(numStr?'<span class="card-meta-num">'+numStr+'</span>':'')+'</div>':'';
+    const metaBot=(rarityStr||artistStr)?'<div class="card-meta-bot">'+(rarityStr?'<span class="card-meta-rarity">'+rarityStr+'</span>':'')+(artistStr?'<span class="card-meta-artist">'+artistStr+'</span>':'')+'</div>':'';
+
+    el.innerHTML='<div class="card-img-wrap">'+imgHtml+'</div>'
+      +metaTop+metaBot
       +'<div class="card-saved-btns">'
       +'<button class="card-mini-btn change" id="card-btn-change">Cambiar carta</button>'
       +'<button class="card-mini-btn del" id="card-btn-del">Quitar carta</button>'
@@ -640,18 +659,92 @@ function renderModalCardSection(){
   }
 }
 
+// Detecta si el link es de Serebii y extrae set/número
+function parseSerebiiUrl(url){
+  const m=url.match(/serebii\.net\/card\/([^/]+)\/0*(\d+)\.shtml/i);
+  if(m)return{setName:m[1],number:m[2]};
+  return null;
+}
+
+// Rareza → símbolo TCG
+function raritySymbol(rarity){
+  if(!rarity)return '';
+  const r=rarity.toLowerCase();
+  if(r.includes('amazing'))return '✦ Amazing Rare';
+  if(r.includes('hyper'))return '✦✦ Hyper Rare';
+  if(r.includes('special illustration'))return '✦✦ Special Illustration Rare';
+  if(r.includes('illustration'))return '✦ Illustration Rare';
+  if(r.includes('ultra'))return '◆◆◆◆ Ultra Rare';
+  if(r.includes('double rare')||r.includes('rare holo v'))return '◆◆ Double Rare';
+  if(r.includes('shiny vault')||r.includes('shiny rare'))return '✦ Shiny Rare';
+  if(r.includes('rare holo ex')||r.includes('rare holo gx')||r.includes('rare holo v'))return '◆◆ Rare Holo';
+  if(r.includes('rare holo'))return '◆◆ Rare Holo';
+  if(r.includes('rare ex')||r.includes('rare gx'))return '◆◆ Rare';
+  if(r.includes('promo'))return '✦ Promo';
+  if(r==='rare')return '◆◆ Rare';
+  if(r==='uncommon')return '◆ Uncommon';
+  if(r==='common')return '○ Common';
+  return rarity;
+}
+
+// Busca la carta en la API de PokémonTCG por nombre de set y número
+async function fetchTcgCardBySerebii(setName,number){
+  try{
+    const query=encodeURIComponent('set.name:"'+setName+'" number:'+number);
+    const res=await fetch('https://api.pokemontcg.io/v2/cards?q='+query+'&pageSize=1');
+    if(!res.ok)throw new Error('API error');
+    const data=await res.json();
+    if(data.data&&data.data.length>0)return data.data[0];
+    return null;
+  }catch(e){console.error(e);return null;}
+}
+
 function showUrlInput(container){
   const el=container||document.getElementById('modal-card-content');
-  el.innerHTML='<input class="card-url-input" id="card-url-input" type="url" placeholder="Pega el link directo a la imagen de la carta que tienes" autocomplete="off">'
+  el.innerHTML='<input class="card-url-input" id="card-url-input" type="url" placeholder="Link de Serebii o imagen directa" autocomplete="off">'
     +'<button class="card-url-save" id="card-url-save">Guardar</button>'
-    +'<div class="card-url-hint">El link debe apuntar directamente a la imagen</div>';
+    +'<div class="card-url-hint">Pega el link de serebii.net/card/... o un link directo a la imagen</div>';
+
   document.getElementById('card-url-save').addEventListener('click',async()=>{
     const url=document.getElementById('card-url-input').value.trim();
     if(!url)return;
-    tcgCards[modalPoke.id]={imageUrl:url};
+
+    const btn=document.getElementById('card-url-save');
+    btn.textContent='Buscando...';btn.disabled=true;
+
+    const serebii=parseSerebiiUrl(url);
+    if(serebii){
+      // Es link de Serebii — buscar en API
+      const card=await fetchTcgCardBySerebii(serebii.setName,serebii.number);
+      if(card){
+        const num=card.number?String(card.number).padStart(3,'0'):serebii.number;
+        const total=card.set?.printedTotal?String(card.set.printedTotal):'';
+        tcgCards[modalPoke.id]={
+          imageUrl:    card.images?.large||card.images?.small||'',
+          setName:     card.set?.name||serebii.setName,
+          number:      num,
+          total:       total,
+          artist:      card.artist||'',
+          rarity:      card.rarity||'',
+          setSymbol:   card.set?.images?.symbol||'',
+          serebiiUrl:  url,
+        };
+        showToast('Carta encontrada: '+card.name);
+      } else {
+        // API no encontró — guardar solo el link de serebii como referencia
+        tcgCards[modalPoke.id]={imageUrl:'',setName:serebii.setName,number:serebii.number,serebiiUrl:url};
+        showToast('No se encontró imagen automática');
+      }
+    } else {
+      // Link directo a imagen
+      tcgCards[modalPoke.id]={imageUrl:url,setName:'',number:'',artist:''};
+      showToast('Carta guardada!');
+    }
+
+    btn.textContent='Guardar';btn.disabled=false;
     const gridCard=document.querySelector('.pokemon-card[data-id="'+CSS.escape(modalPoke.id)+'"]');
     if(gridCard&&!gridCard.querySelector('.card-icon')){const b=document.createElement('div');b.className='card-icon';b.textContent='🃏';gridCard.appendChild(b)}
-    isLocalChange=true;await saveAll();showToast('Carta guardada!');renderModalCardSection();
+    isLocalChange=true;await saveAll();renderModalCardSection();
   });
   document.getElementById('card-url-input').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('card-url-save').click()});
 }
