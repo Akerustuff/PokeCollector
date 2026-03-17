@@ -180,7 +180,7 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
       <div class="pokeball"></div>
       <div>
         <div class="logo-text">PokeCol</div>
-        <div class="logo-sub">Coleccion compartida</div>
+        <div class="logo-sub">Colección compartida</div>
       </div>
     </div>
     <div class="header-right">
@@ -192,7 +192,7 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
     </div>
   </div>
   <div class="search-row">
-    <input class="search-input" type="search" id="search" placeholder="Buscar Pokemon..." autocomplete="off">
+    <input class="search-input" type="search" id="search" placeholder="Buscar Pokémon..." autocomplete="off">
     <button class="btn-filter" id="btn-missing">Faltan</button>
     <button class="btn-filter" id="btn-mark-all">Todos</button>
   </div>
@@ -254,16 +254,16 @@ const db     = getFirestore(app);
 const colRef = doc(db, 'coleccion', 'principal');
 
 const GENERATIONS = [
-  { id:1,       name:'Generacion I',    region:'Kanto',   range:[1,151] },
-  { id:2,       name:'Generacion II',   region:'Johto',   range:[152,251] },
-  { id:3,       name:'Generacion III',  region:'Hoenn',   range:[252,386] },
-  { id:4,       name:'Generacion IV',   region:'Sinnoh',  range:[387,493] },
-  { id:5,       name:'Generacion V',    region:'Teselia', range:[494,649] },
-  { id:6,       name:'Generacion VI',   region:'Kalos',   range:[650,721] },
-  { id:7,       name:'Generacion VII',  region:'Alola',   range:[722,809] },
-  { id:8,       name:'Generacion VIII', region:'Galar',   range:[810,898] },
+  { id:1,       name:'Generación I',    region:'Kanto',   range:[1,151] },
+  { id:2,       name:'Generación II',   region:'Johto',   range:[152,251] },
+  { id:3,       name:'Generación III',  region:'Hoenn',   range:[252,386] },
+  { id:4,       name:'Generación IV',   region:'Sinnoh',  range:[387,493] },
+  { id:5,       name:'Generación V',    region:'Teselia', range:[494,649] },
+  { id:6,       name:'Generación VI',   region:'Kalos',   range:[650,721] },
+  { id:7,       name:'Generación VII',  region:'Alola',   range:[722,809] },
+  { id:8,       name:'Generación VIII', region:'Galar',   range:[810,898] },
   { id:'hisui', name:'Hisui',           region:'Hisui',   range:[899,905] },
-  { id:9,       name:'Generacion IX',   region:'Paldea',  range:[906,1025] },
+  { id:9,       name:'Generación IX',   region:'Paldea',  range:[906,1025] },
 ];
 
 // type: 'family' = formas del mismo Pokemon (aparecen junto al base)
@@ -558,7 +558,7 @@ function cardHTML(p){
 function renderContent(){
   const content=document.getElementById('content');
   const filtered=getFiltered();
-  if(filtered.length===0){content.innerHTML='<div class="empty-state"><div class="ei">&#128269;</div><p>No se encontraron Pokemon</p></div>';updateGlobalCount();return}
+  if(filtered.length===0){content.innerHTML='<div class="empty-state"><div class="ei">&#128269;</div><p>No se encontraron Pokémon</p></div>';updateGlobalCount();return}
   const byGen={};
   for(const p of filtered){
     const gk=String(p.gen);
@@ -610,7 +610,7 @@ async function toggleCollected(card){
   const name=poke?(poke.formLabel?poke.name+' ('+poke.formLabel+')':poke.name):id;
   isLocalChange=true;
   if(collected.has(id)){collected.delete(id);card.classList.remove('collected');card.querySelector('.check-btn').textContent='';showToast(name+' eliminado')}
-  else{collected.add(id);card.classList.add('collected');card.querySelector('.check-btn').textContent='v';showToast(name+' capturado!')}
+  else{collected.add(id);card.classList.add('collected');card.querySelector('.check-btn').textContent='v';showToast(name+' ¡capturado!')}
   if(filterMissing&&!collected.has(id))card.remove();
   updateGlobalCount();updateGenProgress(poke?.gen);
   await saveAll();
@@ -694,11 +694,11 @@ function showUrlInput(container){
         showToast('Carta encontrada: '+card.name);
       } else {
         tcgCards[modalPoke.id]={imageUrl:'',setName:serebii.setName,number:serebii.number,serebiiUrl:url};
-        showToast('Set no disponible en la API aun — guardado sin imagen');
+        showToast('Set no disponible en la API aún — guardado sin imagen');
       }
     } else {
       tcgCards[modalPoke.id]={imageUrl:url,setName:'',number:'',total:'',artist:'',rarity:''};
-      showToast('Carta guardada!');
+      showToast('¡Carta guardada!');
     }
 
     btn.textContent='Guardar';btn.disabled=false;
@@ -730,27 +730,21 @@ function renderModalCardSection(){
       :'<div style="text-align:center;padding:16px 0;color:rgba(255,255,255,.25);font-size:13px">Sin imagen</div>';
 
     const lang=saved.lang||'en';
-    const langFlag={'en':'&#127482;&#127480;','es':'&#127464;&#127473;','pt':'&#127463;&#127479;'};
 
     el.innerHTML='<div class="card-img-wrap">'+imgHtml+'</div>'
       +'<div class="card-info-header">'
-      +'<span class="card-info-title">Informacion de la carta</span>'
+      +'<span class="card-info-title">Información de la carta</span>'
       +'<button class="card-edit-btn" id="card-btn-edit">&#9998; Editar</button>'
       +'</div>'
       +'<div class="card-fields">'
       +fieldCell('Set',saved.setName)
       +fieldCell('Rareza',rarityStr,'rarity')
-      +fieldCell('Numero',numStr,'num')
+      +fieldCell('Número',numStr,'num')
       +fieldCell('Ilustrador',saved.artist)
       +'<div class="card-field" style="grid-column:1/-1">'
       +'<span class="card-field-label">Idioma</span>'
-      +'<div class="lang-select-wrap">'
-      +'<span class="lang-flag" id="lang-flag">'+langFlag[lang]+'</span>'
-      +'<select class="lang-select" id="lang-select">'
-      +'<option value="en"'+(lang==="en"?" selected":"")+'">Ingles</option>'
-      +'<option value="es"'+(lang==="es"?" selected":"")+'">Espanol</option>'
-      +'<option value="pt"'+(lang==="pt"?" selected":"")+'">Portugues</option>'
-      +'</select></div></div>'
+      +'<span class="card-field-value">'+({'en':'Inglés','es':'Español','pt':'Português'}[lang]||'Inglés')+'</span>'
+      +'</div>'
       +'</div>'
       +'<div class="card-saved-btns">'
       +'<button class="card-mini-btn change" id="card-btn-change">Cambiar imagen</button>'
@@ -761,13 +755,7 @@ function renderModalCardSection(){
     document.getElementById('card-btn-change').addEventListener('click',()=>showUrlInput());
 
     // Lang select
-    document.getElementById('lang-select').addEventListener('change',async e=>{
-      const lang=e.target.value;
-      const flags={'en':'&#127482;&#127480;','es':'&#127464;&#127473;','pt':'&#127463;&#127479;'};
-      document.getElementById('lang-flag').innerHTML=flags[lang];
-      tcgCards[modalPoke.id]={...tcgCards[modalPoke.id],lang};
-      isLocalChange=true;await saveAll();
-    });
+    
 
     document.getElementById('card-btn-del').addEventListener('click',async()=>{
       delete tcgCards[modalPoke.id];
@@ -788,7 +776,7 @@ function showEditForm(){
   el.innerHTML='<div class="card-edit-form">'
     +'<div class="card-edit-field"><label class="card-edit-label">Set</label>'
     +'<input class="card-edit-input" id="edit-set" placeholder="Ej: 151" value="'+(saved.setName||'')+'"></div>'
-    +'<div class="card-edit-field"><label class="card-edit-label">Numero</label>'
+    +'<div class="card-edit-field"><label class="card-edit-label">Número</label>'
     +'<input class="card-edit-input" id="edit-num" placeholder="Ej: 004/165" value="'+numStr+'"></div>'
     +'<div class="card-edit-field"><label class="card-edit-label">Rareza</label>'
     +'<input class="card-edit-input" id="edit-rarity" placeholder="Ej: Common, Rare Holo..." value="'+(saved.rarity||'')+'"></div>'
@@ -796,9 +784,9 @@ function showEditForm(){
     +'<input class="card-edit-input" id="edit-artist" placeholder="Nombre del ilustrador" value="'+(saved.artist||'')+'"></div>'
     +'<div class="card-edit-field"><label class="card-edit-label">Idioma</label>'
     +'<select class="card-edit-input" id="edit-lang">'
-    +'<option value="en"'+(saved.lang==='en'||!saved.lang?' selected':'')+'">Ingles (🇺🇸)</option>'
-    +'<option value="es"'+(saved.lang==='es'?' selected':'')+'">Espanol (🇨🇱)</option>'
-    +'<option value="pt"'+(saved.lang==='pt'?' selected':'')+'">Portugues (🇧🇷)</option>'
+    +'<option value="en"'+(saved.lang==='en'||!saved.lang?' selected':'')+'">Inglés</option>'
+    +'<option value="es"'+(saved.lang==='es'?' selected':'')+'">Español</option>'
+    +'<option value="pt"'+(saved.lang==='pt'?' selected':'')+'">Português</option>'
     +'</select></div>'
     +'<div class="card-edit-actions">'
     +'<button class="card-edit-save" id="edit-save">Guardar</button>'
@@ -818,9 +806,9 @@ function showEditForm(){
       total,
       rarity:  document.getElementById('edit-rarity').value.trim(),
       artist:  document.getElementById('edit-artist').value.trim(),
-      lang:    document.getElementById('edit-lang').value,
+      lang:    document.getElementById('edit-lang')?.value||saved.lang||'en',
     };
-    isLocalChange=true;await saveAll();showToast('Informacion actualizada');renderModalCardSection();
+    isLocalChange=true;await saveAll();showToast('Información actualizada');renderModalCardSection();
   });
 }
 
@@ -840,7 +828,7 @@ document.getElementById('modal-collect-btn').addEventListener('click',async()=>{
   else{
     const id=modalPoke.id;const name=modalPoke.formLabel?modalPoke.name+' ('+modalPoke.formLabel+')':modalPoke.name;
     isLocalChange=true;
-    if(collected.has(id)){collected.delete(id);showToast(name+' eliminado')}else{collected.add(id);showToast(name+' capturado!')}
+    if(collected.has(id)){collected.delete(id);showToast(name+' eliminado')}else{collected.add(id);showToast(name+' ¡capturado!')}
     updateGlobalCount();updateGenProgress(modalPoke.gen);await saveAll();renderModalCollectBtn();
   }
 });
