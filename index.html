@@ -105,22 +105,20 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 .modal-sheet{background:#181818;border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:92dvh;display:flex;flex-direction:column;box-shadow:0 -8px 40px rgba(0,0,0,.7);border-top:1px solid rgba(255,255,255,.07);animation:sheetUp .28s cubic-bezier(.32,.72,0,1);overflow:hidden;will-change:transform}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .modal-handle{width:40px;height:4px;background:rgba(255,255,255,.18);border-radius:2px;margin:12px auto 0;flex-shrink:0}
-.modal-header{display:flex;align-items:center;gap:14px;padding:14px 18px 12px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.07)}
-.modal-sprite{width:64px;height:64px;image-rendering:pixelated;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3));flex-shrink:0}
-.modal-title-wrap{flex:1}
-.modal-poke-num{font-size:11px;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:1px}
-.modal-poke-name{font-family:'Bangers',cursive;font-size:26px;color:var(--yellow);letter-spacing:1px;line-height:1}
-.modal-poke-form{font-size:11px;color:rgba(255,255,255,.45);font-weight:700;margin-top:2px}
-.modal-close{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.modal-header{display:flex;align-items:center;gap:10px;padding:12px 14px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.07)}
+.modal-pb-btn{width:44px;height:44px;border:none;background:none;cursor:pointer;padding:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.modal-pb-btn svg{width:40px;height:40px}
+.modal-sprite{width:52px;height:52px;image-rendering:pixelated;object-fit:contain;flex-shrink:0}
+.modal-title-wrap{flex:1;min-width:0}
+.modal-poke-num{font-size:10px;color:rgba(255,255,255,.35);font-weight:700;letter-spacing:1px}
+.modal-poke-name{font-family:'Bangers',cursive;font-size:24px;color:var(--yellow);letter-spacing:1px;line-height:1.15;white-space:nowrap;transition:font-size .1s}
+.modal-poke-form{font-size:10px;color:rgba(255,255,255,.45);font-weight:700;margin-top:2px;line-height:1.3}
+.modal-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent}
 .modal-close:active{background:rgba(255,255,255,.2)}
 /* Body scrollable */
 .modal-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 18px}
-/* Footer fijo */
-.modal-footer{padding:12px 18px;padding-bottom:max(env(safe-area-inset-bottom,0px),12px);border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
-.modal-collect-btn{width:100%;padding:14px;border-radius:14px;border:none;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .1s;display:flex;align-items:center;justify-content:center;gap:8px}
-.modal-collect-btn:active{transform:scale(.97)}
-.modal-collect-btn.add{background:var(--yellow);color:var(--dark)}
-.modal-collect-btn.remove{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.12)}
+/* Footer eliminado — acción de captura en el header */
+.modal-collect-btn{display:none}
 
 /* Seccion carta */
 .card-img-wrap{display:flex;justify-content:center;margin-bottom:12px}
@@ -211,22 +209,17 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
   <div class="modal-sheet" id="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-header">
+      <button class="modal-pb-btn" id="modal-pb-btn"></button>
       <img class="modal-sprite" id="modal-sprite" src="" alt="">
       <div class="modal-title-wrap">
         <div class="modal-poke-num"  id="modal-poke-num"></div>
         <div class="modal-poke-name" id="modal-poke-name"></div>
         <div class="modal-poke-form" id="modal-poke-form"></div>
       </div>
-      <button class="modal-close" id="modal-close">X</button>
+      <button class="modal-close" id="modal-close">✕</button>
     </div>
     <div class="modal-body">
       <div id="modal-card-content"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="modal-collect-btn add" id="modal-collect-btn">
-        <span id="modal-collect-icon">+</span>
-        <span id="modal-collect-text">Marcar como capturado</span>
-      </button>
     </div>
   </div>
 </div>
@@ -618,6 +611,19 @@ async function toggleCollected(card){
 }
 
 // MODAL
+function fitModalName(){
+  const el=document.getElementById('modal-poke-name');
+  if(!el)return;
+  const wrap=el.closest('.modal-title-wrap');
+  if(!wrap)return;
+  let size=24;
+  el.style.fontSize=size+'px';
+  while(el.scrollWidth>wrap.clientWidth&&size>12){
+    size-=1;
+    el.style.fontSize=size+'px';
+  }
+}
+
 function openModal(poke){
   modalPoke=poke;
   const spriteUrl=poke.sprite||('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'+poke.id+'.png');
@@ -632,17 +638,30 @@ function openModal(poke){
   renderModalCardSection();
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow='hidden';
+  requestAnimationFrame(fitModalName);
 }
 
 function closeModal(){document.getElementById('modal-overlay').classList.remove('open');document.body.style.overflow='';modalPoke=null}
 
+const PB_EMPTY=`<svg viewBox="0 0 40 40" fill="none">
+  <circle cx="20" cy="20" r="18.5" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+  <path d="M1.5 20h13.5M25 20h13.5" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+  <circle cx="20" cy="20" r="5" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" fill="rgba(255,255,255,0.05)"/>
+</svg>`;
+const PB_FULL=`<svg viewBox="0 0 40 40" fill="none">
+  <path d="M1.5 20 A18.5 18.5 0 0 1 38.5 20 Z" fill="#CC0000"/>
+  <path d="M1.5 20 A18.5 18.5 0 0 0 38.5 20 Z" fill="white"/>
+  <circle cx="20" cy="20" r="18.5" stroke="#555" stroke-width="1.5"/>
+  <path d="M1.5 20h13.5M25 20h13.5" stroke="#555" stroke-width="1.5"/>
+  <circle cx="20" cy="20" r="5" fill="white" stroke="#555" stroke-width="1.5"/>
+  <circle cx="20" cy="20" r="2.5" fill="#ddd"/>
+</svg>`;
+
 function renderModalCollectBtn(){
   if(!modalPoke)return;
   const isCol=collected.has(modalPoke.id);
-  const btn=document.getElementById('modal-collect-btn');
-  btn.className='modal-collect-btn '+(isCol?'remove':'add');
-  document.getElementById('modal-collect-icon').textContent=isCol?'X':'+';
-  document.getElementById('modal-collect-text').textContent=isCol?'Quitar de capturados':'Marcar como capturado';
+  const btn=document.getElementById('modal-pb-btn');
+  if(btn)btn.innerHTML=isCol?PB_FULL:PB_EMPTY;
 }
 
 function raritySymbol(rarity){
@@ -908,7 +927,7 @@ document.getElementById('card-viewer-overlay').addEventListener('click',e=>{if(e
 // MODAL EVENTS
 document.getElementById('modal-close').addEventListener('click',closeModal);
 document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal()});
-document.getElementById('modal-collect-btn').addEventListener('click',async()=>{
+document.getElementById('modal-pb-btn').addEventListener('click',async()=>{
   if(!modalPoke)return;
   const card=document.querySelector('.pokemon-card[data-id="'+CSS.escape(modalPoke.id)+'"]');
   if(card){await toggleCollected(card)}
