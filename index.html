@@ -1052,12 +1052,19 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.s
 // Mostrar versión del SW activo
 (async()=>{
   try{
-    const keys=await caches.keys();
-    const key=keys.find(k=>k.startsWith('pokedex-'));
-    if(key){
-      const el=document.getElementById('app-version');
-      if(el)el.textContent=key.replace('pokedex-','');
+    const el=document.getElementById('app-version');
+    if(!el)return;
+    // Intenta desde caches primero
+    if('caches' in window){
+      const keys=await caches.keys();
+      const key=keys.find(k=>k.startsWith('pokedex-'));
+      if(key){el.textContent=key.replace('pokedex-','');return;}
     }
+    // Fallback: leer el sw.js y extraer CACHE_NAME
+    const res=await fetch('/pokecollector/sw.js?t='+Date.now());
+    const txt=await res.text();
+    const m=txt.match(/CACHE_NAME\s*=\s*'pokedex-(v\d+)'/);
+    if(m)el.textContent=m[1];
   }catch(e){}
 })();
 
