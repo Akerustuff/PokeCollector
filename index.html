@@ -130,12 +130,28 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 .card-mini-btn:active{opacity:.7}
 .card-mini-btn.change{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
 .card-mini-btn.del{background:rgba(255,60,60,.1);color:rgba(255,100,100,.8)}
-.card-meta-top{display:flex;justify-content:space-between;align-items:center;padding:8px 2px 4px}
-.card-meta-set{font-size:12px;font-weight:700;color:rgba(255,255,255,.6)}
-.card-meta-num{font-size:11px;font-weight:700;color:rgba(255,255,255,.35);font-family:monospace}
-.card-meta-bot{display:flex;justify-content:space-between;align-items:center;padding:2px 2px 10px}
-.card-meta-rarity{font-size:11px;font-weight:700;color:var(--yellow);opacity:.8}
-.card-meta-artist{font-size:10px;color:rgba(255,255,255,.3);font-weight:600}
+.card-info-header{display:flex;align-items:center;justify-content:space-between;margin:14px 0 8px}
+.card-info-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.card-edit-btn{display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px;border:1.5px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.5);font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s}
+.card-edit-btn:active{background:rgba(255,255,255,.08)}
+.card-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.card-field{display:flex;flex-direction:column;gap:3px}
+.card-field-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.card-field-value{font-size:13px;font-weight:600;color:rgba(255,255,255,.8);line-height:1.3}
+.card-field-value.num{font-family:monospace;font-size:12px}
+.card-field-value.rarity{color:var(--yellow);opacity:.9}
+.card-field-value.empty{color:rgba(255,255,255,.2);font-style:italic;font-size:12px}
+/* Edit form */
+.card-edit-form{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.card-edit-field{display:flex;flex-direction:column;gap:4px}
+.card-edit-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.card-edit-input{padding:10px 12px;border-radius:10px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:white;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;outline:none;transition:border-color .2s;width:100%;box-sizing:border-box}
+.card-edit-input::placeholder{color:rgba(255,255,255,.2)}
+.card-edit-input:focus{border-color:var(--yellow)}
+.card-edit-actions{display:flex;gap:8px;margin-top:4px}
+.card-edit-save{flex:1;padding:12px;border-radius:10px;border:none;background:var(--yellow);color:var(--dark);font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.card-edit-save:active{opacity:.8}
+.card-edit-cancel{padding:12px 16px;border-radius:10px;border:1.5px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.4);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent}
 /* URL input — vertical */
 .card-url-input{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:white;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;outline:none;transition:border-color .2s;box-sizing:border-box}
 .card-url-input::placeholder{color:rgba(255,255,255,.3)}
@@ -625,29 +641,43 @@ function renderModalCollectBtn(){
   document.getElementById('modal-collect-text').textContent=isCol?'Quitar de capturados':'Marcar como capturado';
 }
 
+function fieldCell(label,value,cls=''){
+  const empty=!value;
+  return '<div class="card-field">'
+    +'<span class="card-field-label">'+label+'</span>'
+    +'<span class="card-field-value'+(cls?' '+cls:'')+(empty?' empty':'')+'">'+( value||'—')+'</span>'
+    +'</div>';
+}
+
 function renderModalCardSection(){
   if(!modalPoke)return;
   const saved=tcgCards[modalPoke.id];
   const el=document.getElementById('modal-card-content');
-  if(saved&&(saved.imageUrl||saved.serebiiUrl)){
-    // Build metadata lines
-    const numStr=saved.number?(saved.total?saved.number+'/'+saved.total:'#'+saved.number):'';
+  if(saved&&(saved.imageUrl||saved.serebiiUrl||saved.setName)){
+    const numStr=saved.number?(saved.total?saved.number+'/'+saved.total:saved.number):'';
     const rarityStr=saved.rarity?raritySymbol(saved.rarity):'';
-    const artistStr=saved.artist?'✏ '+saved.artist:'';
 
     const imgHtml=saved.imageUrl
-      ?'<img class="card-saved-full" id="card-full" src="'+saved.imageUrl+'" alt="Carta TCG" onerror="this.style.display=&quot;none&quot;">'
-      :'<div style="text-align:center;padding:20px 0;color:rgba(255,255,255,.3);font-size:13px">Sin imagen disponible</div>';
-
-    const metaTop=(saved.setName||numStr)?'<div class="card-meta-top">'+(saved.setName?'<span class="card-meta-set">'+saved.setName+'</span>':'')+(numStr?'<span class="card-meta-num">'+numStr+'</span>':'')+'</div>':'';
-    const metaBot=(rarityStr||artistStr)?'<div class="card-meta-bot">'+(rarityStr?'<span class="card-meta-rarity">'+rarityStr+'</span>':'')+(artistStr?'<span class="card-meta-artist">'+artistStr+'</span>':'')+'</div>':'';
+      ?'<img class="card-saved-full" src="'+saved.imageUrl+'" alt="Carta TCG" onerror="this.style.display=&quot;none&quot;">'
+      :'<div style="text-align:center;padding:16px 0;color:rgba(255,255,255,.25);font-size:13px">Sin imagen</div>';
 
     el.innerHTML='<div class="card-img-wrap">'+imgHtml+'</div>'
-      +metaTop+metaBot
+      +'<div class="card-info-header">'
+      +'<span class="card-info-title">Informacion de la carta</span>'
+      +'<button class="card-edit-btn" id="card-btn-edit">&#9998; Editar</button>'
+      +'</div>'
+      +'<div class="card-fields">'
+      +fieldCell('Set',saved.setName)
+      +fieldCell('Rareza',rarityStr,'rarity')
+      +fieldCell('Numero',numStr,'num')
+      +fieldCell('Ilustrador',saved.artist)
+      +'</div>'
       +'<div class="card-saved-btns">'
-      +'<button class="card-mini-btn change" id="card-btn-change">Cambiar carta</button>'
+      +'<button class="card-mini-btn change" id="card-btn-change">Cambiar imagen</button>'
       +'<button class="card-mini-btn del" id="card-btn-del">Quitar carta</button>'
       +'</div>';
+
+    document.getElementById('card-btn-edit').addEventListener('click',()=>showEditForm());
     document.getElementById('card-btn-change').addEventListener('click',()=>showUrlInput());
     document.getElementById('card-btn-del').addEventListener('click',async()=>{
       delete tcgCards[modalPoke.id];
@@ -659,201 +689,44 @@ function renderModalCardSection(){
   }
 }
 
-// Detecta si el link es de Serebii y extrae set/número
-function parseSerebiiUrl(url){
-  const m=url.match(/serebii\.net\/card\/([^/]+)\/0*(\d+)\.shtml/i);
-  if(m)return{setName:m[1],number:m[2]};
-  return null;
-}
+function showEditForm(){
+  if(!modalPoke)return;
+  const saved=tcgCards[modalPoke.id]||{};
+  const el=document.getElementById('modal-card-content');
+  const numStr=saved.number?(saved.total?saved.number+'/'+saved.total:saved.number):'';
 
-// Rareza → símbolo TCG
-function raritySymbol(rarity){
-  if(!rarity)return '';
-  const r=rarity.toLowerCase();
-  if(r.includes('amazing'))return '✦ Amazing Rare';
-  if(r.includes('hyper'))return '✦✦ Hyper Rare';
-  if(r.includes('special illustration'))return '✦✦ Special Illustration Rare';
-  if(r.includes('illustration'))return '✦ Illustration Rare';
-  if(r.includes('ultra'))return '◆◆◆◆ Ultra Rare';
-  if(r.includes('double rare')||r.includes('rare holo v'))return '◆◆ Double Rare';
-  if(r.includes('shiny vault')||r.includes('shiny rare'))return '✦ Shiny Rare';
-  if(r.includes('rare holo ex')||r.includes('rare holo gx')||r.includes('rare holo v'))return '◆◆ Rare Holo';
-  if(r.includes('rare holo'))return '◆◆ Rare Holo';
-  if(r.includes('rare ex')||r.includes('rare gx'))return '◆◆ Rare';
-  if(r.includes('promo'))return '✦ Promo';
-  if(r==='rare')return '◆◆ Rare';
-  if(r==='uncommon')return '◆ Uncommon';
-  if(r==='common')return '○ Common';
-  return rarity;
-}
+  el.innerHTML='<div class="card-edit-form">'
+    +'<div class="card-edit-field"><label class="card-edit-label">Set</label>'
+    +'<input class="card-edit-input" id="edit-set" placeholder="Ej: 151" value="'+(saved.setName||'')+'"></div>'
+    +'<div class="card-edit-field"><label class="card-edit-label">Numero</label>'
+    +'<input class="card-edit-input" id="edit-num" placeholder="Ej: 004/165" value="'+numStr+'"></div>'
+    +'<div class="card-edit-field"><label class="card-edit-label">Rareza</label>'
+    +'<input class="card-edit-input" id="edit-rarity" placeholder="Ej: Common, Rare Holo..." value="'+(saved.rarity||'')+'"></div>'
+    +'<div class="card-edit-field"><label class="card-edit-label">Ilustrador</label>'
+    +'<input class="card-edit-input" id="edit-artist" placeholder="Nombre del ilustrador" value="'+(saved.artist||'')+'"></div>'
+    +'<div class="card-edit-actions">'
+    +'<button class="card-edit-save" id="edit-save">Guardar</button>'
+    +'<button class="card-edit-cancel" id="edit-cancel">Cancelar</button>'
+    +'</div></div>';
 
-// Mapa de nombres Serebii → ID de set en la API de PokémonTCG
-// Agregar aquí cuando se encuentre un set que no funciona automáticamente
-const SEREBII_SET_MAP = {
-  // Scarlet & Violet
-  '151':               'sv3pt5',
-  'scarletviolet':     'sv1',
-  'paradoxrift':       'sv4',
-  'temporalforces':    'sv5',
-  'twilightmasquerade':'sv6',
-  'shroudedfresco':    'sv6pt5',
-  'stellarcrown':      'sv7',
-  'surgingrivalssv':   'sv8',
-  // Mega Evolution (2025)
-  'megaevolution':     'meg',
-  // Sword & Shield
-  'swsh1':             'swsh1',
-  'chillinguildset':   'swsh9',
-  'brilliantstars':    'swsh9',
-  'astralradiance':    'swsh10',
-  'pokegocardgame':    'pgo',
-  'lostorigin':        'swsh11',
-  'silvertemsest':     'swsh12',
-  'crownzenith':       'swsh12pt5',
-  // Sun & Moon
-  'sunandsmoonsm1':    'sm1',
-  'guardianrising':    'sm2',
-  'burningshaddows':   'sm3',
-  'crimsoninstason':   'sm35',
-  'ultraprism':        'sm5',
-  'forbiddenlight':    'sm6',
-  'celestialstorm':    'sm7',
-  'dragonmajesty':     'sm75',
-  'lostthunder':       'sm8',
-  'teamup':            'sm9',
-  'detectivepikachu':  'det1',
-  'unbrokenbbonds':    'sm10',
-  'unifiedminds':      'sm11',
-  'hiddenffates':      'sm115',
-  'cosmicelipse':      'sm12',
-  'shininglegends':    'sm35',
-  // XY
-  'xy':                'xy1',
-  'flashfire':         'xy2',
-  'furiosfists':       'xy3',
-  'phantomforces':     'xy4',
-  'primalbattle':      'xy5',
-  'roughesea':         'xy6',
-  'ancientorigins':    'xy7',
-  'breaktrough':       'xy8',
-  'breakpoint':        'xy9',
-  'fatescolide':       'xy10',
-  'steamsiege':        'xy11',
-  'evolutions':        'xy12',
-  'generoussymbol':    'xy12',
-  // Black & White
-  'blackwhite':        'bw1',
-  'emergingpowers':    'bw2',
-  'noblvictories':     'bw3',
-  'nextdestinies':     'bw4',
-  'darkexplorers':     'bw5',
-  'dragonsexalted':    'bw6',
-  'dragonvault':       'bw6',
-  'boundariescrossed': 'bw7',
-  'plasmafreeze':      'bw9',
-  'plasmastore':       'bw10',
-  'legendarytreasures':'bw11',
-  // Classic sets
-  'base1':             'base1',
-  'base2':             'base2',
-  'base3':             'base3',
-  'base4':             'base4',
-  'jungle':            'jungle',
-  'fossil':            'fossil',
-  'teamrocket':        'base5',
-  'gymheroes':         'gym1',
-  'gymchallenge':      'gym2',
-  'neo1':              'neo1',
-  'neo2':              'neo2',
-  'neo3':              'neo3',
-  'neo4':              'neo4',
-};
-
-// Busca la carta en la API de PokémonTCG por nombre de set y número
-async function fetchTcgCardBySerebii(setName,number){
-  try{
-    // Primero intentar con el mapa de IDs conocidos
-    const mappedId=SEREBII_SET_MAP[setName.toLowerCase()];
-    let res, data;
-
-    if(mappedId){
-      // Buscar directamente por ID de set
-      const query=encodeURIComponent('set.id:'+mappedId+' number:'+number);
-      res=await fetch('https://api.pokemontcg.io/v2/cards?q='+query+'&pageSize=1');
-      if(res.ok){
-        data=await res.json();
-        if(data.data&&data.data.length>0)return data.data[0];
-      }
-    }
-
-    // Fallback: buscar por nombre de set
-    const query2=encodeURIComponent('set.name:"'+setName+'" number:'+number);
-    res=await fetch('https://api.pokemontcg.io/v2/cards?q='+query2+'&pageSize=1');
-    if(!res.ok)throw new Error('API error');
-    data=await res.json();
-    if(data.data&&data.data.length>0)return data.data[0];
-
-    // Segundo fallback: buscar solo por número y parte del nombre del set
-    const setNameClean=setName.replace(/[^a-z0-9]/gi,' ').trim();
-    const query3=encodeURIComponent('set.name:*'+setNameClean+'* number:'+number);
-    res=await fetch('https://api.pokemontcg.io/v2/cards?q='+query3+'&pageSize=1');
-    if(!res.ok)return null;
-    data=await res.json();
-    if(data.data&&data.data.length>0)return data.data[0];
-
-    return null;
-  }catch(e){console.error(e);return null;}
-}
-
-function showUrlInput(container){
-  const el=container||document.getElementById('modal-card-content');
-  el.innerHTML='<input class="card-url-input" id="card-url-input" type="url" placeholder="Link de Serebii o imagen directa" autocomplete="off">'
-    +'<button class="card-url-save" id="card-url-save">Guardar</button>'
-    +'<div class="card-url-hint">Pega el link de serebii.net/card/... o un link directo a la imagen</div>';
-
-  document.getElementById('card-url-save').addEventListener('click',async()=>{
-    const url=document.getElementById('card-url-input').value.trim();
-    if(!url)return;
-
-    const btn=document.getElementById('card-url-save');
-    btn.textContent='Buscando...';btn.disabled=true;
-
-    const serebii=parseSerebiiUrl(url);
-    if(serebii){
-      // Es link de Serebii — buscar en API
-      const card=await fetchTcgCardBySerebii(serebii.setName,serebii.number);
-      if(card){
-        const num=card.number?String(card.number).padStart(3,'0'):serebii.number;
-        const total=card.set?.printedTotal?String(card.set.printedTotal):'';
-        tcgCards[modalPoke.id]={
-          imageUrl:    card.images?.large||card.images?.small||'',
-          setName:     card.set?.name||serebii.setName,
-          number:      num,
-          total:       total,
-          artist:      card.artist||'',
-          rarity:      card.rarity||'',
-          setSymbol:   card.set?.images?.symbol||'',
-          serebiiUrl:  url,
-        };
-        showToast('Carta encontrada: '+card.name);
-      } else {
-        // API no encontró — guardar solo el link de serebii como referencia
-        tcgCards[modalPoke.id]={imageUrl:'',setName:serebii.setName,number:serebii.number,serebiiUrl:url};
-        showToast('No se encontró imagen automática');
-      }
-    } else {
-      // Link directo a imagen
-      tcgCards[modalPoke.id]={imageUrl:url,setName:'',number:'',artist:''};
-      showToast('Carta guardada!');
-    }
-
-    btn.textContent='Guardar';btn.disabled=false;
-    const gridCard=document.querySelector('.pokemon-card[data-id="'+CSS.escape(modalPoke.id)+'"]');
-    if(gridCard&&!gridCard.querySelector('.card-icon')){const b=document.createElement('div');b.className='card-icon';b.textContent='🃏';gridCard.appendChild(b)}
-    isLocalChange=true;await saveAll();renderModalCardSection();
+  document.getElementById('edit-cancel').addEventListener('click',()=>renderModalCardSection());
+  document.getElementById('edit-save').addEventListener('click',async()=>{
+    const numRaw=document.getElementById('edit-num').value.trim();
+    let number='',total='';
+    if(numRaw.includes('/')){const p=numRaw.split('/');number=p[0].replace(/^0+/,'')||p[0];total=p[1];}
+    else{number=numRaw;}
+    tcgCards[modalPoke.id]={
+      ...saved,
+      setName: document.getElementById('edit-set').value.trim(),
+      number,
+      total,
+      rarity:  document.getElementById('edit-rarity').value.trim(),
+      artist:  document.getElementById('edit-artist').value.trim(),
+    };
+    isLocalChange=true;await saveAll();showToast('Informacion actualizada');renderModalCardSection();
   });
-  document.getElementById('card-url-input').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('card-url-save').click()});
 }
+
 
 // VISOR CARTA
 function openCardViewer(url){document.getElementById('card-viewer-img').src=url;document.getElementById('card-viewer-overlay').classList.add('open')}
