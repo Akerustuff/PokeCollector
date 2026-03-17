@@ -2,7 +2,7 @@
 // Solo cachea el shell de la app (HTML, fuentes).
 // Los datos de la colección siempre vienen de Firebase (nunca se cachean aquí).
 
-const CACHE_NAME = 'pokedex-v12';
+const CACHE_NAME = 'pokedex-v13';
 const BASE = '/pokecollector';
 
 const SHELL = [
