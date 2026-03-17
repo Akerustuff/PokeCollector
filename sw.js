@@ -3,7 +3,7 @@
 // Los datos de la colección siempre vienen de Firebase (nunca se cachean aquí).
 
 const CACHE_NAME = 'pokedex-v2';
-const BASE = '/PokeCollector';
+const BASE = '/pokecollector';
 
 const SHELL = [
   `${BASE}/index.html`,
