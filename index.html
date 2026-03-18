@@ -918,6 +918,14 @@ function showUrlInput(container){
 }
 
 
+function fieldCell(label,value,cls=''){
+  const empty=!value;
+  return '<div class="card-field">'
+    +'<span class="card-field-label">'+label+'</span>'
+    +'<span class="card-field-value'+(cls?' '+cls:'')+(empty?' empty':'')+'">'+( value||'—')+'</span>'
+    +'</div>';
+}
+
 function renderModalCardSection(){
   if(!modalPoke)return;
   const saved=tcgCards[modalPoke.id];
