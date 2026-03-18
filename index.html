@@ -1048,7 +1048,27 @@ async function init(){
 init();
 </script>
 <script>
-if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/pokecollector/sw.js').catch(e=>console.warn('SW:',e))})}
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/pokecollector/sw.js').then(reg=>{
+      // Si hay un SW esperando, forzar activación inmediata
+      if(reg.waiting){reg.waiting.postMessage({type:'SKIP_WAITING'});}
+      reg.addEventListener('updatefound',()=>{
+        const newSW=reg.installing;
+        newSW.addEventListener('statechange',()=>{
+          if(newSW.state==='installed'&&navigator.serviceWorker.controller){
+            newSW.postMessage({type:'SKIP_WAITING'});
+          }
+        });
+      });
+    }).catch(e=>console.warn('SW:',e));
+    // Recargar cuando el SW nuevo tome control
+    let refreshing=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+      if(!refreshing){refreshing=true;window.location.reload();}
+    });
+  });
+}
 // Mostrar versión del SW activo
 (async()=>{
   try{

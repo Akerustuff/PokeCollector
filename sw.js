@@ -2,7 +2,7 @@
 // Solo cachea el shell de la app (HTML, fuentes).
 // Los datos de la colección siempre vienen de Firebase (nunca se cachean aquí).
 
-const CACHE_NAME = 'pokedex-v40';
+const CACHE_NAME = 'pokedex-v41';
 const BASE = '/pokecollector';
 
 const SHELL = [
@@ -18,7 +18,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL))
   );
-  self.skipWaiting();
+  self.skipWaiting(); // Tomar control inmediatamente
 });
 
 // ── Activar: borrar caches viejos ──
@@ -62,4 +62,9 @@ self.addEventListener('fetch', event => {
       });
     })
   );
+});
+
+// Forzar activación inmediata cuando se recibe mensaje
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
