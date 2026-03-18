@@ -39,10 +39,15 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 .search-input{flex:1;padding:10px 16px;border-radius:30px;border:2px solid transparent;background:rgba(255,255,255,.15);color:white;font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;outline:none;transition:all .2s}
 .search-input::placeholder{color:rgba(255,255,255,.45)}
 .search-input:focus{background:rgba(255,255,255,.25);border-color:var(--yellow)}
-.btn-filter{padding:10px 14px;border-radius:30px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:white;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;-webkit-tap-highlight-color:transparent}
-.btn-filter.active{background:var(--yellow);color:var(--dark);border-color:var(--yellow-dark)}
-.gen-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:12px;scrollbar-width:none}
-.gen-tabs::-webkit-scrollbar{display:none}
+.menu-btn{width:42px;height:42px;border-radius:24px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;flex-shrink:0}
+.menu-btn.active{background:var(--yellow);border-color:var(--yellow-dark)}
+.menu-dropdown{display:none;flex-direction:column;position:absolute;top:50px;right:0;background:#1E1E1E;border:1px solid rgba(255,255,255,.12);border-radius:14px;overflow:hidden;width:200px;z-index:200}
+.menu-dropdown.open{display:flex}
+.menu-item{display:flex;align-items:center;gap:10px;padding:13px 14px;color:rgba(255,255,255,.8);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;background:transparent;width:100%;text-align:left;-webkit-tap-highlight-color:transparent}
+.menu-item:active{background:rgba(255,255,255,.06)}
+.menu-item.active{color:#FFCC00}
+.menu-sep{height:1px;background:rgba(255,255,255,.08)}
+
 .gen-tab{flex-shrink:0;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,.1);border:2px solid transparent;color:rgba(255,255,255,.7);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
 .gen-tab.active{background:var(--yellow);color:var(--dark);border-color:var(--yellow-dark)}
 
@@ -178,10 +183,17 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 <div class="header">
   <div class="header-top">
     <div class="logo">
-      <div class="pokeball"></div>
+      <svg width="38" height="38" viewBox="0 0 40 40" fill="none" style="flex-shrink:0">
+        <path d="M1.5 20 A18.5 18.5 0 0 1 38.5 20 Z" fill="#CC0000"/>
+        <path d="M1.5 20 A18.5 18.5 0 0 0 38.5 20 Z" fill="white"/>
+        <circle cx="20" cy="20" r="18.5" stroke="rgba(0,0,0,0.25)" stroke-width="1.5"/>
+        <path d="M1.5 20h13.5M25 20h13.5" stroke="rgba(0,0,0,0.25)" stroke-width="1.5"/>
+        <circle cx="20" cy="20" r="5" fill="white" stroke="rgba(0,0,0,0.25)" stroke-width="1.5"/>
+        <circle cx="20" cy="20" r="2.5" fill="#ddd"/>
+      </svg>
       <div>
-        <div class="logo-text">PokeCol</div>
-        <div class="logo-sub">Colección compartida</div>
+        <div class="logo-text">Caco Collector</div>
+        <div class="logo-sub">Colección compartida <span class="version-badge" id="app-version"></span></div>
       </div>
     </div>
     <div class="header-right">
@@ -194,8 +206,30 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
   </div>
   <div class="search-row">
     <input class="search-input" type="search" id="search" placeholder="Buscar Pokémon..." autocomplete="off">
-    <button class="btn-filter" id="btn-missing">Faltan</button>
-    <button class="btn-filter" id="btn-mark-all">Todos</button>
+    <div style="position:relative;flex-shrink:0">
+      <button class="menu-btn" id="menu-btn">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect x="2" y="3" width="16" height="11" rx="2" stroke="white" stroke-width="1.5"/>
+          <path d="M7 17h6M10 14v3" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="10" cy="8.5" r="2" stroke="white" stroke-width="1.3"/>
+        </svg>
+      </button>
+      <div class="menu-dropdown" id="menu-dropdown">
+        <button class="menu-item" id="btn-missing">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M1.5 8h5M9.5 8h5" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/></svg>
+          Mostrar faltantes
+        </button>
+        <div class="menu-sep"></div>
+        <button class="menu-item" id="btn-mark-all">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Marcar todos
+        </button>
+        <button class="menu-item" id="btn-mark-none">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Desmarcar todos
+        </button>
+      </div>
+    </div>
   </div>
   <div class="gen-tabs" id="gen-tabs">
     <div class="gen-tab active" data-gen="all">Todos</div>
@@ -642,6 +676,7 @@ function openModal(poke){
   const formEl=document.getElementById('modal-poke-form');
   formEl.textContent=poke.formLabel||'';
   formEl.style.display=poke.formLabel?'':'none';
+  warmupTcgApi();
   renderModalCollectBtn();
   renderModalCardSection();
   document.getElementById('modal-overlay').classList.add('open');
@@ -758,12 +793,16 @@ const SEREBII_SET_MAP_FALLBACK={
 };
 
 // Busca la carta en la API de PokémonTCG
+let tcgSearchAbort=null;
+
+function warmupTcgApi(){
+  try{fetch('https://api.pokemontcg.io/v2/cards?q=name:pikachu&pageSize=1',{method:'HEAD'}).catch(()=>{})}catch(e){}
+}
+
 async function fetchTcgCardBySerebii(setName,number,retries=4,onStatus=null){
   const signal=tcgSearchAbort?.signal;
   const base='https://api.pokemontcg.io/v2/cards?pageSize=1&q=';
   const norm=n=>n.toLowerCase().replace(/[^a-z0-9]/g,'');
-
-  // Obtener el ID del set desde el caché dinámico o el fallback
   const sets=tcgSetsCache||SEREBII_SET_MAP_FALLBACK;
   const mappedId=sets[setName.toLowerCase()]||sets[norm(setName)];
 
@@ -797,22 +836,39 @@ async function fetchTcgCardBySerebii(setName,number,retries=4,onStatus=null){
   return null;
 }
 
+
 function showUrlInput(container){
   const el=container||document.getElementById('modal-card-content');
   el.innerHTML='<input class="card-url-input" id="card-url-input" type="url" placeholder="Link de Serebii o imagen directa" autocomplete="off">'
     +'<button class="card-url-save" id="card-url-save">Guardar</button>'
     +'<div class="card-url-hint">Pega el link de serebii.net/card/... o un link directo a la imagen</div>';
 
+  const pbSvg='<svg style="width:16px;height:16px;animation:pbspin 0.8s linear infinite;vertical-align:middle;margin-right:6px" viewBox="0 0 40 40" fill="none"><path d="M1.5 20 A18.5 18.5 0 0 1 38.5 20 Z" fill="#CC0000"/><path d="M1.5 20 A18.5 18.5 0 0 0 38.5 20 Z" fill="white"/><circle cx="20" cy="20" r="18.5" stroke="#555" stroke-width="1.5"/><path d="M1.5 20h13.5M25 20h13.5" stroke="#555" stroke-width="1.5"/><circle cx="20" cy="20" r="5" fill="white" stroke="#555" stroke-width="1.5"/><circle cx="20" cy="20" r="2.5" fill="#ddd"/></svg>';
+
   document.getElementById('card-url-save').addEventListener('click',async()=>{
-    const url=document.getElementById('card-url-input').value.trim();
+    const btn=document.getElementById('card-url-save');
+    const url=document.getElementById('card-url-input')?.value.trim();
     if(!url)return;
 
-    const btn=document.getElementById('card-url-save');
-    btn.textContent='Buscando...';btn.disabled=true;
+    // Cancelar búsqueda en curso
+    if(tcgSearchAbort){
+      tcgSearchAbort.abort();
+      tcgSearchAbort=null;
+      btn.textContent='Guardar';
+      return;
+    }
+
+    tcgSearchAbort=new AbortController();
+    const setStatus=t=>{
+      const b=document.getElementById('card-url-save');
+      if(b)b.innerHTML=pbSvg+'<span>'+t+'</span>';
+    };
+    setStatus('Buscando...');
 
     const serebii=parseSerebiiUrl(url);
     if(serebii){
-      const card=await fetchTcgCardBySerebii(serebii.setName,serebii.number);
+      const card=await fetchTcgCardBySerebii(serebii.setName,serebii.number,4,setStatus);
+      if(tcgSearchAbort?.signal?.aborted){tcgSearchAbort=null;return;}
       if(card){
         const num=card.number?String(card.number).padStart(3,'0'):serebii.number;
         const total=card.set?.printedTotal?String(card.set.printedTotal):'';
@@ -825,7 +881,7 @@ function showUrlInput(container){
           rarity:     card.rarity||'',
           serebiiUrl: url,
         };
-        showToast('Carta encontrada: '+card.name);
+        showToast('¡Carta encontrada: '+card.name+'!');
       } else {
         tcgCards[modalPoke.id]={imageUrl:'',setName:serebii.setName,number:serebii.number,serebiiUrl:url};
         showToast('Set no disponible en la API aún — guardado sin imagen');
@@ -835,13 +891,16 @@ function showUrlInput(container){
       showToast('¡Carta guardada!');
     }
 
-    btn.textContent='Guardar';btn.disabled=false;
+    tcgSearchAbort=null;
+    const b=document.getElementById('card-url-save');
+    if(b)b.textContent='Guardar';
     const gridCard=document.querySelector('.pokemon-card[data-id="'+CSS.escape(modalPoke.id)+'"]');
-    if(gridCard&&!gridCard.querySelector('.card-icon')){const b=document.createElement('div');b.className='card-icon';b.textContent='🃏';gridCard.appendChild(b)}
+    if(gridCard&&!gridCard.querySelector('.card-icon')){const ic=document.createElement('div');ic.className='card-icon';ic.textContent='🃏';gridCard.appendChild(ic);}
     isLocalChange=true;await saveAll();renderModalCardSection();
   });
   document.getElementById('card-url-input').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('card-url-save').click()});
 }
+
 
 function fieldCell(label,value,cls=''){
   const empty=!value;
@@ -967,13 +1026,48 @@ document.getElementById('modal-pb-btn').addEventListener('click',async()=>{
   }
 });
 
-// Swipe down to close modal
+// Swipe gestures en el modal
 {
   const sheet=document.getElementById('modal-sheet');
-  let sy=0,swiping=false;
-  sheet.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;swiping=false},{passive:true});
-  sheet.addEventListener('touchmove',e=>{const dy=e.touches[0].clientY-sy;if(dy>10){swiping=true;sheet.style.transform='translateY('+dy*.5+'px)';sheet.style.transition='none'}},{passive:true});
-  sheet.addEventListener('touchend',e=>{sheet.style.transition='';sheet.style.transform='';if(swiping&&(e.changedTouches[0].clientY-sy)>80)closeModal();swiping=false},{passive:true});
+  let sx=0,sy=0,dir=null;
+  sheet.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;dir=null;},{passive:true});
+  sheet.addEventListener('touchmove',e=>{
+    const dx=e.touches[0].clientX-sx;
+    const dy=e.touches[0].clientY-sy;
+    if(!dir)dir=Math.abs(dx)>Math.abs(dy)?'h':'v';
+    if(dir==='v'&&dy>10){sheet.style.transform='translateY('+dy*.5+'px)';sheet.style.transition='none';}
+    if(dir==='h'){sheet.style.transform='translateX('+dx*.3+'px)';sheet.style.transition='none';}
+  },{passive:true});
+  sheet.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-sx;
+    const dy=e.changedTouches[0].clientY-sy;
+    sheet.style.transition='transform .25s ease';
+    sheet.style.transform='';
+    setTimeout(()=>{sheet.style.transition='';},260);
+    if(dir==='v'&&dy>80){closeModal();return;}
+    if(dir==='h'&&Math.abs(dx)>60){
+      const filtered=getFiltered();
+      const idx=filtered.findIndex(p=>p.id===modalPoke?.id);
+      if(idx===-1)return;
+      const next=dx<0?filtered[idx+1]:filtered[idx-1];
+      if(next){
+        sheet.style.transition='transform .15s ease,opacity .15s ease';
+        sheet.style.transform='translateX('+(dx<0?'-80px':'80px')+')';
+        sheet.style.opacity='0';
+        setTimeout(()=>{
+          sheet.style.transition='';
+          sheet.style.transform='translateX('+(dx<0?'80px':'-80px')+')';
+          sheet.style.opacity='0';
+          openModal(next);
+          requestAnimationFrame(()=>{
+            sheet.style.transition='transform .15s ease,opacity .15s ease';
+            sheet.style.transform='';
+            sheet.style.opacity='1';
+          });
+        },150);
+      }
+    }
+  },{passive:true});
 }
 
 // PROGRESS
@@ -995,13 +1089,31 @@ document.getElementById('search').addEventListener('input',e=>{
   if(searchQuery){activeGen='all';document.querySelectorAll('.gen-tab').forEach(t=>t.classList.remove('active'));document.querySelector('.gen-tab[data-gen="all"]')?.classList.add('active')}
   renderContent();
 });
-document.getElementById('btn-missing').addEventListener('click',e=>{filterMissing=!filterMissing;e.target.classList.toggle('active',filterMissing);renderContent()});
-document.getElementById('btn-mark-all').addEventListener('click',async e=>{
-  const filtered=getFiltered();const allMarked=filtered.every(p=>collected.has(p.id));
-  if(allMarked){filtered.forEach(p=>collected.delete(p.id));showToast(filtered.length+' Pokemon desmarcados');e.target.textContent='Todos'}
-  else{filtered.forEach(p=>collected.add(p.id));showToast(filtered.length+' Pokemon marcados');e.target.textContent='Ninguno'}
+document.getElementById('btn-missing').addEventListener('click',e=>{
+  filterMissing=!filterMissing;
+  e.target.classList.toggle('active',filterMissing);
+  document.getElementById('menu-dropdown').classList.remove('open');
+  renderContent();
+});
+document.getElementById('btn-mark-all').addEventListener('click',async()=>{
+  const filtered=getFiltered();
+  filtered.forEach(p=>collected.add(p.id));
+  showToast(filtered.length+' Pokémon marcados');
+  document.getElementById('menu-dropdown').classList.remove('open');
   isLocalChange=true;renderContent();await saveAll();
 });
+document.getElementById('btn-mark-none').addEventListener('click',async()=>{
+  const filtered=getFiltered();
+  filtered.forEach(p=>collected.delete(p.id));
+  showToast(filtered.length+' Pokémon desmarcados');
+  document.getElementById('menu-dropdown').classList.remove('open');
+  isLocalChange=true;renderContent();await saveAll();
+});
+document.getElementById('menu-btn').addEventListener('click',e=>{
+  e.stopPropagation();
+  document.getElementById('menu-dropdown').classList.toggle('open');
+});
+document.addEventListener('click',()=>document.getElementById('menu-dropdown')?.classList.remove('open'));;
 
 // INIT
 async function init(){
@@ -1026,6 +1138,22 @@ init();
 </script>
 <script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/pokecollector/sw.js').catch(e=>console.warn('SW:',e))})}
+(async()=>{
+  try{
+    const el=document.getElementById('app-version');
+    if(!el)return;
+    if('caches' in window){
+      const keys=await caches.keys();
+      const key=keys.find(k=>k.startsWith('pokedex-'));
+      if(key){el.textContent=key.replace('pokedex-','');return;}
+    }
+    const res=await fetch('/pokecollector/sw.js?t='+Date.now());
+    const txt=await res.text();
+    const m=txt.match(/CACHE_NAME\s*=\s*'pokedex-(v\d+)'/);
+    if(m)el.textContent=m[1];
+  }catch(e){}
+})();
+
 </script>
 </body>
 </html>
