@@ -43,12 +43,12 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 .menu-btn.active{background:var(--yellow);border-color:var(--yellow-dark)}
 .menu-dropdown{display:none;flex-direction:column;position:absolute;top:50px;right:0;background:#1E1E1E;border:1px solid rgba(255,255,255,.12);border-radius:14px;overflow:hidden;width:200px;z-index:200}
 .menu-dropdown.open{display:flex}
-.menu-item{display:flex;align-items:center;gap:10px;padding:13px 14px;color:rgba(255,255,255,.8);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;background:transparent;width:100%;text-align:left;-webkit-tap-highlight-color:transparent}
+.menu-dropdown .menu-item{display:flex;align-items:center;gap:10px;padding:13px 14px;color:rgba(255,255,255,.8);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;background:transparent;width:100%;text-align:left;-webkit-tap-highlight-color:transparent}
 .menu-item:active{background:rgba(255,255,255,.06)}
 .menu-item.active{color:#FFCC00}
 .menu-sep{height:1px;background:rgba(255,255,255,.08)}
 
-.gen-tab{flex-shrink:0;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,.1);border:2px solid transparent;color:rgba(255,255,255,.7);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.gen-tab{flex-shrink:0;display:inline-flex;align-items:center;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,.1);border:2px solid transparent;color:rgba(255,255,255,.7);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;white-space:nowrap;width:auto}
 .gen-tab.active{background:var(--yellow);color:var(--dark);border-color:var(--yellow-dark)}
 
 /* CONTENT */
@@ -870,7 +870,7 @@ function showUrlInput(container){
       const card=await fetchTcgCardBySerebii(serebii.setName,serebii.number,4,setStatus);
       if(tcgSearchAbort?.signal?.aborted){tcgSearchAbort=null;return;}
       if(card){
-        const num=card.number?String(card.number).padStart(3,'0'):serebii.number;
+        const num=card.number?String(parseInt(card.number)).padStart(3,'0'):serebii.number;
         const total=card.set?.printedTotal?String(card.set.printedTotal):'';
         tcgCards[modalPoke.id]={
           imageUrl:   card.images?.large||card.images?.small||'',
@@ -969,8 +969,10 @@ function showEditForm(){
   el.innerHTML='<div class="card-edit-form">'
     +'<div class="card-edit-field"><label class="card-edit-label">Set</label>'
     +'<input class="card-edit-input" id="edit-set" placeholder="Ej: 151" value="'+(saved.setName||'')+'"></div>'
-    +'<div class="card-edit-field"><label class="card-edit-label">Número</label>'
-    +'<input class="card-edit-input" id="edit-num" placeholder="Ej: 004/165" value="'+numStr+'"></div>'
+    +'<div class="card-edit-field"><label class="card-edit-label">Número de carta</label>'
+    +'<input class="card-edit-input" id="edit-num" type="number" min="1" max="999" placeholder="092" value="'+(saved.number||'')+'"></div>'
+    +'<div class="card-edit-field"><label class="card-edit-label">Total del set</label>'
+    +'<input class="card-edit-input" id="edit-total" type="number" min="1" max="999" placeholder="165" value="'+(saved.total||'')+'"></div>'
     +'<div class="card-edit-field"><label class="card-edit-label">Rareza</label>'
     +'<input class="card-edit-input" id="edit-rarity" placeholder="Ej: Common, Rare Holo..." value="'+(saved.rarity||'')+'"></div>'
     +'<div class="card-edit-field"><label class="card-edit-label">Ilustrador</label>'
@@ -989,9 +991,9 @@ function showEditForm(){
   document.getElementById('edit-cancel').addEventListener('click',()=>renderModalCardSection());
   document.getElementById('edit-save').addEventListener('click',async()=>{
     const numRaw=document.getElementById('edit-num').value.trim();
-    let number='',total='';
-    if(numRaw.includes('/')){const p=numRaw.split('/');number=p[0].replace(/^0+/,'')||p[0];total=p[1];}
-    else{number=numRaw;}
+    const totalRaw=document.getElementById('edit-total').value.trim();
+    const number=numRaw?String(parseInt(numRaw)||0).padStart(3,'0'):'';
+    const total=totalRaw?String(parseInt(totalRaw)||0).padStart(3,'0'):'';
     tcgCards[modalPoke.id]={
       ...saved,
       setName: document.getElementById('edit-set').value.trim(),
