@@ -826,29 +826,41 @@ const SEREBII_SET_MAP={
 
 // Busca la carta en la API de PokémonTCG
 async function fetchTcgCardBySerebii(setName,number,retries=4,onStatus=null){
-  try{
-    const mappedId=SEREBII_SET_MAP[setName.toLowerCase()];
-    const query=mappedId
-      ?encodeURIComponent('set.id:'+mappedId+' number:'+number)
-      :encodeURIComponent('set.name:"'+setName+'" number:'+number);
-    const signal=tcgSearchAbort?.signal;
-    const res=await fetchWithTimeout('https://api.pokemontcg.io/v2/cards?q='+query+'&pageSize=1',15000,signal);
-    if(!res.ok)return null;
-    const data=await res.json();
-    if(data.data&&data.data.length>0)return data.data[0];
-    return null;
-  }catch(e){
-    if(e.name==='AbortError')return null;
-    console.warn('TCG API:',e.message);
-    if(retries>0){
-      const attempt=5-retries;
-      if(onStatus)onStatus('Reintento '+attempt+'/4...');
-      await new Promise(r=>setTimeout(r,1500));
-      if(tcgSearchAbort?.signal?.aborted)return null;
-      return fetchTcgCardBySerebii(setName,number,retries-1,onStatus);
+  const signal=tcgSearchAbort?.signal;
+  const base='https://api.pokemontcg.io/v2/cards?pageSize=1&q=';
+  const mappedId=SEREBII_SET_MAP[setName.toLowerCase()];
+
+  // Intentar hasta 3 queries distintas antes de reintentar por error
+  const queries=[
+    mappedId ? 'set.id:'+mappedId+' number:'+number : null,
+    mappedId ? 'set.id:'+mappedId+' number:'+String(parseInt(number)) : null,
+    'set.name:"'+setName+'" number:'+number,
+  ].filter(Boolean);
+
+  for(const q of queries){
+    try{
+      console.log('TCG query:',q);
+      const res=await fetchWithTimeout(base+encodeURIComponent(q),15000,signal);
+      if(signal?.aborted)return null;
+      if(res.ok){
+        const data=await res.json();
+        if(data.data?.length>0){console.log('TCG found:',data.data[0].name);return data.data[0];}
+      }
+    }catch(e){
+      if(e.name==='AbortError')return null;
+      console.warn('TCG query failed:',q,e.message);
+      if(retries>0){
+        const attempt=5-retries;
+        if(onStatus)onStatus('Reintento '+attempt+'/4...');
+        await new Promise(r=>setTimeout(r,1500));
+        if(signal?.aborted)return null;
+        return fetchTcgCardBySerebii(setName,number,retries-1,onStatus);
+      }
+      return null;
     }
-    return null;
   }
+  console.log('TCG: no results for',setName,number);
+  return null;
 }
 
 let tcgSearchAbort=null;
