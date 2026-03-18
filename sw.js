@@ -2,7 +2,7 @@
 // Solo cachea el shell de la app (HTML, fuentes).
 // Los datos de la colección siempre vienen de Firebase (nunca se cachean aquí).
 
-const CACHE_NAME = 'pokedex-v50';
+const CACHE_NAME = 'pokedex-v53';
 const BASE = '/pokecollector';
 
 const SHELL = [
@@ -18,7 +18,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL))
   );
-  self.skipWaiting(); // Tomar control inmediatamente
+  self.skipWaiting();
 });
 
 // ── Activar: borrar caches viejos ──
@@ -42,11 +42,10 @@ self.addEventListener('fetch', event => {
     url.hostname.includes('pokeapi.co') ||
     url.hostname.includes('tcgdex.net') ||
     url.hostname.includes('raw.githubusercontent.com') ||
-    url.hostname.includes('pokemontcg.io') ||
-    url.hostname.includes('fonts.googleapis.com') ||
-    url.hostname.includes('fonts.gstatic.com')
+    url.hostname.includes('pokemontcg.io')
   ) {
-    return; // Sin respondWith = el navegador maneja directo, sin interferencia del SW
+    event.respondWith(fetch(event.request));
+    return;
   }
 
   // Shell: cache-first con fallback a red
@@ -63,9 +62,4 @@ self.addEventListener('fetch', event => {
       });
     })
   );
-});
-
-// Forzar activación inmediata cuando se recibe mensaje
-self.addEventListener('message', event => {
-  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
