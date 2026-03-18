@@ -26,17 +26,17 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 .pokeball::before{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:11px;height:11px;border-radius:50%;background:white;border:2.5px solid #1a1a1a;z-index:1}
 .pokeball::after{content:'';position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);height:3px;background:#1a1a1a}
 .logo-text{font-family:'Bangers',cursive;font-size:30px;color:var(--yellow);letter-spacing:1px;text-shadow:2px 2px 0 rgba(0,0,0,.35);line-height:1}
-.logo-sub{font-size:10px;color:rgba(255,255,255,.75);font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.logo-sub{font-size:9px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:1px;display:flex;align-items:center}
 .header-right{display:flex;align-items:center;gap:8px}
-.sync-dot{width:10px;height:10px;border-radius:50%;background:#44DD44;box-shadow:0 0 6px #44DD44;transition:all .3s;flex-shrink:0}
-.sync-dot.syncing{background:var(--yellow);box-shadow:0 0 6px var(--yellow);animation:pulse .6s infinite alternate}
-.sync-dot.error{background:#FF4444;box-shadow:0 0 6px #FF4444;animation:none}
+.sync-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);transition:all .3s}
+.sync-ring.syncing{background:var(--yellow);box-shadow:0 0 4px var(--yellow);animation:pulse .6s infinite alternate}
+.sync-ring.error{background:#FF4444;box-shadow:0 0 4px #FF4444;animation:none}
 @keyframes pulse{from{opacity:.4}to{opacity:1}}
 .stats-badge{background:rgba(0,0,0,.35);border-radius:20px;padding:5px 10px;text-align:center;border:1px solid rgba(255,255,255,.15);min-width:0;max-width:90px}
 .stats-number{font-family:'Bangers',cursive;font-size:clamp(13px,4vw,18px);color:var(--yellow);line-height:1;white-space:nowrap;overflow:hidden;width:100%;display:block}
 .stats-label{font-size:9px;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:1px;font-weight:700}
-.search-row{display:flex;gap:8px;margin-bottom:10px}
-.search-input{flex:1;padding:10px 16px;border-radius:30px;border:2px solid transparent;background:rgba(255,255,255,.15);color:white;font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;outline:none;transition:all .2s}
+.search-row{margin-bottom:8px}
+.search-input{width:100%;box-sizing:border-box;flex:1;padding:10px 16px;border-radius:30px;border:2px solid transparent;background:rgba(255,255,255,.15);color:white;font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;outline:none;transition:all .2s}
 .search-input::placeholder{color:rgba(255,255,255,.45)}
 .search-input:focus{background:rgba(255,255,255,.25);border-color:var(--yellow)}
 .menu-btn{width:42px;height:42px;border-radius:24px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;flex-shrink:0}
@@ -183,21 +183,22 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 <div class="header">
   <div class="header-top">
     <div class="logo">
-      <svg width="38" height="38" viewBox="0 0 40 40" fill="none" style="flex-shrink:0">
-        <path d="M1.5 20 A18.5 18.5 0 0 1 38.5 20 Z" fill="#CC0000"/>
-        <path d="M1.5 20 A18.5 18.5 0 0 0 38.5 20 Z" fill="white"/>
-        <circle cx="20" cy="20" r="18.5" stroke="rgba(0,0,0,0.25)" stroke-width="1.5"/>
-        <path d="M1.5 20h13.5M25 20h13.5" stroke="rgba(0,0,0,0.25)" stroke-width="1.5"/>
-        <circle cx="20" cy="20" r="5" fill="white" stroke="rgba(0,0,0,0.25)" stroke-width="1.5"/>
-        <circle cx="20" cy="20" r="2.5" fill="#ddd"/>
-      </svg>
+      <div style="position:relative;flex-shrink:0;width:38px;height:38px">
+        <svg width="38" height="38" viewBox="0 0 40 40" fill="none">
+          <path d="M1.5 20 A18.5 18.5 0 0 1 38.5 20 Z" fill="#CC0000"/>
+          <path d="M1.5 20 A18.5 18.5 0 0 0 38.5 20 Z" fill="white"/>
+          <circle cx="20" cy="20" r="18.5" stroke="rgba(0,0,0,0.2)" stroke-width="1.5"/>
+          <path d="M1.5 20h13.5M25 20h13.5" stroke="rgba(0,0,0,0.2)" stroke-width="1.5"/>
+          <circle cx="20" cy="20" r="5" fill="rgba(0,0,0,0.15)" stroke="rgba(0,0,0,0.2)" stroke-width="1.5"/>
+        </svg>
+        <div class="sync-ring" id="sync-dot"></div>
+      </div>
       <div>
-        <div class="logo-text">Caco Collector</div>
-        <div class="logo-sub">Colección compartida <span class="version-badge" id="app-version"></span></div>
+        <div class="logo-text">Cacos Collector</div>
+        <div class="logo-sub"><span class="version-badge" id="app-version"></span></div>
       </div>
     </div>
     <div class="header-right">
-      <div class="sync-dot syncing" id="sync-dot"></div>
       <div class="stats-badge">
         <div class="stats-number" id="global-count">-- / --</div>
         <div class="stats-label">Capturados</div>
@@ -206,6 +207,9 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
   </div>
   <div class="search-row">
     <input class="search-input" type="search" id="search" placeholder="Buscar Pokémon..." autocomplete="off">
+  </div>
+  <div class="filter-row">
+    <button class="gen-filter-btn" id="gen-filter-btn">Gen: Todas</button>
     <div style="position:relative;flex-shrink:0">
       <button class="menu-btn" id="menu-btn">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -231,8 +235,6 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
       </div>
     </div>
   </div>
-  <div class="gen-tabs" id="gen-tabs">
-    <div class="gen-tab active" data-gen="all">Todos</div>
   </div>
 </div>
 
@@ -247,6 +249,30 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
   </svg><div class="loading-text">Conectando con la PC de Bill...</div></div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- GEN FILTER MODAL -->
+<div class="gen-filter-overlay" id="gen-filter-overlay">
+  <div class="gen-filter-sheet">
+    <div class="gen-filter-title">Filtrar por generación</div>
+    <div class="gen-filter-list" id="gen-filter-list"></div>
+    <div class="gen-filter-actions">
+      <button class="gen-filter-cancel" id="gen-filter-cancel">Cancelar</button>
+      <button class="gen-filter-apply" id="gen-filter-apply">Aplicar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="gen-filter-overlay" id="confirm-overlay">
+  <div class="gen-filter-sheet">
+    <div class="gen-filter-title" id="confirm-title"></div>
+    <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:16px" id="confirm-sub"></div>
+    <div class="gen-filter-actions">
+      <button class="gen-filter-cancel" id="confirm-cancel">Cancelar</button>
+      <button class="gen-filter-apply" id="confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay">
@@ -544,29 +570,15 @@ function buildPokemonList(){
 }
 
 // GEN TABS
-function buildGenTabs(){
-  const container=document.getElementById('gen-tabs');
-  container.innerHTML='<div class="gen-tab active" data-gen="all">Todos</div>';
-  for(const gen of GENERATIONS){
-    const tab=document.createElement('div');
-    tab.className='gen-tab';
-    tab.dataset.gen=gen.id;
-    tab.textContent=gen.id==='hisui'?'Hisui':('Gen '+gen.id);
-    container.appendChild(tab);
-  }
-  container.addEventListener('click',e=>{
-    const tab=e.target.closest('.gen-tab');if(!tab)return;
-    const raw=tab.dataset.gen;
-    activeGen=raw==='all'?'all':(raw==='hisui'?'hisui':parseInt(raw));
-    container.querySelectorAll('.gen-tab').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');renderContent();
-  });
-}
 
 // FILTER
 function getFiltered(){
   let list=allPokemon;
-  if(activeGen!=='all')list=list.filter(p=>String(p.gen)===String(activeGen));
+  if(activeGen==='multi'){
+    list=list.filter(p=>[...genSelected].some(id=>String(p.gen)===String(id)));
+  } else if(activeGen!=='all'){
+    list=list.filter(p=>String(p.gen)===String(activeGen));
+  }
   if(filterMissing)list=list.filter(p=>!collected.has(p.id));
   if(searchQuery){const q=searchQuery.toLowerCase();list=list.filter(p=>p.name.toLowerCase().includes(q)||(p.formLabel&&p.formLabel.toLowerCase().includes(q))||String(p.id).includes(q))}
   return list;
@@ -1097,19 +1109,23 @@ document.getElementById('btn-missing').addEventListener('click',e=>{
   document.getElementById('menu-dropdown').classList.remove('open');
   renderContent();
 });
-document.getElementById('btn-mark-all').addEventListener('click',async()=>{
-  const filtered=getFiltered();
-  filtered.forEach(p=>collected.add(p.id));
-  showToast(filtered.length+' Pokémon marcados');
+document.getElementById('btn-mark-all').addEventListener('click',()=>{
   document.getElementById('menu-dropdown').classList.remove('open');
-  isLocalChange=true;renderContent();await saveAll();
+  const filtered=getFiltered();
+  showConfirm('¿Marcar todos?','Se marcarán '+filtered.length+' Pokémon como capturados.',async()=>{
+    filtered.forEach(p=>collected.add(p.id));
+    showToast(filtered.length+' Pokémon marcados');
+    isLocalChange=true;renderContent();await saveAll();
+  });
 });
-document.getElementById('btn-mark-none').addEventListener('click',async()=>{
-  const filtered=getFiltered();
-  filtered.forEach(p=>collected.delete(p.id));
-  showToast(filtered.length+' Pokémon desmarcados');
+document.getElementById('btn-mark-none').addEventListener('click',()=>{
   document.getElementById('menu-dropdown').classList.remove('open');
-  isLocalChange=true;renderContent();await saveAll();
+  const filtered=getFiltered();
+  showConfirm('¿Desmarcar todos?','Se desmarcarán '+filtered.length+' Pokémon.',async()=>{
+    filtered.forEach(p=>collected.delete(p.id));
+    showToast(filtered.length+' Pokémon desmarcados');
+    isLocalChange=true;renderContent();await saveAll();
+  });
 });
 document.getElementById('menu-btn').addEventListener('click',e=>{
   e.stopPropagation();
@@ -1121,7 +1137,7 @@ document.addEventListener('click',()=>document.getElementById('menu-dropdown')?.
 async function init(){
   try{nameCache=JSON.parse(localStorage.getItem(NAMES_KEY)||'{}')}catch{}
   try{const snap=await getDoc(colRef);if(snap.exists())loadFromSnap(snap.data())}catch(e){console.error(e);setSyncState('error')}
-  buildPokemonList();buildGenTabs();renderContent();startListener();loadTcgSets();setSyncState('ok');
+  buildPokemonList();renderContent();startListener();loadTcgSets();setSyncState('ok');
   const missing=allPokemon.filter(p=>p.type==='base'&&!nameCache[p.id]).map(p=>parseInt(p.id)).filter(Boolean);
   if(missing.length>0){
     const BATCH=15;
@@ -1156,6 +1172,108 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.s
   }catch(e){}
 })();
 
+// ── GEN FILTER ──
+const GEN_OPTS=[
+  {id:1,   num:'I',    region:'Kanto'},
+  {id:2,   num:'II',   region:'Johto'},
+  {id:3,   num:'III',  region:'Hoenn'},
+  {id:4,   num:'IV',   region:'Sinnoh'},
+  {id:5,   num:'V',    region:'Teselia'},
+  {id:6,   num:'VI',   region:'Kalos'},
+  {id:7,   num:'VII',  region:'Alola'},
+  {id:8,   num:'VIII', region:'Galar'},
+  {id:'hisui',num:'',  region:'Hisui'},
+  {id:9,   num:'IX',   region:'Paldea'},
+];
+const GEN_TOTAL=GEN_OPTS.length;
+let genSelected=new Set(['all']);
+
+function genIsAll(){return genSelected.has('all');}
+
+function buildGenList(){
+  const list=document.getElementById('gen-filter-list');
+  list.innerHTML='';
+  const allSel=genIsAll();
+  const allEl=document.createElement('div');
+  allEl.className='gen-opt'+(allSel?' selected':'');
+  allEl.innerHTML='<div class="gen-opt-check">'+(allSel?'✓':'')+'</div><strong>Todas las generaciones</strong>';
+  allEl.addEventListener('click',()=>{genSelected=new Set(['all']);buildGenList();});
+  list.appendChild(allEl);
+  const sep=document.createElement('div');sep.className='gen-filter-sep';list.appendChild(sep);
+  GEN_OPTS.forEach(g=>{
+    const el=document.createElement('div');
+    const isSel=!genIsAll()&&genSelected.has(g.id);
+    el.className='gen-opt'+(isSel?' selected':'');
+    const label=g.num?'<span class="gen-opt-num">Gen '+g.num+' — </span>'+g.region:g.region;
+    el.innerHTML='<div class="gen-opt-check">'+(isSel?'✓':'')+'</div>'+label;
+    el.addEventListener('click',()=>{
+      if(genIsAll())genSelected=new Set();
+      if(genSelected.has(g.id))genSelected.delete(g.id);
+      else genSelected.add(g.id);
+      if(genSelected.size===GEN_TOTAL)genSelected=new Set(['all']);
+      if(genSelected.size===0)genSelected=new Set(['all']);
+      buildGenList();
+    });
+    list.appendChild(el);
+  });
+}
+
+function openGenFilter(){buildGenList();document.getElementById('gen-filter-overlay').classList.add('open');}
+function closeGenFilter(){document.getElementById('gen-filter-overlay').classList.remove('open');}
+
+function applyGenFilter(){
+  const btn=document.getElementById('gen-filter-btn');
+  if(genIsAll()){
+    activeGen='all';
+    btn.textContent='Gen: Todas';
+    btn.className='gen-filter-btn';
+  } else {
+    const regions=[...genSelected].map(id=>GEN_OPTS.find(g=>g.id===id)?.region||String(id));
+    const label=regions.length<=2?regions.join(', '):regions.slice(0,2).join(', ')+' y '+(regions.length-2)+' más';
+    btn.textContent='Gen: '+label;
+    btn.className='gen-filter-btn filtered';
+    activeGen=genSelected.size===1?[...genSelected][0]:'multi';
+  }
+  closeGenFilter();
+  renderContent();
+}
+
+document.getElementById('gen-filter-btn').addEventListener('click',openGenFilter);
+document.getElementById('gen-filter-cancel').addEventListener('click',closeGenFilter);
+document.getElementById('gen-filter-apply').addEventListener('click',applyGenFilter);
+document.getElementById('gen-filter-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('gen-filter-overlay'))closeGenFilter();
+});
+
+// ── CONFIRM MODAL ──
+function showConfirm(title,sub,onOk){
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-sub').textContent=sub;
+  document.getElementById('confirm-ok').onclick=()=>{closeConfirm();onOk();};
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');}
+document.getElementById('confirm-cancel').addEventListener('click',closeConfirm);
+document.getElementById('confirm-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('confirm-overlay'))closeConfirm();
+});
+
 </script>
 </body>
-</html>
+</html>.filter-row{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;gap:8px}
+.gen-filter-btn{padding:7px 14px;border-radius:20px;background:rgba(255,255,255,.1);border:2px solid transparent;color:rgba(255,255,255,.8);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.gen-filter-btn.filtered{background:rgba(255,204,0,.2);border-color:rgba(255,204,0,.4);color:#FFCC00}
+.gen-filter-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.7);align-items:flex-end;justify-content:center}
+.gen-filter-overlay.open{display:flex}
+.gen-filter-sheet{background:#181818;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:16px;padding-bottom:max(env(safe-area-inset-bottom,0px),16px)}
+.gen-filter-title{font-size:14px;font-weight:900;color:white;margin-bottom:12px}
+.gen-filter-list{display:flex;flex-direction:column;gap:2px;max-height:55dvh;overflow-y:auto;margin-bottom:14px}
+.gen-opt{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;cursor:pointer;color:rgba(255,255,255,.7);font-size:13px;font-weight:700;-webkit-tap-highlight-color:transparent}
+.gen-opt.selected{background:rgba(255,204,0,.12);color:#FFCC00}
+.gen-opt-check{width:18px;height:18px;border-radius:5px;border:2px solid rgba(255,255,255,.25);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900}
+.gen-opt.selected .gen-opt-check{background:#FFCC00;border-color:#E6A800;color:#1a1a1a}
+.gen-opt-num{font-size:10px;opacity:.5;margin-right:2px}
+.gen-filter-sep{height:1px;background:rgba(255,255,255,.08);margin:4px 0}
+.gen-filter-actions{display:flex;gap:8px}
+.gen-filter-cancel{flex:1;padding:12px;border-radius:12px;border:1.5px solid rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.5);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+.gen-filter-apply{flex:2;padding:12px;border-radius:12px;border:none;background:var(--yellow);color:var(--dark);font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer}
