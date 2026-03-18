@@ -9,6 +9,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PokeDex">
 <link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://api.pokemontcg.io" crossorigin>
+<link rel="dns-prefetch" href="https://api.pokemontcg.io">
+<link rel="preconnect" href="https://images.pokemontcg.io" crossorigin>
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>PokeDex Coleccion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -92,11 +95,9 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 .form-label{font-size:9px;color:var(--gray-400);text-align:center;font-weight:600;line-height:1.1;pointer-events:none}
 
 /* UTILS */
-.loading{display:flex;justify-content:center;align-items:center;padding:80px;gap:10px}
-.lb{width:14px;height:14px;border-radius:50%;background:var(--red);animation:bounce .7s infinite alternate}
-.lb:nth-child(2){animation-delay:.15s;background:var(--yellow)}
-.lb:nth-child(3){animation-delay:.3s}
-@keyframes bounce{from{transform:translateY(0);opacity:.5}to{transform:translateY(-18px);opacity:1}}
+.loading{display:flex;justify-content:center;align-items:center;padding:80px}
+.loading-pb{width:48px;height:48px;animation:pbspin 0.8s linear infinite}
+@keyframes pbspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}to{transform:translateY(-18px);opacity:1}}
 .empty-state{text-align:center;padding:60px 20px;color:var(--gray-400)}
 .empty-state .ei{font-size:48px;margin-bottom:12px}
 .empty-state p{font-weight:700;font-size:16px}
@@ -235,7 +236,14 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 </div>
 
 <div class="content" id="content">
-  <div class="loading"><div class="lb"></div><div class="lb"></div><div class="lb"></div></div>
+  <div class="loading"><svg class="loading-pb" viewBox="0 0 40 40" fill="none">
+    <path d="M1.5 20 A18.5 18.5 0 0 1 38.5 20 Z" fill="#CC0000"/>
+    <path d="M1.5 20 A18.5 18.5 0 0 0 38.5 20 Z" fill="white"/>
+    <circle cx="20" cy="20" r="18.5" stroke="#ccc" stroke-width="1.5"/>
+    <path d="M1.5 20h13.5M25 20h13.5" stroke="#ccc" stroke-width="1.5"/>
+    <circle cx="20" cy="20" r="5" fill="white" stroke="#ccc" stroke-width="1.5"/>
+    <circle cx="20" cy="20" r="2.5" fill="#ddd"/>
+  </svg></div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -657,8 +665,14 @@ function fitModalName(){
   }
 }
 
+// Precalentar conexión con la API al abrir el modal
+function warmupTcgApi(){
+  try{fetch('https://api.pokemontcg.io/v2/cards?q=name:pikachu&pageSize=1',{method:'HEAD'}).catch(()=>{})}catch(e){}
+}
+
 function openModal(poke){
   modalPoke=poke;
+  warmupTcgApi();
   const spriteUrl=poke.sprite||('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'+poke.id+'.png');
   const numLabel=!isNaN(poke.id)?('#'+String(poke.id).padStart(4,'0')):'';
   document.getElementById('modal-sprite').src=spriteUrl;
@@ -753,6 +767,16 @@ const SEREBII_SET_MAP={
   'destinedrivals':'sv10','destined':'sv10',
   // Mega Evolution (2025 - puede que aún no esté en la API)
   'megaevolution':'meg',
+  // Promos SV
+  'svpromos':'svp','svpromo':'svp','sv-promos':'svp',
+  // Promos SWSH
+  'swshpromos':'swshp','swsh-promos':'swshp',
+  // Promos SM
+  'smpromos':'smp',
+  // Promos XY
+  'xypromos':'xyp',
+  // Promos BW
+  'bwpromos':'bwp',
   // Sword & Shield
   'swordshield':'swsh1','swsh1':'swsh1',
   'rebelclash':'swsh2','darknessablaze':'swsh3','championspath':'swsh35',
@@ -784,22 +808,26 @@ const SEREBII_SET_MAP={
 };
 
 // Busca la carta en la API de PokémonTCG
-async function fetchTcgCardBySerebii(setName,number){
+async function fetchTcgCardBySerebii(setName,number,retries=2){
   try{
     const mappedId=SEREBII_SET_MAP[setName.toLowerCase()];
-    if(mappedId){
-      const query=encodeURIComponent('set.id:'+mappedId+' number:'+number);
-      const res=await fetchWithTimeout('https://api.pokemontcg.io/v2/cards?q='+query+'&pageSize=1');
-      if(res.ok){const data=await res.json();if(data.data&&data.data.length>0)return data.data[0];}
-      return null;
-    }
-    const query=encodeURIComponent('set.name:"'+setName+'" number:'+number);
+    const query=mappedId
+      ?encodeURIComponent('set.id:'+mappedId+' number:'+number)
+      :encodeURIComponent('set.name:"'+setName+'" number:'+number);
     const res=await fetchWithTimeout('https://api.pokemontcg.io/v2/cards?q='+query+'&pageSize=1');
     if(!res.ok)return null;
     const data=await res.json();
     if(data.data&&data.data.length>0)return data.data[0];
     return null;
-  }catch(e){console.warn('TCG API:',e.message);return null;}
+  }catch(e){
+    console.warn('TCG API:',e.message);
+    if(retries>0){
+      console.log('Reintentando... ('+(retries)+' intentos restantes)');
+      await new Promise(r=>setTimeout(r,1000));
+      return fetchTcgCardBySerebii(setName,number,retries-1);
+    }
+    return null;
+  }
 }
 
 function showUrlInput(container){
@@ -813,7 +841,9 @@ function showUrlInput(container){
     if(!url)return;
 
     const btn=document.getElementById('card-url-save');
-    btn.textContent='Buscando...';btn.disabled=true;
+    btn.innerHTML='<svg style="width:16px;height:16px;animation:pbspin 0.8s linear infinite;vertical-align:middle;margin-right:6px" viewBox="0 0 40 40" fill="none"><path d="M1.5 20 A18.5 18.5 0 0 1 38.5 20 Z" fill="#CC0000"/><path d="M1.5 20 A18.5 18.5 0 0 0 38.5 20 Z" fill="#1a1a1a"/><circle cx="20" cy="20" r="18.5" stroke="#555" stroke-width="1.5"/><path d="M1.5 20h13.5M25 20h13.5" stroke="#555" stroke-width="1.5"/><circle cx="20" cy="20" r="5" fill="white" stroke="#555" stroke-width="1.5"/></svg>Buscando';
+    btn.disabled=true;
+    const dotTimer=null;
 
     const serebii=parseSerebiiUrl(url);
     if(serebii){
