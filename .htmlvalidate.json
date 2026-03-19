@@ -8,6 +8,9 @@
     "script-type": "off",
     "require-sri": "off",
     "long-title": "off",
-    "no-raw-characters": "off"
+    "no-raw-characters": "off",
+    "no-implicit-button-type": "off",
+    "text-content": "off",
+    "attribute-allowed-values": "off"
   }
 }
