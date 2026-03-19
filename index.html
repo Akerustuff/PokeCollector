@@ -48,8 +48,6 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 .menu-item.active{color:#FFCC00}
 .menu-sep{height:1px;background:rgba(255,255,255,.08)}
 
-.gen-tab{flex-shrink:0;display:inline-flex;align-items:center;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,.1);border:2px solid transparent;color:rgba(255,255,255,.7);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;white-space:nowrap;width:auto}
-.gen-tab.active{background:var(--yellow);color:var(--dark);border-color:var(--yellow-dark)}
 
 /* CONTENT */
 .content{padding:16px;background:var(--gray-100);min-height:calc(100vh - 180px)}
@@ -177,10 +175,20 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 @keyframes cardPop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
 .card-viewer-close{padding:12px 32px;border-radius:30px;border:none;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent}
 
-.gen-tabs{display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;padding-bottom:12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.gen-tabs::-webkit-scrollbar{display:none}
-.gen-tab{flex-shrink:0;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,.1);border:2px solid transparent;color:rgba(255,255,255,.7);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap}
-.gen-tab.active{background:var(--yellow);color:var(--dark);border-color:var(--yellow-dark)}
+.gen-filter-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,.1);border:2px solid transparent;color:rgba(255,255,255,.7);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;margin-bottom:12px}
+.gen-filter-btn.active{background:var(--yellow);color:var(--dark);border-color:var(--yellow-dark)}
+/* GEN FILTER MODAL */
+.gen-modal-overlay{display:none;position:fixed;inset:0;z-index:1050;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center}.gen-modal-overlay.open{display:flex}
+.gen-modal-sheet{background:#181818;border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:80dvh;display:flex;flex-direction:column;box-shadow:0 -8px 40px rgba(0,0,0,.7);border-top:1px solid rgba(255,255,255,.07);animation:sheetUp .28s cubic-bezier(.32,.72,0,1);overflow:hidden}
+.gen-modal-handle{width:40px;height:4px;background:rgba(255,255,255,.18);border-radius:2px;margin:12px auto 0;flex-shrink:0}
+.gen-modal-header{padding:12px 18px 10px;font-family:'Bangers',cursive;font-size:20px;color:var(--yellow);letter-spacing:1px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.07)}
+.gen-modal-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 0}
+.gen-modal-item{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;-webkit-tap-highlight-color:transparent;border:none;background:transparent;width:100%;text-align:left;color:rgba(255,255,255,.85);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700}.gen-modal-item:active{background:rgba(255,255,255,.05)}
+.gen-modal-check{width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.2);background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:transparent;transition:background .15s,border-color .15s}
+.gen-modal-item.selected .gen-modal-check{background:var(--yellow);border-color:var(--yellow-dark);color:var(--dark)}
+.gen-modal-sep{height:1px;background:rgba(255,255,255,.08);margin:4px 18px}
+.gen-modal-footer{padding:12px 18px;flex-shrink:0;border-top:1px solid rgba(255,255,255,.07)}
+.gen-modal-apply{width:100%;padding:14px;border-radius:12px;border:none;background:var(--yellow);color:var(--dark);font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent}.gen-modal-apply:active{opacity:.85}
 </style>
 </head>
 <body>
@@ -237,8 +245,12 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
       </div>
     </div>
   </div>
-  <div class="gen-tabs" id="gen-tabs">
-    <div class="gen-tab active" data-gen="all">Todos</div>
+  <div>
+    <button class="gen-filter-btn" id="gen-filter-btn">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 3h12M3 7h8M5 11h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span id="gen-filter-label">Todas</span>
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
   </div>
 </div>
 
@@ -253,6 +265,18 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
   </svg><div class="loading-text">Conectando con la PC de Bill...</div></div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- GEN FILTER MODAL -->
+<div class="gen-modal-overlay" id="gen-modal-overlay">
+  <div class="gen-modal-sheet">
+    <div class="gen-modal-handle"></div>
+    <div class="gen-modal-header">Filtrar por generación</div>
+    <div class="gen-modal-list" id="gen-modal-list"></div>
+    <div class="gen-modal-footer">
+      <button class="gen-modal-apply" id="gen-modal-apply">Aplicar</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay">
@@ -477,7 +501,8 @@ const ALT_FORMS = [
 
 // STATE
 let collected=new Set(), tcgCards={}, allPokemon=[], nameCache={};
-let activeGen='all', filterMissing=false, searchQuery='', isLocalChange=false;
+let activeGens=new Set(), filterMissing=false, searchQuery='', isLocalChange=false;
+let pendingGens=new Set();
 let modalPoke=null;
 
 // TOAST & SYNC
@@ -549,30 +574,81 @@ function buildPokemonList(){
   }
 }
 
-// GEN TABS
-function buildGenTabs(){
-  const container=document.getElementById('gen-tabs');
-  container.innerHTML='<div class="gen-tab active" data-gen="all">Todos</div>';
+// GEN FILTER
+function genFilterLabel(){
+  if(activeGens.size===0)return'Todas';
+  const names=GENERATIONS.filter(g=>activeGens.has(String(g.id))).map(g=>g.region);
+  if(names.length===1)return'Gen: '+names[0];
+  if(names.length===2)return'Gen: '+names.join(', ');
+  return'Gen: '+names[0]+', '+names[1]+' +'+(names.length-2)+' más';
+}
+
+function updateGenFilterBtn(){
+  const btn=document.getElementById('gen-filter-btn');
+  const label=document.getElementById('gen-filter-label');
+  if(!btn||!label)return;
+  label.textContent=genFilterLabel();
+  btn.classList.toggle('active',activeGens.size>0);
+}
+
+function renderGenModalList(){
+  const allSelected=pendingGens.size===0;
+  let html='<button class="gen-modal-item'+(allSelected?' selected':'')+'" data-gen="all">'
+    +'<div class="gen-modal-check">'+(allSelected?'✓':'')+'</div>Todas</button>'
+    +'<div class="gen-modal-sep"></div>';
   for(const gen of GENERATIONS){
-    const tab=document.createElement('div');
-    tab.className='gen-tab';
-    tab.dataset.gen=gen.id;
-    tab.textContent=gen.id==='hisui'?'Hisui':('Gen '+gen.id);
-    container.appendChild(tab);
+    const gid=String(gen.id);
+    const sel=pendingGens.has(gid);
+    const label=gen.id==='hisui'?'Hisui - Hisui':('Gen '+gen.id+' - '+gen.region);
+    html+='<button class="gen-modal-item'+(sel?' selected':'')+'" data-gen="'+gid+'">'
+      +'<div class="gen-modal-check">'+(sel?'✓':'')+'</div>'+label+'</button>';
   }
-  container.addEventListener('click',e=>{
-    const tab=e.target.closest('.gen-tab');if(!tab)return;
-    const raw=tab.dataset.gen;
-    activeGen=raw==='all'?'all':(raw==='hisui'?'hisui':parseInt(raw));
-    container.querySelectorAll('.gen-tab').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');renderContent();
+  const list=document.getElementById('gen-modal-list');
+  list.innerHTML=html;
+  list.querySelectorAll('.gen-modal-item').forEach(item=>{
+    item.addEventListener('click',()=>{
+      const g=item.dataset.gen;
+      if(g==='all'){
+        pendingGens.clear();
+      } else {
+        if(pendingGens.has(g))pendingGens.delete(g);else pendingGens.add(g);
+        if(pendingGens.size===GENERATIONS.length)pendingGens.clear();
+      }
+      renderGenModalList();
+    });
+  });
+}
+
+function openGenModal(){
+  pendingGens=new Set(activeGens);
+  renderGenModalList();
+  document.getElementById('gen-modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeGenModal(){
+  document.getElementById('gen-modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function buildGenFilter(){
+  updateGenFilterBtn();
+  document.getElementById('gen-filter-btn').addEventListener('click',openGenModal);
+  document.getElementById('gen-modal-apply').addEventListener('click',()=>{
+    activeGens=new Set(pendingGens);
+    closeGenModal();
+    updateGenFilterBtn();
+    renderContent();
+  });
+  document.getElementById('gen-modal-overlay').addEventListener('click',e=>{
+    if(e.target===document.getElementById('gen-modal-overlay'))closeGenModal();
   });
 }
 
 // FILTER
 function getFiltered(){
   let list=allPokemon;
-  if(activeGen!=='all')list=list.filter(p=>String(p.gen)===String(activeGen));
+  if(activeGens.size>0)list=list.filter(p=>activeGens.has(String(p.gen)));
   if(filterMissing)list=list.filter(p=>!collected.has(p.id));
   if(searchQuery){const q=searchQuery.toLowerCase();list=list.filter(p=>p.name.toLowerCase().includes(q)||(p.formLabel&&p.formLabel.toLowerCase().includes(q))||String(p.id).includes(q))}
   return list;
@@ -1147,7 +1223,7 @@ function updateAllGenProgress(){for(const g of GENERATIONS)updateGenProgress(g.i
 // SEARCH & FILTERS
 document.getElementById('search').addEventListener('input',e=>{
   searchQuery=e.target.value.trim();
-  if(searchQuery){activeGen='all';document.querySelectorAll('.gen-tab').forEach(t=>t.classList.remove('active'));document.querySelector('.gen-tab[data-gen="all"]')?.classList.add('active')}
+  if(searchQuery){activeGens=new Set();updateGenFilterBtn();}
   renderContent();
 });
 document.getElementById('btn-missing').addEventListener('click',e=>{
@@ -1180,7 +1256,7 @@ document.addEventListener('click',()=>document.getElementById('menu-dropdown')?.
 async function init(){
   try{nameCache=JSON.parse(localStorage.getItem(NAMES_KEY)||'{}')}catch{}
   try{const snap=await getDoc(colRef);if(snap.exists())loadFromSnap(snap.data())}catch(e){console.error(e);setSyncState('error')}
-  buildPokemonList();buildGenTabs();renderContent();startListener();loadTcgSets();setSyncState('ok');
+  buildPokemonList();buildGenFilter();renderContent();startListener();loadTcgSets();setSyncState('ok');
   const missing=allPokemon.filter(p=>p.type==='base'&&!nameCache[p.id]).map(p=>parseInt(p.id)).filter(Boolean);
   if(missing.length>0){
     const BATCH=15;
