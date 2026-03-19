@@ -2,7 +2,7 @@
 // Solo cachea el shell de la app (HTML, fuentes).
 // Los datos de la colección siempre vienen de Firebase (nunca se cachean aquí).
 
-const CACHE_NAME = 'pokedex-v1.1';
+const CACHE_NAME = 'pokedex-v1.0';
 const BASE = '/pokecollector';
 
 const SHELL = [
@@ -41,7 +41,8 @@ self.addEventListener('fetch', event => {
     url.hostname.includes('firebase') ||
     url.hostname.includes('pokeapi.co') ||
     url.hostname.includes('tcgdex.net') ||
-    url.hostname.includes('raw.githubusercontent.com')
+    url.hostname.includes('raw.githubusercontent.com') ||
+    url.hostname.includes('pokemontcg.io')
   ) {
     event.respondWith(fetch(event.request));
     return;
