@@ -1,8 +1,5 @@
-// Service Worker — PokéDex Colección
-// Solo cachea el shell de la app (HTML, fuentes).
-// Los datos de la colección siempre vienen de Firebase (nunca se cachean aquí).
-
-const CACHE_NAME = 'pokedex-v1.0';
+// Service Worker — Cacos Collector
+const CACHE_NAME = 'pokedex-v1.1';
 const BASE = '/pokecollector';
 
 const SHELL = [
@@ -31,29 +28,28 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// ── Fetch: network-first para Firebase/APIs externas, cache-first para shell ──
+// ── Fetch: APIs externas pasan directo, shell desde caché ──
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Firebase, PokeAPI y TCGdex: siempre red (datos en tiempo real)
   if (
     url.hostname.includes('firestore.googleapis.com') ||
     url.hostname.includes('firebase') ||
     url.hostname.includes('pokeapi.co') ||
+    url.hostname.includes('pokemontcg.io') ||
     url.hostname.includes('tcgdex.net') ||
     url.hostname.includes('raw.githubusercontent.com') ||
-    url.hostname.includes('pokemontcg.io')
+    url.hostname.includes('images.pokemontcg.io') ||
+    url.hostname.includes('fonts.googleapis.com') ||
+    url.hostname.includes('fonts.gstatic.com')
   ) {
-    event.respondWith(fetch(event.request));
     return;
   }
 
-  // Shell: cache-first con fallback a red
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
       return fetch(event.request).then(response => {
-        // Cachear respuestas válidas del shell
         if (response && response.status === 200 && response.type === 'basic') {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
@@ -62,4 +58,9 @@ self.addEventListener('fetch', event => {
       });
     })
   );
+});
+
+// ── Activación inmediata al recibir mensaje ──
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
