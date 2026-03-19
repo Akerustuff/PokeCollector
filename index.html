@@ -940,10 +940,8 @@ function renderModalCardSection(){
       +fieldCell('Rareza',rarityStr,'rarity')
       +fieldCell('Número',numStr,'num')
       +fieldCell('Ilustrador',saved.artist)
-      +'<div class="card-field" style="grid-column:1/-1">'
-      +'<span class="card-field-label">Idioma</span>'
-      +'<span class="card-field-value">'+({'en':'Inglés','es':'Español','pt':'Português'}[lang]||'Inglés')+'</span>'
-      +'</div>'
+      +fieldCell('Idioma',({'en':'Inglés','es':'Español','pt':'Português'}[lang]||'Inglés'))
+      +fieldCell('Variante',saved.variant||'')
       +'</div>'
       +'<div class="card-saved-btns">'
       +'<button class="card-mini-btn change" id="card-btn-change">Cambiar imagen</button>'
@@ -989,7 +987,30 @@ function showEditForm(){
     +'<option value="es"'+(saved.lang==='es'?' selected':'')+'">Español</option>'
     +'<option value="pt"'+(saved.lang==='pt'?' selected':'')+'">Português</option>'
     +'</select></div>'
-    +'<div class="card-edit-actions">'
+
+    +'<div class="card-edit-field"><label class="card-edit-label">Variante</label>'
+    +'<select class="card-edit-input" id="edit-variant">'
++'<option value="">— Sin variante —</option>'
+    +'<option value="Anniversary Stamp"'+(saved.variant==='Anniversary Stamp'?' selected':'')+'>  Anniversary Stamp</option>'
+    +'<option value="Championship Stamp"'+(saved.variant==='Championship Stamp'?' selected':'')+'>  Championship Stamp</option>'
+    +'<option value="Classic Collection"'+(saved.variant==='Classic Collection'?' selected':'')+'>  Classic Collection</option>'
+    +'<option value="Festival Stamp"'+(saved.variant==='Festival Stamp'?' selected':'')+'>  Festival Stamp</option>'
+    +'<option value="Full Art"'+(saved.variant==='Full Art'?' selected':'')+'>  Full Art</option>'
+    +'<option value="Holofoil"'+(saved.variant==='Holofoil'?' selected':'')+'>  Holofoil</option>'
+    +'<option value="Hyper Rare"'+(saved.variant==='Hyper Rare'?' selected':'')+'>  Hyper Rare</option>'
+    +'<option value="Non-Holo"'+(saved.variant==='Non-Holo'?' selected':'')+'>  Non-Holo</option>'
+    +'<option value="Play Pokémon Stamp"'+(saved.variant==='Play Pokémon Stamp'?' selected':'')+'>  Play Pokémon Stamp</option>'
+    +'<option value="Pokémon Center Stamp"'+(saved.variant==='Pokémon Center Stamp'?' selected':'')+'>  Pokémon Center Stamp</option>'
+    +'<option value="Pre-release Stamp"'+(saved.variant==='Pre-release Stamp'?' selected':'')+'>  Pre-release Stamp</option>'
+    +'<option value="Rainbow Rare"'+(saved.variant==='Rainbow Rare'?' selected':'')+'>  Rainbow Rare</option>'
+    +'<option value="Reverse Holo"'+(saved.variant==='Reverse Holo'?' selected':'')+'>  Reverse Holo</option>'
+    +'<option value="Shiny"'+(saved.variant==='Shiny'?' selected':'')+'>  Shiny</option>'
+    +'<option value="Special Illustration Rare"'+(saved.variant==='Special Illustration Rare'?' selected':'')+'>  Special Illustration Rare</option>'
+    +'<option value="Special Promo"'+(saved.variant==='Special Promo'?' selected':'')+'>  Special Promo</option>'
+    +'<option value="Staff Stamp"'+(saved.variant==='Staff Stamp'?' selected':'')+'>  Staff Stamp</option>'
+    +'<option value="Store Promo"'+(saved.variant==='Store Promo'?' selected':'')+'>  Store Promo</option>'
+    +'<option value="Winner Stamp"'+(saved.variant==='Winner Stamp'?' selected':'')+'>  Winner Stamp</option>'
+    +'</select></div>'    +'<div class="card-edit-actions">'
     +'<button class="card-edit-save" id="edit-save">Guardar</button>'
     +'<button class="card-edit-cancel" id="edit-cancel">Cancelar</button>'
     +'</div></div>';
@@ -1008,6 +1029,7 @@ function showEditForm(){
       rarity:  document.getElementById('edit-rarity').value.trim(),
       artist:  document.getElementById('edit-artist').value.trim(),
       lang:    document.getElementById('edit-lang')?.value||saved.lang||'en',
+      variant: document.getElementById('edit-variant')?.value||'',
     };
     isLocalChange=true;await saveAll();showToast('Información actualizada');renderModalCardSection();
   });

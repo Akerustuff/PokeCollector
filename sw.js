@@ -1,5 +1,5 @@
 // Service Worker — Cacos Collector
-const CACHE_NAME = 'pokedex-v1.1';
+const CACHE_NAME = 'pokedex-v1.2';
 const BASE = '/pokecollector';
 
 const SHELL = [
