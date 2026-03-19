@@ -55,7 +55,4 @@ jobs:
           node-version: '20'
 
       - name: Validar HTML
-        run: |
-          npx --yes html-validate@latest \
-            --config '{"extends":["html-validate:recommended"],"rules":{"no-inline-style":"off","attr-quotes":"off","void-style":"off","no-trailing-whitespace":"off","script-type":"off","require-sri":"off","long-title":"off"}}' \
-            index.html
+        run: npx --yes html-validate@latest index.html
