@@ -36,14 +36,14 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 .stats-badge{background:rgba(0,0,0,.35);border-radius:20px;padding:5px 10px;text-align:center;border:1px solid rgba(255,255,255,.15);min-width:0;max-width:90px}
 .stats-number{font-family:'Bangers',cursive;font-size:clamp(13px,4vw,18px);color:var(--yellow);line-height:1;white-space:nowrap;overflow:hidden;width:100%;display:block}
 .stats-label{font-size:9px;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:1px;font-weight:700}
-.search-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-.search-input{flex:1;padding:10px 16px;border-radius:30px;border:2px solid transparent;background:rgba(255,255,255,.15);color:white;font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;outline:none;transition:all .2s}
+.search-row{margin-bottom:8px}
+.search-input{width:100%;box-sizing:border-box;padding:10px 16px;border-radius:30px;border:2px solid transparent;background:rgba(255,255,255,.15);color:white;font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;outline:none;transition:all .2s}
 .search-input::placeholder{color:rgba(255,255,255,.45)}
 .search-input:focus{background:rgba(255,255,255,.25);border-color:var(--yellow)}
 .menu-btn{width:42px;height:42px;border-radius:24px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;flex-shrink:0}
 .menu-btn.active{background:var(--yellow);border-color:var(--yellow-dark)}
-.menu-dropdown{display:none;flex-direction:column;position:absolute;top:50px;right:0;background:#1E1E1E;border:1px solid rgba(255,255,255,.12);border-radius:14px;overflow:hidden;width:200px;z-index:200pointer-events:none}
-.menu-dropdown.open{display:flexpointer-events:auto}
+.menu-dropdown{display:none;flex-direction:column;position:absolute;top:50px;right:0;background:#1E1E1E;border:1px solid rgba(255,255,255,.12);border-radius:14px;overflow:hidden;width:200px;z-index:200}
+.menu-dropdown.open{display:flex}
 .menu-dropdown .menu-item{display:flex;align-items:center;gap:10px;padding:13px 14px;color:rgba(255,255,255,.8);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;background:transparent;width:100%;text-align:left;-webkit-tap-highlight-color:transparent}
 .menu-item:active{background:rgba(255,255,255,.06)}
 .menu-item.active{color:#FFCC00}
@@ -184,7 +184,7 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 <div class="header">
   <div class="header-top">
     <div class="logo">
-      <div style="position:relative;flex-shrink:0;width:38px;height:38px">
+      <div style="position:relative;width:38px;height:38px;flex-shrink:0">
         <svg width="38" height="38" viewBox="0 0 40 40" fill="none">
           <path d="M1.5 20 A18.5 18.5 0 0 1 38.5 20 Z" fill="#CC0000"/>
           <path d="M1.5 20 A18.5 18.5 0 0 0 38.5 20 Z" fill="white"/>
@@ -204,34 +204,34 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
         <div class="stats-number" id="global-count">-- / --</div>
         <div class="stats-label">Capturados</div>
       </div>
+      <div style="position:relative">
+        <button class="menu-btn" id="menu-btn" type="button">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="3" width="16" height="11" rx="2" stroke="white" stroke-width="1.5"/>
+            <path d="M7 17h6M10 14v3" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="10" cy="8.5" r="2" stroke="white" stroke-width="1.3"/>
+          </svg>
+        </button>
+        <div class="menu-dropdown" id="menu-dropdown">
+          <button class="menu-item" id="btn-missing" type="button">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M1.5 8h5M9.5 8h5" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/></svg>
+            Mostrar faltantes
+          </button>
+          <div class="menu-sep"></div>
+          <button class="menu-item" id="btn-mark-all" type="button">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Marcar todos
+          </button>
+          <button class="menu-item" id="btn-mark-none" type="button">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Desmarcar todos
+          </button>
+        </div>
+      </div>
     </div>
   </div>
   <div class="search-row">
     <input class="search-input" type="search" id="search" placeholder="Buscar Pokémon..." autocomplete="off">
-    <div style="position:relative;flex-shrink:0">
-      <button class="menu-btn" id="menu-btn">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <rect x="2" y="3" width="16" height="11" rx="2" stroke="white" stroke-width="1.5"/>
-          <path d="M7 17h6M10 14v3" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-          <circle cx="10" cy="8.5" r="2" stroke="white" stroke-width="1.3"/>
-        </svg>
-      </button>
-      <div class="menu-dropdown" id="menu-dropdown">
-        <button class="menu-item" id="btn-missing">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M1.5 8h5M9.5 8h5" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/></svg>
-          Mostrar faltantes
-        </button>
-        <div class="menu-sep"></div>
-        <button class="menu-item" id="btn-mark-all">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          Marcar todos
-        </button>
-        <button class="menu-item" id="btn-mark-none">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          Desmarcar todos
-        </button>
-      </div>
-    </div>
   </div>
   <div class="filter-row">
     <button class="gen-filter-btn" id="gen-filter-btn" type="button">Gen: Todas</button>
@@ -1260,10 +1260,9 @@ document.getElementById('confirm-overlay').addEventListener('click',e=>{
 
 </script>
 </body>
-</html>.filter-row{padding:0 0 12px;background:transparent}
-.gen-filter-btn{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;padding:6px 16px;border-radius:20px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.3);color:rgba(255,255,255,.85);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;user-select:none;-webkit-user-select:none;touch-action:manipulation}
-.gen-filter-btn:active{opacity:.8}
-.gen-filter-btn.filtered{background:var(--yellow);color:var(--dark);border-color:var(--yellow-dark)}
+</html>.filter-row{padding-bottom:12px}
+.gen-filter-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 16px;border-radius:20px;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.25);color:rgba(255,255,255,.9);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;-webkit-appearance:none;appearance:none}
+.gen-filter-btn.filtered{background:rgba(255,204,0,.25);border-color:rgba(255,204,0,.5);color:#FFCC00}
 .gen-filter-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.7);align-items:flex-end;justify-content:center}
 .gen-filter-overlay.open{display:flex}
 .gen-filter-sheet{background:#181818;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:16px;padding-bottom:max(env(safe-area-inset-bottom,0px),16px)}
