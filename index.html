@@ -716,18 +716,46 @@ function renderModalCollectBtn(){
 function raritySymbol(rarity){
   if(!rarity)return '';
   const r=rarity.toLowerCase();
-  if(r.includes('amazing'))return '✦ Amazing Rare';
-  if(r.includes('hyper'))return '✦✦ Hyper Rare';
-  if(r.includes('special illustration'))return '✦✦ Special Illustration Rare';
-  if(r.includes('illustration'))return '✦ Illustration Rare';
-  if(r.includes('ultra'))return '◆◆◆◆ Ultra Rare';
-  if(r.includes('double rare'))return '◆◆ Double Rare';
-  if(r.includes('shiny'))return '✦ Shiny Rare';
-  if(r.includes('rare holo'))return '◆◆ Rare Holo';
-  if(r.includes('promo'))return '✦ Promo';
-  if(r==='rare')return '◆◆ Rare';
-  if(r==='uncommon')return '◆ Uncommon';
-  if(r==='common')return '○ Common';
+  const RARITIES=[
+    // Common / Uncommon
+    {keys:['common'],                                    sym:'●',   label:'Common',                    color:'#888'},
+    {keys:['uncommon'],                                  sym:'◆',   label:'Uncommon',                  color:'#888'},
+    // Rare ★ gris
+    {keys:['amazing rare'],                              sym:'★',   label:'Amazing Rare',              color:'#aaa'},
+    {keys:['radiant rare'],                              sym:'★',   label:'Radiant Rare',              color:'#aaa'},
+    {keys:['trainer gallery'],                           sym:'★',   label:'Trainer Gallery Rare',      color:'#aaa'},
+    {keys:['rare ace'],                                  sym:'★',   label:'Rare ACE',                  color:'#aaa'},
+    {keys:['rare break'],                                sym:'★',   label:'Rare BREAK',                color:'#aaa'},
+    {keys:['rare prime'],                                sym:'★',   label:'Rare Prime',                color:'#aaa'},
+    {keys:['rare prism'],                                sym:'★',   label:'Rare Prism Star',           color:'#aaa'},
+    {keys:['rare shining'],                              sym:'★',   label:'Rare Shining',              color:'#aaa'},
+    {keys:['rare holo'],                                 sym:'★',   label:'Rare Holo',                 color:'#aaa'},
+    // Double Rare ★★ gris
+    {keys:['double rare'],                               sym:'★★',  label:'Double Rare',               color:'#aaa'},
+    // Illustration Rare ★ dorada
+    {keys:['illustration rare'],                         sym:'★',   label:'Illustration Rare',         color:'#FFD700'},
+    // Special Illustration Rare ★★ dorada
+    {keys:['special illustration'],                      sym:'★★',  label:'Special Illustration Rare', color:'#FFD700'},
+    // Hyper Rare ★★★ dorada
+    {keys:['hyper rare','rare secret'],                  sym:'★★★', label:'Hyper Rare',                color:'#FFD700'},
+    // Ultra Rare ★★ plateada
+    {keys:['ultra rare','rare ultra'],                   sym:'★★',  label:'Ultra Rare',                color:'#C0C0C0'},
+    // Rainbow / Shiny ★ plateada
+    {keys:['rare rainbow','rare shiny','shiny rare'],    sym:'★',   label:'Shiny Rare',                color:'#C0C0C0'},
+    // Shiny Ultra Rare ★★ plateada
+    {keys:['shiny ultra rare'],                          sym:'★★',  label:'Shiny Ultra Rare',          color:'#C0C0C0'},
+    // Promo / otros
+    {keys:['classic collection'],                        sym:'',    label:'Classic Collection',        color:'#aaa'},
+    {keys:['promo'],                                     sym:'',    label:'Promo',                     color:'#aaa'},
+    // Rare genérico (al final para no capturar los anteriores)
+    {keys:['rare'],                                      sym:'★',   label:'Rare',                      color:'#aaa'},
+  ];
+  for(const entry of RARITIES){
+    if(entry.keys.some(k=>r.includes(k))){
+      const{sym,label,color}=entry;
+      return sym?`<span style="color:${color}">${sym}</span> ${label}`:label;
+    }
+  }
   return rarity;
 }
 
@@ -978,7 +1006,21 @@ function showEditForm(){
     +'<div class="card-edit-field"><label class="card-edit-label">Total del set</label>'
     +'<input class="card-edit-input" id="edit-total" type="number" min="1" max="999" placeholder="165" value="'+(saved.total||'')+'"></div>'
     +'<div class="card-edit-field"><label class="card-edit-label">Rareza</label>'
-    +'<input class="card-edit-input" id="edit-rarity" placeholder="Ej: Common, Rare Holo..." value="'+(saved.rarity||'')+'"></div>'
+    +'<select class="card-edit-input" id="edit-rarity">'
++'<option value="">— Seleccionar —</option>'
+    +'<option value="Common"'+(saved.rarity==='Common'?' selected':'')+'>  ● Common</option>'
+    +'<option value="Uncommon"'+(saved.rarity==='Uncommon'?' selected':'')+'>  ◆ Uncommon</option>'
+    +'<option value="Rare"'+(saved.rarity==='Rare'?' selected':'')+'>  ★ Rare</option>'
+    +'<option value="Double Rare"'+(saved.rarity==='Double Rare'?' selected':'')+'>  ★★ Double Rare</option>'
+    +'<option value="Illustration Rare"'+(saved.rarity==='Illustration Rare'?' selected':'')+'>  ★ Illustration Rare</option>'
+    +'<option value="Ultra Rare"'+(saved.rarity==='Ultra Rare'?' selected':'')+'>  ★★ Ultra Rare</option>'
+    +'<option value="Special Illustration Rare"'+(saved.rarity==='Special Illustration Rare'?' selected':'')+'>  ★★ Special Illustration Rare</option>'
+    +'<option value="Hyper Rare"'+(saved.rarity==='Hyper Rare'||saved.rarity==='Rare Secret'?' selected':'')+'>  ★★★ Secret Rare / Hyper Rare</option>'
+    +'<option value="Shiny Rare"'+(saved.rarity==='Shiny Rare'?' selected':'')+'>  ★ Shiny Rare</option>'
+    +'<option value="Shiny Ultra Rare"'+(saved.rarity==='Shiny Ultra Rare'?' selected':'')+'>  ★★ Shiny Ultra Rare</option>'
+    +'<option value="Mega Attack Rare"'+(saved.rarity==='Mega Attack Rare'?' selected':'')+'>  ★★ Mega Attack Rare</option>'
+    +'<option value="Promo"'+(saved.rarity==='Promo'?' selected':'')+'>  Promo</option>'
+    +'</select></div>'
     +'<div class="card-edit-field"><label class="card-edit-label">Ilustrador</label>'
     +'<input class="card-edit-input" id="edit-artist" placeholder="Nombre del ilustrador" value="'+(saved.artist||'')+'"></div>'
     +'<div class="card-edit-field"><label class="card-edit-label">Idioma</label>'
@@ -991,25 +1033,34 @@ function showEditForm(){
     +'<div class="card-edit-field"><label class="card-edit-label">Variante</label>'
     +'<select class="card-edit-input" id="edit-variant">'
 +'<option value="">— Sin variante —</option>'
-    +'<option value="Anniversary Stamp"'+(saved.variant==='Anniversary Stamp'?' selected':'')+'>  Anniversary Stamp</option>'
-    +'<option value="Championship Stamp"'+(saved.variant==='Championship Stamp'?' selected':'')+'>  Championship Stamp</option>'
+    +'<option value="Alt Art"'+(saved.variant==='Alt Art'?' selected':'')+'>  Alt Art</option>'
     +'<option value="Classic Collection"'+(saved.variant==='Classic Collection'?' selected':'')+'>  Classic Collection</option>'
-    +'<option value="Festival Stamp"'+(saved.variant==='Festival Stamp'?' selected':'')+'>  Festival Stamp</option>'
     +'<option value="Full Art"'+(saved.variant==='Full Art'?' selected':'')+'>  Full Art</option>'
-    +'<option value="Holofoil"'+(saved.variant==='Holofoil'?' selected':'')+'>  Holofoil</option>'
-    +'<option value="Hyper Rare"'+(saved.variant==='Hyper Rare'?' selected':'')+'>  Hyper Rare</option>'
+    +'<option value="Gold"'+(saved.variant==='Gold'?' selected':'')+'>  Gold</option>'
+    +'<option value="Holo Confetti"'+(saved.variant==='Holo Confetti'?' selected':'')+'>  Holo Confetti</option>'
+    +'<option value="Holo Cosmos"'+(saved.variant==='Holo Cosmos'?' selected':'')+'>  Holo Cosmos</option>'
+    +'<option value="Holo Mirror"'+(saved.variant==='Holo Mirror'?' selected':'')+'>  Holo Mirror</option>'
+    +'<option value="Holo Rare"'+(saved.variant==='Holo Rare'?' selected':'')+'>  Holo Rare</option>'
+    +'<option value="Holo Reverse"'+(saved.variant==='Holo Reverse'?' selected':'')+'>  Holo Reverse</option>'
+    +'<option value="Holo Textured"'+(saved.variant==='Holo Textured'?' selected':'')+'>  Holo Textured</option>'
     +'<option value="Non-Holo"'+(saved.variant==='Non-Holo'?' selected':'')+'>  Non-Holo</option>'
-    +'<option value="Play Pokémon Stamp"'+(saved.variant==='Play Pokémon Stamp'?' selected':'')+'>  Play Pokémon Stamp</option>'
-    +'<option value="Pokémon Center Stamp"'+(saved.variant==='Pokémon Center Stamp'?' selected':'')+'>  Pokémon Center Stamp</option>'
-    +'<option value="Pre-release Stamp"'+(saved.variant==='Pre-release Stamp'?' selected':'')+'>  Pre-release Stamp</option>'
+    +'<option value="Parallel Foil: Masterball"'+(saved.variant==='Parallel Foil: Masterball'?' selected':'')+'>  Parallel Foil: Masterball</option>'
+    +'<option value="Parallel Foil: Other patterns"'+(saved.variant==='Parallel Foil: Other patterns'?' selected':'')+'>  Parallel Foil: Other patterns</option>'
+    +'<option value="Parallel Foil: Other pokeballs"'+(saved.variant==='Parallel Foil: Other pokeballs'?' selected':'')+'>  Parallel Foil: Other pokeballs</option>'
+    +'<option value="Parallel Foil: Pokeball"'+(saved.variant==='Parallel Foil: Pokeball'?' selected':'')+'>  Parallel Foil: Pokeball</option>'
+    +'<option value="Parallel Foil: Type"'+(saved.variant==='Parallel Foil: Type'?' selected':'')+'>  Parallel Foil: Type</option>'
     +'<option value="Rainbow Rare"'+(saved.variant==='Rainbow Rare'?' selected':'')+'>  Rainbow Rare</option>'
-    +'<option value="Reverse Holo"'+(saved.variant==='Reverse Holo'?' selected':'')+'>  Reverse Holo</option>'
     +'<option value="Shiny"'+(saved.variant==='Shiny'?' selected':'')+'>  Shiny</option>'
-    +'<option value="Special Illustration Rare"'+(saved.variant==='Special Illustration Rare'?' selected':'')+'>  Special Illustration Rare</option>'
-    +'<option value="Special Promo"'+(saved.variant==='Special Promo'?' selected':'')+'>  Special Promo</option>'
-    +'<option value="Staff Stamp"'+(saved.variant==='Staff Stamp'?' selected':'')+'>  Staff Stamp</option>'
-    +'<option value="Store Promo"'+(saved.variant==='Store Promo'?' selected':'')+'>  Store Promo</option>'
-    +'<option value="Winner Stamp"'+(saved.variant==='Winner Stamp'?' selected':'')+'>  Winner Stamp</option>'
+    +'<option value="Stamp: Aniversary"'+(saved.variant==='Stamp: Aniversary'?' selected':'')+'>  Stamp: Aniversary</option>'
+    +'<option value="Stamp: Championship"'+(saved.variant==='Stamp: Championship'?' selected':'')+'>  Stamp: Championship</option>'
+    +'<option value="Stamp: Festive"'+(saved.variant==='Stamp: Festive'?' selected':'')+'>  Stamp: Festive</option>'
+    +'<option value="Stamp: Play Pokémon"'+(saved.variant==='Stamp: Play Pokémon'?' selected':'')+'>  Stamp: Play Pokémon</option>'
+    +'<option value="Stamp: Pokémon Center"'+(saved.variant==='Stamp: Pokémon Center'?' selected':'')+'>  Stamp: Pokémon Center</option>'
+    +'<option value="Stamp: Pre-release"'+(saved.variant==='Stamp: Pre-release'?' selected':'')+'>  Stamp: Pre-release</option>'
+    +'<option value="Stamp: Special"'+(saved.variant==='Stamp: Special'?' selected':'')+'>  Stamp: Special</option>'
+    +'<option value="Stamp: Staff"'+(saved.variant==='Stamp: Staff'?' selected':'')+'>  Stamp: Staff</option>'
+    +'<option value="Stamp: Store Promo"'+(saved.variant==='Stamp: Store Promo'?' selected':'')+'>  Stamp: Store Promo</option>'
+    +'<option value="Stamp: Winner"'+(saved.variant==='Stamp: Winner'?' selected':'')+'>  Stamp: Winner</option>'
     +'</select></div>'    +'<div class="card-edit-actions">'
     +'<button class="card-edit-save" id="edit-save">Guardar</button>'
     +'<button class="card-edit-cancel" id="edit-cancel">Cancelar</button>'
