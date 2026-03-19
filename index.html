@@ -19,8 +19,8 @@
 body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflow-x:hidden}
 
 /* HEADER */
-.header{background:linear-gradient(160deg,var(--red-dark) 0%,var(--red) 55%,#DD2222 100%);padding:12px 14px 0;position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,.5)}
-.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.header{background:linear-gradient(160deg,var(--red-dark) 0%,var(--red) 55%,#DD2222 100%);padding:16px 16px 0;position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,.5)}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .logo{display:flex;align-items:center;gap:10px}
 .pokeball{width:40px;height:40px;border-radius:50%;background:linear-gradient(180deg,#fafafa 50%,#1a1a1a 50%);border:3px solid #1a1a1a;position:relative;flex-shrink:0}
 .pokeball::before{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:11px;height:11px;border-radius:50%;background:white;border:2.5px solid #1a1a1a;z-index:1}
@@ -30,14 +30,14 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 .header-right{display:flex;align-items:center;gap:8px}
 .sync-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:11px;height:11px;border-radius:50%;transition:all .3s;z-index:2}
 .sync-ring.ok{background:#44DD44;box-shadow:0 0 5px #44DD44}
-.sync-ring.syncing{background:var(--yellow);box-shadow:0 0 5px var(--yellow);animation:pulse .6s infinite alternate}
+.sync-ring.syncing{background:var(--yellow);box-shadow:0 0 4px var(--yellow);animation:pulse .6s infinite alternate}
 .sync-ring.error{background:#FF4444;box-shadow:0 0 4px #FF4444;animation:none}
 @keyframes pulse{from{opacity:.4}to{opacity:1}}
 .stats-badge{background:rgba(0,0,0,.35);border-radius:20px;padding:5px 10px;text-align:center;border:1px solid rgba(255,255,255,.15);min-width:0;max-width:90px}
 .stats-number{font-family:'Bangers',cursive;font-size:clamp(13px,4vw,18px);color:var(--yellow);line-height:1;white-space:nowrap;overflow:hidden;width:100%;display:block}
 .stats-label{font-size:9px;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:1px;font-weight:700}
-.search-row{margin-bottom:8px}
-.search-input{width:100%;box-sizing:border-box;padding:10px 16px;border-radius:30px;border:2px solid transparent;background:rgba(255,255,255,.15);color:white;font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;outline:none;transition:all .2s}
+.search-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.search-input{flex:1;padding:10px 16px;border-radius:30px;border:2px solid transparent;background:rgba(255,255,255,.15);color:white;font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;outline:none;transition:all .2s}
 .search-input::placeholder{color:rgba(255,255,255,.45)}
 .search-input:focus{background:rgba(255,255,255,.25);border-color:var(--yellow)}
 .menu-btn{width:42px;height:42px;border-radius:24px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;flex-shrink:0}
@@ -208,9 +208,6 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
   </div>
   <div class="search-row">
     <input class="search-input" type="search" id="search" placeholder="Buscar Pokémon..." autocomplete="off">
-  </div>
-  <div class="filter-row">
-    <button class="gen-filter-btn" id="gen-filter-btn">Gen: Todas</button>
     <div style="position:relative;flex-shrink:0">
       <button class="menu-btn" id="menu-btn">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -235,6 +232,9 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
         </button>
       </div>
     </div>
+  </div>
+  <div class="filter-row">
+    <div class="gen-filter-btn" id="gen-filter-btn" role="button" tabindex="0">Gen: Todas</div>
   </div>
 </div>
 
@@ -1260,9 +1260,10 @@ document.getElementById('confirm-overlay').addEventListener('click',e=>{
 
 </script>
 </body>
-</html>.filter-row{display:flex;align-items:center;justify-content:space-between;padding:0 0 12px;gap:8px}
-.gen-filter-btn{height:42px;padding:0 16px;border-radius:21px;background:rgba(255,255,255,.1);border:2px solid transparent;color:rgba(255,255,255,.85);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;-webkit-tap-highlight-color:transparent;display:flex;align-items:center}
-.gen-filter-btn.filtered{background:rgba(255,204,0,.2);border-color:rgba(255,204,0,.4);color:#FFCC00}
+</html>.filter-row{padding:0 0 12px;background:transparent}
+.gen-filter-btn{-webkit-appearance:none;appearance:none;display:inline-flex;align-items:center;padding:6px 16px;border-radius:20px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.3);color:rgba(255,255,255,.85);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.gen-filter-btn:active{opacity:.8}
+.gen-filter-btn.filtered{background:var(--yellow);color:var(--dark);border-color:var(--yellow-dark)}
 .gen-filter-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.7);align-items:flex-end;justify-content:center}
 .gen-filter-overlay.open{display:flex}
 .gen-filter-sheet{background:#181818;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:16px;padding-bottom:max(env(safe-area-inset-bottom,0px),16px)}
