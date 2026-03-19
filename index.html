@@ -715,47 +715,27 @@ function renderModalCollectBtn(){
 
 function raritySymbol(rarity){
   if(!rarity)return '';
-  const r=rarity.toLowerCase();
-  const RARITIES=[
-    // Common / Uncommon
-    {keys:['common'],                                    sym:'●',   label:'Common',                    color:'#888'},
-    {keys:['uncommon'],                                  sym:'◆',   label:'Uncommon',                  color:'#888'},
-    // Rare ★ gris
-    {keys:['amazing rare'],                              sym:'★',   label:'Amazing Rare',              color:'#aaa'},
-    {keys:['radiant rare'],                              sym:'★',   label:'Radiant Rare',              color:'#aaa'},
-    {keys:['trainer gallery'],                           sym:'★',   label:'Trainer Gallery Rare',      color:'#aaa'},
-    {keys:['rare ace'],                                  sym:'★',   label:'Rare ACE',                  color:'#aaa'},
-    {keys:['rare break'],                                sym:'★',   label:'Rare BREAK',                color:'#aaa'},
-    {keys:['rare prime'],                                sym:'★',   label:'Rare Prime',                color:'#aaa'},
-    {keys:['rare prism'],                                sym:'★',   label:'Rare Prism Star',           color:'#aaa'},
-    {keys:['rare shining'],                              sym:'★',   label:'Rare Shining',              color:'#aaa'},
-    {keys:['rare holo'],                                 sym:'★',   label:'Rare Holo',                 color:'#aaa'},
-    // Double Rare ★★ gris
-    {keys:['double rare'],                               sym:'★★',  label:'Double Rare',               color:'#aaa'},
-    // Illustration Rare ★ dorada
-    {keys:['illustration rare'],                         sym:'★',   label:'Illustration Rare',         color:'#FFD700'},
-    // Special Illustration Rare ★★ dorada
-    {keys:['special illustration'],                      sym:'★★',  label:'Special Illustration Rare', color:'#FFD700'},
-    // Hyper Rare ★★★ dorada
-    {keys:['hyper rare','rare secret'],                  sym:'★★★', label:'Hyper Rare',                color:'#FFD700'},
-    // Ultra Rare ★★ plateada
-    {keys:['ultra rare','rare ultra'],                   sym:'★★',  label:'Ultra Rare',                color:'#C0C0C0'},
-    // Rainbow / Shiny ★ plateada
-    {keys:['rare rainbow','rare shiny','shiny rare'],    sym:'★',   label:'Shiny Rare',                color:'#C0C0C0'},
-    // Shiny Ultra Rare ★★ plateada
-    {keys:['shiny ultra rare'],                          sym:'★★',  label:'Shiny Ultra Rare',          color:'#C0C0C0'},
-    // Promo / otros
-    {keys:['classic collection'],                        sym:'',    label:'Classic Collection',        color:'#aaa'},
-    {keys:['promo'],                                     sym:'',    label:'Promo',                     color:'#aaa'},
-    // Rare genérico (al final para no capturar los anteriores)
-    {keys:['rare'],                                      sym:'★',   label:'Rare',                      color:'#aaa'},
+  const r=rarity.toLowerCase().trim();
+  const grey='#777';
+  const silver='#C0C0C0';
+  const gold='#FFD700';
+  const map=[
+    ['common',         `<span style="color:${grey}">●</span>`,          'Common'],
+    ['uncommon',       `<span style="color:${grey}">◆</span>`,          'Uncommon'],
+    ['double rare',    `<span style="color:${grey}">★★</span>`,         'Double Rare'],
+    ['rare',           `<span style="color:${grey}">★</span>`,          'Rare'],
+    ['shiny ultra rare',`<span style="color:${silver}">★★</span>`,      'Shiny Ultra Rare'],
+    ['shiny rare',     `<span style="color:${silver}">★</span>`,        'Shiny Rare'],
+    ['ultra rare',     `<span style="color:${silver}">★★</span>`,       'Ultra Rare'],
+    ['special illustration rare',`<span style="color:${gold}">★★</span>`,'Special Illustration Rare'],
+    ['illustration rare',`<span style="color:${gold}">★</span>`,        'Illustration Rare'],
+    ['mega attack rare',`<span style="color:#FF00FF">★</span><span style="color:#ADFF2F">★</span>`,'Mega Attack Rare'],
+    ['hyper rare',     `<span style="color:${gold}">★★★</span>`,        'Secret Rare / Hyper Rare'],
+    ['rare secret',    `<span style="color:${gold}">★★★</span>`,        'Secret Rare / Hyper Rare'],
+    ['promo',          '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAYAAABb0P4QAAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAACq0lEQVR4nO1TTWgTQRR+b3Y36W6aNKEYEFJEvFSFQimBxOJh8Sc0iEi1pb140KJgLx7Ui0iQQhEUzyL0IHja4CmagwQ3tNLdDQELpT14KUQk1B6S3WKy3d3JeGhT2thKEY9+p/eYNx/fvPk+gP/oBGMMVVXlFUXh/gnZn/ojIZPJEMYYti/n8/ljy8vLtw3DuNAmZYyRwxR3KiCI2GrXmqYd9/v9GmMsJkkSmqb5JJFIzO6ZQQDAdg8AQPaxI7bK5XK/rusxRGwh4j3GWG8ul/NZlvWQ5/kZRGwVi8XBcrk8h4hsh2xXGLbVAACWSqVpv98/5ThOtFarDYRCIVkUxbe1Wm0wGAze9TxvlFJ6JRgMfrJtG1zXnRAE4Xs8Hl/ZEbS9j2KxSMLhcEySpDXTNB8zxgZ6enrim5ubrwkhY6IoDjWbTdtxnDlEnPT5fCuO45zu6urqtW07V6lURru7u/l0Ou3s26FhGGOhUEip1+vfBEFYA4D+RqMhR6PRQLVarYqiCJTS8wBwguf5c4gou657anh4+MfukzOZDBkZGXkaiUQuWpb1gFKa7Ovre16pVCYsy3qfSqV+dv7kwsJCRBCEecZYHhGr4XD4pmVZ2Xg8/oyk0+lbAHDJ87wZSum7RCLxYn19/T7HcSupVOqnoiicoijcHjtxhULBZIxlEJERQl6apvmFEDKr6/oj1DTtjSRJk81ms0AIGaKUXk8mk5/btkBE1qlQVVVelmVP07R5AKgnk8mri4uLeUJIFA3DOCsIwg1K6TWfz3em0Wh8tW17cGNjg42Pj9ODzMsY47LZLMRisalAIPDKdd2PhJDLW1tb0/sGl5aWTuq6PrTHtIeifV4qle6srq5+MAxjCgC2o6aqKv9XOT0Av0UPYDsxRyVQVZVv17Ise78AGcxePOScACoAAAAASUVORK5CYII=" style="height:1em;vertical-align:middle;opacity:.85">',                                      'Promo'],
   ];
-  for(const entry of RARITIES){
-    if(entry.keys.some(k=>r.includes(k))){
-      const{sym,label,color}=entry;
-      return sym?`<span style="color:${color}">${sym}</span> ${label}`:label;
-    }
-  }
+  const match=map.find(([k])=>r===k||r.startsWith(k));
+  if(match)return `${match[1]} ${match[2]}`;
   return rarity;
 }
 
@@ -1008,18 +988,18 @@ function showEditForm(){
     +'<div class="card-edit-field"><label class="card-edit-label">Rareza</label>'
     +'<select class="card-edit-input" id="edit-rarity">'
 +'<option value="">— Seleccionar —</option>'
-    +'<option value="Common"'+(saved.rarity==='Common'?' selected':'')+'>  ● Common</option>'
-    +'<option value="Uncommon"'+(saved.rarity==='Uncommon'?' selected':'')+'>  ◆ Uncommon</option>'
-    +'<option value="Rare"'+(saved.rarity==='Rare'?' selected':'')+'>  ★ Rare</option>'
-    +'<option value="Double Rare"'+(saved.rarity==='Double Rare'?' selected':'')+'>  ★★ Double Rare</option>'
-    +'<option value="Illustration Rare"'+(saved.rarity==='Illustration Rare'?' selected':'')+'>  ★ Illustration Rare</option>'
-    +'<option value="Ultra Rare"'+(saved.rarity==='Ultra Rare'?' selected':'')+'>  ★★ Ultra Rare</option>'
-    +'<option value="Special Illustration Rare"'+(saved.rarity==='Special Illustration Rare'?' selected':'')+'>  ★★ Special Illustration Rare</option>'
-    +'<option value="Hyper Rare"'+(saved.rarity==='Hyper Rare'||saved.rarity==='Rare Secret'?' selected':'')+'>  ★★★ Secret Rare / Hyper Rare</option>'
-    +'<option value="Shiny Rare"'+(saved.rarity==='Shiny Rare'?' selected':'')+'>  ★ Shiny Rare</option>'
-    +'<option value="Shiny Ultra Rare"'+(saved.rarity==='Shiny Ultra Rare'?' selected':'')+'>  ★★ Shiny Ultra Rare</option>'
-    +'<option value="Mega Attack Rare"'+(saved.rarity==='Mega Attack Rare'?' selected':'')+'>  ★★ Mega Attack Rare</option>'
-    +'<option value="Promo"'+(saved.rarity==='Promo'?' selected':'')+'>  Promo</option>'
+    +'<option value="Common"'+(saved.rarity==='Common'||saved.rarity==='Rare Secret'&&'Common'==='Hyper Rare'?' selected':'')+'>  Common</option>'
+    +'<option value="Uncommon"'+(saved.rarity==='Uncommon'||saved.rarity==='Rare Secret'&&'Uncommon'==='Hyper Rare'?' selected':'')+'>  Uncommon</option>'
+    +'<option value="Rare"'+(saved.rarity==='Rare'||saved.rarity==='Rare Secret'&&'Rare'==='Hyper Rare'?' selected':'')+'>  Rare</option>'
+    +'<option value="Double Rare"'+(saved.rarity==='Double Rare'||saved.rarity==='Rare Secret'&&'Double Rare'==='Hyper Rare'?' selected':'')+'>  Double Rare</option>'
+    +'<option value="Ultra Rare"'+(saved.rarity==='Ultra Rare'||saved.rarity==='Rare Secret'&&'Ultra Rare'==='Hyper Rare'?' selected':'')+'>  Ultra Rare</option>'
+    +'<option value="Shiny Rare"'+(saved.rarity==='Shiny Rare'||saved.rarity==='Rare Secret'&&'Shiny Rare'==='Hyper Rare'?' selected':'')+'>  Shiny Rare</option>'
+    +'<option value="Shiny Ultra Rare"'+(saved.rarity==='Shiny Ultra Rare'||saved.rarity==='Rare Secret'&&'Shiny Ultra Rare'==='Hyper Rare'?' selected':'')+'>  Shiny Ultra Rare</option>'
+    +'<option value="Illustration Rare"'+(saved.rarity==='Illustration Rare'||saved.rarity==='Rare Secret'&&'Illustration Rare'==='Hyper Rare'?' selected':'')+'>  Illustration Rare</option>'
+    +'<option value="Special Illustration Rare"'+(saved.rarity==='Special Illustration Rare'||saved.rarity==='Rare Secret'&&'Special Illustration Rare'==='Hyper Rare'?' selected':'')+'>  Special Illustration Rare</option>'
+    +'<option value="Mega Attack Rare"'+(saved.rarity==='Mega Attack Rare'||saved.rarity==='Rare Secret'&&'Mega Attack Rare'==='Hyper Rare'?' selected':'')+'>  Mega Attack Rare</option>'
+    +'<option value="Hyper Rare"'+(saved.rarity==='Hyper Rare'||saved.rarity==='Rare Secret'&&'Hyper Rare'==='Hyper Rare'?' selected':'')+'>  Hyper Rare</option>'
+    +'<option value="Promo"'+(saved.rarity==='Promo'||saved.rarity==='Rare Secret'&&'Promo'==='Hyper Rare'?' selected':'')+'>  Promo</option>'
     +'</select></div>'
     +'<div class="card-edit-field"><label class="card-edit-label">Ilustrador</label>'
     +'<input class="card-edit-input" id="edit-artist" placeholder="Nombre del ilustrador" value="'+(saved.artist||'')+'"></div>'
