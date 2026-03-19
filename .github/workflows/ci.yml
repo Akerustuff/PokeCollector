@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [develop]
+
+jobs:
+  validate:
+    name: Validar proyecto
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verificar archivos requeridos
+        run: |
+          MISSING=0
+          for f in index.html manifest.json sw.js icons/icon-192.png icons/icon-512.png; do
+            if [ ! -f "$f" ]; then
+              echo "FALTA: $f"
+              MISSING=1
+            else
+              echo "OK: $f"
+            fi
+          done
+          if [ $MISSING -eq 1 ]; then
+            echo ""
+            echo "Faltan archivos requeridos. El deploy fallaria."
+            exit 1
+          fi
+
+      - name: Validar manifest.json
+        run: |
+          python3 -c "
+          import json, sys
+          try:
+            data = json.load(open('manifest.json'))
+            required = ['name', 'short_name', 'start_url', 'display', 'icons']
+            missing = [k for k in required if k not in data]
+            if missing:
+              print('manifest.json le faltan campos: ' + ', '.join(missing))
+              sys.exit(1)
+            print('manifest.json valido')
+          except json.JSONDecodeError as e:
+            print('manifest.json tiene un error de JSON: ' + str(e))
+            sys.exit(1)
+          "
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validar HTML
+        run: |
+          npx --yes html-validate@latest \
+            --config '{"extends":["html-validate:recommended"],"rules":{"no-inline-style":"off","attr-quotes":"off","void-style":"off","no-trailing-whitespace":"off","script-type":"off","require-sri":"off","long-title":"off"}}' \
+            index.html
