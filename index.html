@@ -42,8 +42,8 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 .search-input:focus{background:rgba(255,255,255,.25);border-color:var(--yellow)}
 .menu-btn{width:42px;height:42px;border-radius:24px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;flex-shrink:0}
 .menu-btn.active{background:var(--yellow);border-color:var(--yellow-dark)}
-.menu-dropdown{display:none;flex-direction:column;position:absolute;top:50px;right:0;background:#1E1E1E;border:1px solid rgba(255,255,255,.12);border-radius:14px;overflow:hidden;width:200px;z-index:200}
-.menu-dropdown.open{display:flex}
+.menu-dropdown{display:none;flex-direction:column;position:absolute;top:50px;right:0;background:#1E1E1E;border:1px solid rgba(255,255,255,.12);border-radius:14px;overflow:hidden;width:200px;z-index:200pointer-events:none}
+.menu-dropdown.open{display:flexpointer-events:auto}
 .menu-dropdown .menu-item{display:flex;align-items:center;gap:10px;padding:13px 14px;color:rgba(255,255,255,.8);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;background:transparent;width:100%;text-align:left;-webkit-tap-highlight-color:transparent}
 .menu-item:active{background:rgba(255,255,255,.06)}
 .menu-item.active{color:#FFCC00}
@@ -234,7 +234,7 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
     </div>
   </div>
   <div class="filter-row">
-    <div class="gen-filter-btn" id="gen-filter-btn" role="button" tabindex="0">Gen: Todas</div>
+    <button class="gen-filter-btn" id="gen-filter-btn" type="button">Gen: Todas</button>
   </div>
 </div>
 
@@ -1261,7 +1261,7 @@ document.getElementById('confirm-overlay').addEventListener('click',e=>{
 </script>
 </body>
 </html>.filter-row{padding:0 0 12px;background:transparent}
-.gen-filter-btn{-webkit-appearance:none;appearance:none;display:inline-flex;align-items:center;padding:6px 16px;border-radius:20px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.3);color:rgba(255,255,255,.85);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.gen-filter-btn{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;padding:6px 16px;border-radius:20px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.3);color:rgba(255,255,255,.85);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;user-select:none;-webkit-user-select:none;touch-action:manipulation}
 .gen-filter-btn:active{opacity:.8}
 .gen-filter-btn.filtered{background:var(--yellow);color:var(--dark);border-color:var(--yellow-dark)}
 .gen-filter-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.7);align-items:flex-end;justify-content:center}
