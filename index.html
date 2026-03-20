@@ -76,12 +76,12 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 .card-body:active{opacity:.7}
 
 /* Check button — esquina superior izquierda */
-.check-btn{position:absolute;top:5px;left:5px;width:24px;height:24px;border-radius:7px;border:2px solid var(--gray-200);background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;transition:background .15s,border-color .15s,transform .1s;-webkit-tap-highlight-color:transparent;font-size:13px;font-weight:900;color:transparent;line-height:1}
+.check-btn{position:absolute;top:4px;left:4px;width:26px;height:26px;border:none;background:none;padding:0;cursor:pointer;z-index:3;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;transition:transform .1s}
 .check-btn:active{transform:scale(.82)}
-.pokemon-card.collected .check-btn{background:var(--red);border-color:var(--red-dark);color:white}
+.check-btn svg{width:21px;height:21px}
 
 /* TCG badge — esquina superior derecha */
-.card-icon{position:absolute;top:5px;right:6px;font-size:11px;line-height:1;pointer-events:none;z-index:2;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
+.card-icon{position:absolute;top:5px;right:5px;line-height:1;pointer-events:none;z-index:2;filter:drop-shadow(0 1px 2px rgba(0,0,0,.2))}.card-icon svg{display:block;width:14px;height:14px}
 
 .pokemon-img{width:54px;height:54px;image-rendering:pixelated;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.12));pointer-events:none}
 .pokemon-card:not(.collected) .pokemon-img{filter:grayscale(.4) opacity(.6)}
@@ -546,8 +546,8 @@ function startListener(){
 }
 
 function patchCards(added,removed){
-  for(const id of added){const c=document.querySelector(`.pokemon-card[data-id="${CSS.escape(String(id))}"]`);if(c){c.classList.add('collected');c.querySelector('.check-btn').textContent='v';c.classList.remove('synced-in');void c.offsetWidth;c.classList.add('synced-in')}}
-  for(const id of removed){const c=document.querySelector(`.pokemon-card[data-id="${CSS.escape(String(id))}"]`);if(c){c.classList.remove('collected');c.querySelector('.check-btn').textContent='';c.classList.remove('synced-in');void c.offsetWidth;c.classList.add('synced-in')}}
+  for(const id of added){const c=document.querySelector(`.pokemon-card[data-id="${CSS.escape(String(id))}"]`);if(c){c.classList.add('collected');c.querySelector('.check-btn').innerHTML=CARD_PB_FULL;c.classList.remove('synced-in');void c.offsetWidth;c.classList.add('synced-in')}}
+  for(const id of removed){const c=document.querySelector(`.pokemon-card[data-id="${CSS.escape(String(id))}"]`);if(c){c.classList.remove('collected');c.querySelector('.check-btn').innerHTML=CARD_PB_EMPTY;c.classList.remove('synced-in');void c.offsetWidth;c.classList.add('synced-in')}}
 }
 
 // NAMES
@@ -675,8 +675,8 @@ function cardHTML(p){
   const hasTcg=!!tcgCards[p.id];
   const extraClass=(p.type==='family'?' form':(p.type==='regional'||p.type==='hisui')?' form regional':'');
   return '<div class="pokemon-card'+(isCol?' collected':'')+extraClass+'" data-id="'+p.id+'">'
-    +'<button class="check-btn" data-action="check">'+(isCol?'v':'')+'</button>'
-    +(hasTcg?'<div class="card-icon">&#127183;</div>':'')
+    +'<button class="check-btn" data-action="check">'+(isCol?CARD_PB_FULL:CARD_PB_EMPTY)+'</button>'
+    +(hasTcg?'<div class="card-icon">'+CARD_TCG_ICON+'</div>':'')
     +'<div class="card-body" data-action="open">'
     +'<img class="pokemon-img" src="'+spriteUrl+'" alt="'+p.name+'" loading="lazy" onerror="this.style.visibility=&quot;hidden&quot;">'
     +(numLabel?'<div class="pokemon-number">'+numLabel+'</div>':'')
@@ -739,8 +739,8 @@ async function toggleCollected(card){
   const poke=allPokemon.find(p=>p.id===id);
   const name=poke?(poke.formLabel?poke.name+' ('+poke.formLabel+')':poke.name):id;
   isLocalChange=true;
-  if(collected.has(id)){collected.delete(id);card.classList.remove('collected');card.querySelector('.check-btn').textContent='';showToast(name+' eliminado')}
-  else{collected.add(id);card.classList.add('collected');card.querySelector('.check-btn').textContent='v';showToast(name+' ¡capturado!')}
+  if(collected.has(id)){collected.delete(id);card.classList.remove('collected');card.querySelector('.check-btn').innerHTML=CARD_PB_EMPTY;showToast(name+' eliminado')}
+  else{collected.add(id);card.classList.add('collected');card.querySelector('.check-btn').innerHTML=CARD_PB_FULL;showToast(name+' ¡capturado!')}
   if(filterMissing&&!collected.has(id))card.remove();
   updateGlobalCount();updateGenProgress(poke?.gen);
   await saveAll();
@@ -781,6 +781,20 @@ function openModal(poke){
 
 function closeModal(){document.getElementById('modal-overlay').classList.remove('open');document.body.style.overflow='';modalPoke=null}
 
+const CARD_TCG_ICON=`<svg viewBox="0 0 16 16" fill="none"><rect x="1" y="5" width="14" height="10" rx="1.5" stroke="#666" stroke-width="1.3"/><path d="M5 5V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1" stroke="#666" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="10" r="2.5" stroke="#666" stroke-width="1.3"/></svg>`;
+const CARD_PB_EMPTY=`<svg viewBox="0 0 40 40" fill="none">
+  <circle cx="20" cy="20" r="18.5" stroke="#bbb" stroke-width="2"/>
+  <path d="M1.5 20h13.5M25 20h13.5" stroke="#bbb" stroke-width="2"/>
+  <circle cx="20" cy="20" r="5" stroke="#bbb" stroke-width="2" fill="white"/>
+</svg>`;
+const CARD_PB_FULL=`<svg viewBox="0 0 40 40" fill="none">
+  <path d="M1.5 20 A18.5 18.5 0 0 1 38.5 20 Z" fill="#CC0000"/>
+  <path d="M1.5 20 A18.5 18.5 0 0 0 38.5 20 Z" fill="white"/>
+  <circle cx="20" cy="20" r="18.5" stroke="#555" stroke-width="2"/>
+  <path d="M1.5 20h13.5M25 20h13.5" stroke="#555" stroke-width="2"/>
+  <circle cx="20" cy="20" r="5" fill="white" stroke="#555" stroke-width="2"/>
+  <circle cx="20" cy="20" r="2.5" fill="#ddd"/>
+</svg>`;
 const PB_EMPTY=`<svg viewBox="0 0 40 40" fill="none">
   <circle cx="20" cy="20" r="18.5" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
   <path d="M1.5 20h13.5M25 20h13.5" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
@@ -802,6 +816,21 @@ function renderModalCollectBtn(){
   if(btn)btn.innerHTML=isCol?PB_FULL:PB_EMPTY;
 }
 
+function normalizeApiRarity(r){
+  if(!r)return '';
+  const map={
+    'Common':'Common','Uncommon':'Uncommon','Rare':'Rare',
+    'Rare Holo':'Rare','Rare Holo EX':'Ultra Rare','Rare Holo GX':'Shiny Rare',
+    'Rare Holo V':'Shiny Rare','Rare Holo VMAX':'Shiny Rare','Rare Holo VSTAR':'Shiny Rare',
+    'Rare Ultra':'Ultra Rare','Rare Secret':'Hyper Rare','Rare Rainbow':'Hyper Rare',
+    'Rare Shiny':'Shiny Rare','Rare Shiny GX':'Shiny Ultra Rare',
+    'Double Rare':'Double Rare','Ultra Rare':'Ultra Rare',
+    'Illustration Rare':'Illustration Rare','Special Illustration Rare':'Special Illustration Rare',
+    'Hyper Rare':'Hyper Rare','Shiny Rare':'Shiny Rare','Shiny Ultra Rare':'Shiny Ultra Rare',
+    'ACE SPEC Rare':'Ultra Rare','Promo':'Promo',
+  };
+  return map[r]||r;
+}
 function raritySymbol(rarity){
   if(!rarity)return '';
   const r=rarity.toLowerCase().trim();
@@ -811,11 +840,11 @@ function raritySymbol(rarity){
   const map=[
     ['common',         `<span style="color:${grey}">●</span>`,          'Common'],
     ['uncommon',       `<span style="color:${grey}">◆</span>`,          'Uncommon'],
-    ['double rare',    `<span style="color:${grey}">★★</span>`,         'Double Rare'],
     ['rare',           `<span style="color:${grey}">★</span>`,          'Rare'],
-    ['shiny ultra rare',`<span style="color:${silver}">★★</span>`,      'Shiny Ultra Rare'],
+    ['double rare',    `<span style="color:${grey}">★★</span>`,         'Double Rare'],
     ['shiny rare',     `<span style="color:${silver}">★</span>`,        'Shiny Rare'],
     ['ultra rare',     `<span style="color:${silver}">★★</span>`,       'Ultra Rare'],
+    ['shiny ultra rare',`<span style="color:${silver}">★★</span>`,      'Shiny Ultra Rare'],
     ['special illustration rare',`<span style="color:${gold}">★★</span>`,'Special Illustration Rare'],
     ['illustration rare',`<span style="color:${gold}">★</span>`,        'Illustration Rare'],
     ['mega attack rare',`<span style="color:#FF00FF">★</span><span style="color:#ADFF2F">★</span>`,'Mega Attack Rare'],
@@ -859,7 +888,7 @@ async function loadTcgSets(){
     const res=await fetch('https://api.pokemontcg.io/v2/sets?pageSize=250&orderBy=releaseDate');
     if(!res.ok)throw new Error('sets fetch failed');
     const data=await res.json();
-    tcgSetsCache={};
+    tcgSetsCache={...SEREBII_SET_MAP_FALLBACK};
     const norm=n=>n.toLowerCase().replace(/[^a-z0-9]/g,'');
     for(const s of data.data||[]){
       tcgSetsCache[s.id.toLowerCase()]=s.id;
@@ -909,8 +938,11 @@ async function fetchTcgCardBySerebii(setName,number,retries=4,onStatus=null){
   const sets=tcgSetsCache||SEREBII_SET_MAP_FALLBACK;
   const mappedId=sets[setName.toLowerCase()]||sets[norm(setName)];
 
+  const PROMO_PREFIX={'swshp':'SWSH','smp':'SM','xyp':'XY','bwp':'BW','svp':'SVP','bwp':'BW'};
+  const promoPrefix=mappedId?PROMO_PREFIX[mappedId]:null;
   const queries=[
     mappedId?'set.id:'+mappedId+' number:'+number:null,
+    promoPrefix?'set.id:'+mappedId+' number:'+promoPrefix+number:null,
     'set.name:"'+setName+'" number:'+number,
   ].filter(Boolean);
 
@@ -981,7 +1013,7 @@ function showUrlInput(container){
           number:     num,
           total:      total,
           artist:     card.artist||'',
-          rarity:     card.rarity||'',
+          rarity:     normalizeApiRarity(card.rarity),
           serebiiUrl: url,
         };
         showToast('¡Carta encontrada: '+card.name+'!');
@@ -998,7 +1030,7 @@ function showUrlInput(container){
     const b=document.getElementById('card-url-save');
     if(b)b.textContent='Guardar';
     const gridCard=document.querySelector('.pokemon-card[data-id="'+CSS.escape(modalPoke.id)+'"]');
-    if(gridCard&&!gridCard.querySelector('.card-icon')){const ic=document.createElement('div');ic.className='card-icon';ic.textContent='🃏';gridCard.appendChild(ic);}
+    if(gridCard&&!gridCard.querySelector('.card-icon')){const ic=document.createElement('div');ic.className='card-icon';ic.innerHTML=CARD_TCG_ICON;gridCard.appendChild(ic);}
     isLocalChange=true;await saveAll();renderModalCardSection();
   });
   document.getElementById('card-url-input').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('card-url-save').click()});
@@ -1064,6 +1096,7 @@ function renderModalCardSection(){
 function showEditForm(){
   if(!modalPoke)return;
   const saved=tcgCards[modalPoke.id]||{};
+  if(saved.rarity)saved.rarity=normalizeApiRarity(saved.rarity);
   const el=document.getElementById('modal-card-content');
   const numStr=saved.number?(saved.total?saved.number+'/'+saved.total:saved.number):'';
 
@@ -1081,8 +1114,8 @@ function showEditForm(){
     +'<option value="Uncommon"'+(saved.rarity==='Uncommon'||saved.rarity==='Rare Secret'&&'Uncommon'==='Hyper Rare'?' selected':'')+'>  Uncommon</option>'
     +'<option value="Rare"'+(saved.rarity==='Rare'||saved.rarity==='Rare Secret'&&'Rare'==='Hyper Rare'?' selected':'')+'>  Rare</option>'
     +'<option value="Double Rare"'+(saved.rarity==='Double Rare'||saved.rarity==='Rare Secret'&&'Double Rare'==='Hyper Rare'?' selected':'')+'>  Double Rare</option>'
-    +'<option value="Ultra Rare"'+(saved.rarity==='Ultra Rare'||saved.rarity==='Rare Secret'&&'Ultra Rare'==='Hyper Rare'?' selected':'')+'>  Ultra Rare</option>'
     +'<option value="Shiny Rare"'+(saved.rarity==='Shiny Rare'||saved.rarity==='Rare Secret'&&'Shiny Rare'==='Hyper Rare'?' selected':'')+'>  Shiny Rare</option>'
+    +'<option value="Ultra Rare"'+(saved.rarity==='Ultra Rare'||saved.rarity==='Rare Secret'&&'Ultra Rare'==='Hyper Rare'?' selected':'')+'>  Ultra Rare</option>'
     +'<option value="Shiny Ultra Rare"'+(saved.rarity==='Shiny Ultra Rare'||saved.rarity==='Rare Secret'&&'Shiny Ultra Rare'==='Hyper Rare'?' selected':'')+'>  Shiny Ultra Rare</option>'
     +'<option value="Illustration Rare"'+(saved.rarity==='Illustration Rare'||saved.rarity==='Rare Secret'&&'Illustration Rare'==='Hyper Rare'?' selected':'')+'>  Illustration Rare</option>'
     +'<option value="Special Illustration Rare"'+(saved.rarity==='Special Illustration Rare'||saved.rarity==='Rare Secret'&&'Special Illustration Rare'==='Hyper Rare'?' selected':'')+'>  Special Illustration Rare</option>'
