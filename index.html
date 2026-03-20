@@ -865,15 +865,19 @@ function parseSerebiiUrl(url){
 }
 
 // Fetch con timeout de 6 segundos
-async function fetchWithTimeout(url,ms=6000){
+async function fetchWithTimeout(url,ms=6000,signal=null){
   const ctrl=new AbortController();
   const timer=setTimeout(()=>ctrl.abort(),ms);
+  const onAbort=()=>ctrl.abort();
+  signal?.addEventListener('abort',onAbort);
   try{
     const res=await fetch(url,{signal:ctrl.signal});
     clearTimeout(timer);
+    signal?.removeEventListener('abort',onAbort);
     return res;
   }catch(e){
     clearTimeout(timer);
+    signal?.removeEventListener('abort',onAbort);
     throw e;
   }
 }
@@ -947,25 +951,31 @@ async function fetchTcgCardBySerebii(setName,number,retries=4,onStatus=null){
   ].filter(Boolean);
 
   for(const q of queries){
-    try{
-      if(signal?.aborted)return null;
-      const res=await fetchWithTimeout(base+encodeURIComponent(q),15000,signal);
-      if(signal?.aborted)return null;
-      if(res.ok){
-        const data=await res.json();
-        if(data.data?.length>0)return data.data[0];
-      }
-    }catch(e){
-      if(e.name==='AbortError')return null;
-      console.warn('TCG query failed:',q,e.message);
-      if(retries>0){
-        const attempt=5-retries;
-        if(onStatus)onStatus('Reintento '+attempt+'/4...');
-        await new Promise(r=>setTimeout(r,1500));
+    for(let attempt=0;attempt<=retries;attempt++){
+      try{
         if(signal?.aborted)return null;
-        return fetchTcgCardBySerebii(setName,number,retries-1,onStatus);
+        if(attempt>0){
+          if(onStatus)onStatus('Reintento '+attempt+'/'+retries+'...');
+          await new Promise(r=>setTimeout(r,Math.min(500*Math.pow(2,attempt-1),4000)));
+          if(signal?.aborted)return null;
+        }
+        const res=await fetchWithTimeout(base+encodeURIComponent(q),10000,signal);
+        if(signal?.aborted)return null;
+        if(res.ok){
+          const data=await res.json();
+          if(data.data?.length>0)return data.data[0];
+          break; // query ok pero sin resultados, pasar a siguiente query
+        }
+        if(res.status===429||res.status>=500){
+          console.warn('TCG HTTP '+res.status+', reintentando:',q);
+          continue; // reintentar misma query
+        }
+        break; // otro error HTTP, pasar a siguiente query
+      }catch(e){
+        if(e.name==='AbortError')return null;
+        console.warn('TCG query failed:',q,e.message);
+        if(attempt<retries)continue; // reintentar misma query
       }
-      return null;
     }
   }
   return null;
