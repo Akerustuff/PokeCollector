@@ -266,6 +266,19 @@ body{font-family:'Nunito',sans-serif;background:#1A1A1A;min-height:100vh;overflo
 </div>
 <div class="toast" id="toast"></div>
 
+<!-- CONFIRM MODAL -->
+<div class="gen-modal-overlay" id="confirm-modal-overlay">
+  <div class="gen-modal-sheet">
+    <div class="gen-modal-handle"></div>
+    <div class="gen-modal-header" id="confirm-modal-title"></div>
+    <div style="padding:14px 18px;color:rgba(255,255,255,.6);font-size:14px" id="confirm-modal-body"></div>
+    <div class="gen-modal-footer" style="display:flex;gap:10px">
+      <button class="gen-modal-apply" id="confirm-modal-cancel" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.7)">Cancelar</button>
+      <button class="gen-modal-apply" id="confirm-modal-ok"></button>
+    </div>
+  </div>
+</div>
+
 <!-- GEN FILTER MODAL -->
 <div class="gen-modal-overlay" id="gen-modal-overlay">
   <div class="gen-modal-sheet">
@@ -1234,19 +1247,48 @@ document.getElementById('btn-missing').addEventListener('click',e=>{
   document.getElementById('menu-dropdown').classList.remove('open');
   renderContent();
 });
-document.getElementById('btn-mark-all').addEventListener('click',async()=>{
-  const filtered=getFiltered();
-  filtered.forEach(p=>collected.add(p.id));
-  showToast(filtered.length+' Pokémon marcados');
-  document.getElementById('menu-dropdown').classList.remove('open');
-  isLocalChange=true;renderContent();await saveAll();
+function openConfirmModal({title,body,okLabel,onOk}){
+  document.getElementById('confirm-modal-title').textContent=title;
+  document.getElementById('confirm-modal-body').textContent=body;
+  document.getElementById('confirm-modal-ok').textContent=okLabel;
+  document.getElementById('confirm-modal-overlay').classList.add('open');
+  document.getElementById('confirm-modal-ok').onclick=()=>{closeConfirmModal();onOk();};
+}
+function closeConfirmModal(){
+  document.getElementById('confirm-modal-overlay').classList.remove('open');
+}
+document.getElementById('confirm-modal-cancel').addEventListener('click',closeConfirmModal);
+document.getElementById('confirm-modal-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('confirm-modal-overlay'))closeConfirmModal();
 });
-document.getElementById('btn-mark-none').addEventListener('click',async()=>{
-  const filtered=getFiltered();
-  filtered.forEach(p=>collected.delete(p.id));
-  showToast(filtered.length+' Pokémon desmarcados');
+
+document.getElementById('btn-mark-all').addEventListener('click',()=>{
   document.getElementById('menu-dropdown').classList.remove('open');
-  isLocalChange=true;renderContent();await saveAll();
+  const filtered=getFiltered();
+  openConfirmModal({
+    title:'Marcar todos',
+    body:'¿Seguro que quieres marcar '+filtered.length+' Pokémon como obtenidos?',
+    okLabel:'Marcar todos',
+    onOk:async()=>{
+      filtered.forEach(p=>collected.add(p.id));
+      showToast(filtered.length+' Pokémon marcados');
+      isLocalChange=true;renderContent();await saveAll();
+    }
+  });
+});
+document.getElementById('btn-mark-none').addEventListener('click',()=>{
+  document.getElementById('menu-dropdown').classList.remove('open');
+  const filtered=getFiltered();
+  openConfirmModal({
+    title:'Desmarcar todos',
+    body:'¿Seguro que quieres desmarcar '+filtered.length+' Pokémon?',
+    okLabel:'Desmarcar todos',
+    onOk:async()=>{
+      filtered.forEach(p=>collected.delete(p.id));
+      showToast(filtered.length+' Pokémon desmarcados');
+      isLocalChange=true;renderContent();await saveAll();
+    }
+  });
 });
 document.getElementById('menu-btn').addEventListener('click',e=>{
   e.stopPropagation();
